@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { setSessionCookie } from "@/lib/auth/session";
 
 type DashboardPageProps = {
   searchParams: Promise<{ session_id?: string }>;
@@ -8,6 +9,10 @@ type DashboardPageProps = {
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = await searchParams;
   const checkoutSuccess = Boolean(params.session_id);
+
+  if (params.session_id) {
+    await setSessionCookie(params.session_id);
+  }
 
   return (
     <>
