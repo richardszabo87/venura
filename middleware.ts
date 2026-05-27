@@ -1,17 +1,27 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname === "/") {
-    const session = request.cookies.get("venura_session");
-    if (session?.value) {
-      return NextResponse.redirect(new URL("/analyzer", request.url));
-    }
+const isProtectedRoute = createRouteMatcher([
+  "/analyzer(.*)",
+  "/saved-deals(.*)",
+  "/compare(.*)",
+  "/projections(.*)",
+  "/portfolio(.*)",
+  "/deal-alerts(.*)",
+  "/venura-ai(.*)",
+  "/pricing(.*)",
+  "/dashboard(.*)",
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect();
   }
-
-  return NextResponse.next();
-}
+});
 
 export const config = {
-  matcher: "/",
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+    "/__clerk/(.*)",
+  ],
 };

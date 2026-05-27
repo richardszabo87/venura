@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { LandingPage } from "@/components/landing/landing-page";
-import { isLoggedIn } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   title: "Venura — Analyze Any Property in 60 Seconds",
@@ -10,7 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  if (await isLoggedIn()) {
+  const { userId } = await auth();
+
+  if (userId) {
     redirect("/analyzer");
   }
 

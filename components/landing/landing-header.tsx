@@ -25,13 +25,13 @@ export function LandingHeader() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/analyzer"
+            href="/sign-in"
             className="hidden text-sm font-medium text-white/70 transition hover:text-white sm:inline"
           >
             Log in
           </Link>
           <Link
-            href="/analyzer"
+            href="/sign-up"
             className="rounded-lg bg-[#74C69D] px-4 py-2 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
           >
             Get started
