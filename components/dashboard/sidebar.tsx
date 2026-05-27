@@ -1,5 +1,6 @@
 "use client";
 
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -17,6 +18,12 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { isLoaded, user } = useUser();
+
+  const displayName =
+    user?.firstName ||
+    user?.primaryEmailAddress?.emailAddress ||
+    user?.emailAddresses[0]?.emailAddress;
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 flex w-64 flex-col bg-[#1B4332]">
@@ -55,7 +62,20 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-white/10 px-6 py-4">
-        <p className="text-xs text-white/40">
+        {isLoaded && displayName && (
+          <p className="mb-3 truncate text-sm font-medium text-white/80">
+            {displayName}
+          </p>
+        )}
+        <SignOutButton redirectUrl="/">
+          <button
+            type="button"
+            className="w-full rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-300/90 transition hover:border-red-400/30 hover:bg-red-500/15 hover:text-red-200"
+          >
+            Log out
+          </button>
+        </SignOutButton>
+        <p className="mt-4 text-xs text-white/40">
           For illustrative purposes only
         </p>
       </div>
