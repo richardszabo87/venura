@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -11,7 +12,11 @@ import {
   YAxis,
 } from "recharts";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { DEFAULTS, calculateMortgagePayment } from "@/lib/calculator";
+import { getLastAnalysis } from "@/lib/analyzer-session";
+import {
+  calculateMortgagePayment,
+  type PropertyInputs,
+} from "@/lib/calculator";
 import { formatCurrency } from "@/lib/format";
 
 type ProjectionTab = "equity" | "cashflow" | "value";
@@ -26,7 +31,7 @@ const APPRECIATION_RATE = 0.03;
 const RENT_GROWTH_RATE = 0.025;
 const EXPENSE_GROWTH_RATE = 0.02;
 
-function buildProjectionData() {
+function buildProjectionData(inputs: PropertyInputs) {
   const {
     purchasePrice,
     monthlyRent,
@@ -36,7 +41,7 @@ function buildProjectionData() {
     interestRate,
     insurance,
     loanTerm,
-  } = DEFAULTS;
+  } = inputs;
 
   const downPayment = purchasePrice * (downPaymentPercent / 100);
   const loanAmount = purchasePrice - downPayment;
@@ -82,7 +87,16 @@ function buildProjectionData() {
 
 export default function ProjectionsPage() {
   const [activeTab, setActiveTab] = useState<ProjectionTab>("equity");
-  const data = useMemo(() => buildProjectionData(), []);
+  const [inputs, setInputs] = useState<PropertyInputs | null>(null);
+
+  useEffect(() => {
+    setInputs(getLastAnalysis());
+  }, []);
+
+  const data = useMemo(
+    () => (inputs ? buildProjectionData(inputs) : []),
+    [inputs],
+  );
 
   const chartConfig = {
     equity: {
@@ -112,88 +126,104 @@ export default function ProjectionsPage() {
         description="Model equity growth, cash flow trends, and property appreciation over 10 years."
       />
 
-      <div className="mb-6 flex flex-wrap gap-2">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTab(tab.id)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-              activeTab === tab.id
-                ? "bg-[#74C69D] text-[#1B4332]"
-                : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-            }`}
+      {!inputs ? (
+        <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-[#1B4332]/50 p-8 text-center">
+          <p className="max-w-md text-base text-white/70">
+            Analyze a property first to see projections.
+          </p>
+          <Link
+            href="/analyzer"
+            className="mt-6 rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
           >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-semibold text-[#74C69D]">
-              {config.label}
-            </h2>
-            <p className="mt-1 text-sm text-white/60">
-              Based on default analyzer inputs · 3% appreciation · 2.5% rent
-              growth
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs uppercase tracking-wider text-white/50">
-              Year 10
-            </p>
-            <p className="text-2xl font-bold tabular-nums text-white">
-              {formatCurrency(data[10][config.dataKey])}
-            </p>
-          </div>
+            Go to Analyzer
+          </Link>
         </div>
+      ) : (
+        <>
+          <div className="mb-6 flex flex-wrap gap-2">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                  activeTab === tab.id
+                    ? "bg-[#74C69D] text-[#1B4332]"
+                    : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-        <div className="h-80 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={config.color} stopOpacity={0.4} />
-                  <stop offset="100%" stopColor={config.color} stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-              <XAxis
-                dataKey="year"
-                tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 12 }}
-                axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 12 }}
-                axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                tickLine={false}
-                tickFormatter={(v) =>
-                  `$${(v / 1000).toFixed(0)}k`
-                }
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1B4332",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "8px",
-                  color: "#fff",
-                }}
-                formatter={(value: number) => [formatCurrency(value), config.label]}
-              />
-              <Area
-                type="monotone"
-                dataKey={config.dataKey}
-                stroke={config.color}
-                strokeWidth={2}
-                fill="url(#chartGradient)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+          <div className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-[#74C69D]">
+                  {config.label}
+                </h2>
+                <p className="mt-1 text-sm text-white/60">
+                  Based on your last analysis · 3% appreciation · 2.5% rent
+                  growth
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs uppercase tracking-wider text-white/50">
+                  Year 10
+                </p>
+                <p className="text-2xl font-bold tabular-nums text-white">
+                  {formatCurrency(data[10][config.dataKey])}
+                </p>
+              </div>
+            </div>
+
+            <div className="h-80 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={config.color} stopOpacity={0.4} />
+                      <stop offset="100%" stopColor={config.color} stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                  <XAxis
+                    dataKey="year"
+                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 12 }}
+                    axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 12 }}
+                    axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                    tickLine={false}
+                    tickFormatter={(v) =>
+                      `$${(v / 1000).toFixed(0)}k`
+                    }
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1B4332",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "8px",
+                      color: "#fff",
+                    }}
+                    formatter={(value: number) => [formatCurrency(value), config.label]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey={config.dataKey}
+                    stroke={config.color}
+                    strokeWidth={2}
+                    fill="url(#chartGradient)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

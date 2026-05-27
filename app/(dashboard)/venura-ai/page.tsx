@@ -11,7 +11,7 @@ type Message = {
 
 const PRELOADED_RESPONSES: Record<string, string> = {
   "dc metro market":
-    "The DC metro rental market remains resilient with strong job growth from federal employment, defense contractors, and tech. Prince George's County offers lower entry prices with solid rental demand — areas like Landover and Hyattsville are popular with investors seeking cash flow. Montgomery County (Silver Spring, Bethesda) commands higher rents but tighter margins. Average cap rates in PG County run 5–7% vs. 4–5% in Montgomery. Watch for HOA-heavy condos which can compress cash flow significantly.",
+    "The DC metro rental market remains resilient with strong job growth from federal employment, defense contractors, and tech. Outer suburban counties often offer lower entry prices with solid rental demand for investors seeking cash flow. Closer-in suburban markets typically command higher rents but tighter margins. Average cap rates can vary widely by submarket — always compare against local comps. Watch for HOA-heavy condos which can compress cash flow significantly.",
   "rent control":
     "Maryland does not have statewide rent control, but Montgomery County has a rent stabilization program affecting certain multi-family buildings built before specific dates. DC has its own rent control laws under the Rental Housing Act covering most units built before 1975 (with exemptions). Prince George's County currently has no rent control ordinance. Always verify the jurisdiction and building age before underwriting — rent control can cap your upside and affect exit strategy.",
   "heloc vs home equity loan":

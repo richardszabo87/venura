@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo } from "react";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { analyzeProperty } from "@/lib/calculator";
@@ -21,6 +22,8 @@ export default function ComparePage() {
   const deals = SAMPLE_SAVED_DEALS;
 
   const metrics: CompareMetric[] = useMemo(() => {
+    if (deals.length < 2) return [];
+
     const analyses = deals.map((d) =>
       analyzeProperty({
         purchasePrice: d.purchasePrice,
@@ -94,59 +97,73 @@ export default function ComparePage() {
         description="Compare saved properties and see which metrics lead the pack."
       />
 
-      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#1B4332] shadow-xl">
-        <table className="w-full min-w-[640px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-white/10">
-              <th className="px-6 py-4 font-semibold text-[#74C69D]">Metric</th>
-              {deals.map((deal) => (
-                <th
-                  key={deal.id}
-                  className="px-6 py-4 font-semibold text-white"
-                >
-                  <span className="block">{deal.address}</span>
-                  <span className="mt-0.5 block text-xs font-normal text-white/50">
-                    {deal.city}, {deal.state}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {metrics.map((metric) => (
-              <tr
-                key={metric.label}
-                className="border-b border-white/5 last:border-0"
-              >
-                <td className="px-6 py-4 font-medium text-white/70">
-                  {metric.label}
-                </td>
-                {metric.values.map((value, i) => {
-                  const isBest = i === metric.bestIndex;
-
-                  return (
-                    <td
-                      key={i}
-                      className={`px-6 py-4 tabular-nums ${
-                        isBest
-                          ? "bg-emerald-500/10 font-bold text-[#74C69D]"
-                          : "text-white/90"
-                      }`}
-                    >
-                      {formatValue(metric.label, value)}
-                      {isBest && (
-                        <span className="ml-2 text-xs font-normal text-emerald-400/80">
-                          Best
-                        </span>
-                      )}
-                    </td>
-                  );
-                })}
+      {deals.length < 2 ? (
+        <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-[#1B4332]/50 p-8 text-center">
+          <p className="max-w-md text-base text-white/70">
+            Save at least 2 deals to compare them.
+          </p>
+          <Link
+            href="/saved-deals"
+            className="mt-6 rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+          >
+            View Saved Deals
+          </Link>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#1B4332] shadow-xl">
+          <table className="w-full min-w-[640px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="px-6 py-4 font-semibold text-[#74C69D]">Metric</th>
+                {deals.map((deal) => (
+                  <th
+                    key={deal.id}
+                    className="px-6 py-4 font-semibold text-white"
+                  >
+                    <span className="block">{deal.address}</span>
+                    <span className="mt-0.5 block text-xs font-normal text-white/50">
+                      {deal.city}, {deal.state}
+                    </span>
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {metrics.map((metric) => (
+                <tr
+                  key={metric.label}
+                  className="border-b border-white/5 last:border-0"
+                >
+                  <td className="px-6 py-4 font-medium text-white/70">
+                    {metric.label}
+                  </td>
+                  {metric.values.map((value, i) => {
+                    const isBest = i === metric.bestIndex;
+
+                    return (
+                      <td
+                        key={i}
+                        className={`px-6 py-4 tabular-nums ${
+                          isBest
+                            ? "bg-emerald-500/10 font-bold text-[#74C69D]"
+                            : "text-white/90"
+                        }`}
+                      >
+                        {formatValue(metric.label, value)}
+                        {isBest && (
+                          <span className="ml-2 text-xs font-normal text-emerald-400/80">
+                            Best
+                          </span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 }

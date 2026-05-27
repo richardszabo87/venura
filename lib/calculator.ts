@@ -1,11 +1,11 @@
 export const DEFAULTS = {
-  purchasePrice: 174999,
-  monthlyRent: 1850,
-  hoaFee: 274,
-  propertyTaxes: 165,
+  purchasePrice: 0,
+  monthlyRent: 0,
+  hoaFee: 0,
+  propertyTaxes: 0,
   downPaymentPercent: 20,
   interestRate: 6.99,
-  insurance: 55,
+  insurance: 0,
   loanTerm: 30,
 };
 

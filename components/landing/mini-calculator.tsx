@@ -1,33 +1,29 @@
-import { analyzeProperty, DEFAULTS, VERDICT_STYLES } from "@/lib/calculator";
+import { analyzeProperty, VERDICT_STYLES } from "@/lib/calculator";
 import {
   formatCurrency,
   formatCurrencyDetailed,
   formatPercentOneDecimal,
 } from "@/lib/format";
-import { SAMPLE_SAVED_DEALS } from "@/lib/sample-deals";
 
-const DUTCH_VILLAGE = SAMPLE_SAVED_DEALS[0];
-
-const PREVIEW_INPUTS = {
-  purchasePrice: DEFAULTS.purchasePrice,
-  monthlyRent: DEFAULTS.monthlyRent,
-  hoaFee: DEFAULTS.hoaFee,
-  propertyTaxes: DEFAULTS.propertyTaxes,
-  downPaymentPercent: DEFAULTS.downPaymentPercent,
-  interestRate: DEFAULTS.interestRate,
-  insurance: DEFAULTS.insurance,
-  loanTerm: DEFAULTS.loanTerm,
+const EXAMPLE_INPUTS = {
+  purchasePrice: 174999,
+  monthlyRent: 1850,
+  hoaFee: 274,
+  propertyTaxes: 165,
+  downPaymentPercent: 20,
+  interestRate: 6.99,
+  insurance: 55,
+  loanTerm: 30,
 };
 
-const PREVIEW_METRICS = {
-  monthlyCashFlow: 221,
-  capRate: 5.1,
-  cashOnCashReturn: 7.9,
+const EXAMPLE_PROPERTY = {
+  address: "1909 Dutch Village",
+  city: "Landover",
+  state: "MD",
 };
 
 export function MiniCalculator() {
-  const analysis = analyzeProperty(PREVIEW_INPUTS);
-
+  const analysis = analyzeProperty(EXAMPLE_INPUTS);
   const verdictStyle = VERDICT_STYLES[analysis.verdict];
 
   return (
@@ -35,13 +31,13 @@ export function MiniCalculator() {
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0d2818] shadow-2xl shadow-black/30">
         <div className="border-b border-white/10 px-5 py-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-[#74C69D]">
-            Live preview
+            Example analysis
           </p>
           <h3 className="mt-1 font-semibold text-white">
-            {DUTCH_VILLAGE.address}
+            {EXAMPLE_PROPERTY.address}
           </h3>
           <p className="text-sm text-white/50">
-            {DUTCH_VILLAGE.city}, {DUTCH_VILLAGE.state}
+            {EXAMPLE_PROPERTY.city}, {EXAMPLE_PROPERTY.state}
           </p>
         </div>
 
@@ -59,20 +55,20 @@ export function MiniCalculator() {
         <div className="grid grid-cols-2 gap-3 p-5">
           <Metric
             label="Monthly cash flow"
-            value={formatCurrencyDetailed(PREVIEW_METRICS.monthlyCashFlow)}
-            positive
+            value={formatCurrencyDetailed(analysis.monthlyCashFlow)}
+            positive={analysis.monthlyCashFlow >= 0}
           />
           <Metric
             label="Cap rate"
-            value={formatPercentOneDecimal(PREVIEW_METRICS.capRate)}
+            value={formatPercentOneDecimal(analysis.capRate)}
           />
           <Metric
             label="Cash-on-cash"
-            value={formatPercentOneDecimal(PREVIEW_METRICS.cashOnCashReturn)}
+            value={formatPercentOneDecimal(analysis.cashOnCashReturn)}
           />
           <Metric
             label="Purchase price"
-            value={formatCurrency(PREVIEW_INPUTS.purchasePrice)}
+            value={formatCurrency(EXAMPLE_INPUTS.purchasePrice)}
           />
         </div>
 
