@@ -8,6 +8,7 @@ import {
   type PropertyInputs,
 } from "@/lib/calculator";
 import { saveLastAnalysis } from "@/lib/analyzer-session";
+import { generateAnalysisPdf } from "@/lib/generate-analysis-pdf";
 import {
   formatCurrency,
   formatCurrencyDetailed,
@@ -20,6 +21,8 @@ import {
 } from "@/components/analyzer/verdict-banner";
 
 export function PropertyAnalyzer() {
+  const [propertyName, setPropertyName] = useState("");
+  const [propertyAddress, setPropertyAddress] = useState("");
   const [purchasePrice, setPurchasePrice] = useState(DEFAULTS.purchasePrice);
   const [monthlyRent, setMonthlyRent] = useState(DEFAULTS.monthlyRent);
   const [hoaFee, setHoaFee] = useState(DEFAULTS.hoaFee);
@@ -34,6 +37,10 @@ export function PropertyAnalyzer() {
   const [analyzedInputs, setAnalyzedInputs] = useState<PropertyInputs | null>(
     null,
   );
+  const [saveStatus, setSaveStatus] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const currentInputs = useMemo(
     () => ({
@@ -74,6 +81,57 @@ export function PropertyAnalyzer() {
     setAnalyzedInputs({ ...currentInputs });
     saveLastAnalysis(currentInputs);
     setHasAnalyzed(true);
+    setSaveStatus("idle");
+    setSaveError(null);
+  }
+
+  async function handleSaveDeal() {
+    if (!analyzedInputs || !analysis) return;
+
+    const name = propertyName.trim() || "Untitled deal";
+    const address = propertyAddress.trim();
+    if (!address) {
+      setSaveError("Enter a property address before saving.");
+      setSaveStatus("error");
+      return;
+    }
+
+    setSaveStatus("saving");
+    setSaveError(null);
+
+    try {
+      const res = await fetch("/api/saved-deals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          address,
+          inputs: analyzedInputs,
+          analysis,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Failed to save deal");
+      }
+
+      setSaveStatus("saved");
+    } catch (err) {
+      setSaveStatus("error");
+      setSaveError(err instanceof Error ? err.message : "Failed to save deal");
+    }
+  }
+
+  function handleDownloadPdf() {
+    if (!analyzedInputs || !analysis) return;
+
+    generateAnalysisPdf({
+      propertyName: propertyName.trim() || "Property Analysis",
+      address: propertyAddress.trim(),
+      inputs: analyzedInputs,
+      analysis,
+    });
   }
 
   return (
@@ -83,6 +141,32 @@ export function PropertyAnalyzer() {
           <h2 className="mb-5 text-lg font-semibold text-[#74C69D]">
             Property Inputs
           </h2>
+          <div className="mb-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <label className="block sm:col-span-2">
+              <span className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-white/60">
+                Property name
+              </span>
+              <input
+                type="text"
+                value={propertyName}
+                onChange={(e) => setPropertyName(e.target.value)}
+                placeholder="e.g. Capitol Hill Duplex"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30"
+              />
+            </label>
+            <label className="block sm:col-span-2">
+              <span className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-white/60">
+                Address
+              </span>
+              <input
+                type="text"
+                value={propertyAddress}
+                onChange={(e) => setPropertyAddress(e.target.value)}
+                placeholder="123 Main St, Arlington, VA"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30"
+              />
+            </label>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <InputField
               id="purchasePrice"
@@ -165,6 +249,36 @@ export function PropertyAnalyzer() {
           ) : (
             <>
               <VerdictBanner analysis={analysis} />
+
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleSaveDeal}
+                  disabled={saveStatus === "saving"}
+                  className="rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2] disabled:opacity-50"
+                >
+                  {saveStatus === "saving"
+                    ? "Saving…"
+                    : saveStatus === "saved"
+                      ? "Saved"
+                      : "Save Deal"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownloadPdf}
+                  className="rounded-xl border border-[#74C69D]/50 bg-[#74C69D]/10 px-5 py-2.5 text-sm font-semibold text-[#74C69D] transition hover:bg-[#74C69D]/20"
+                >
+                  Download PDF
+                </button>
+                {saveStatus === "saved" && (
+                  <span className="text-sm text-[#74C69D]">
+                    Deal saved to your library.
+                  </span>
+                )}
+                {saveError && (
+                  <span className="text-sm text-red-400">{saveError}</span>
+                )}
+              </div>
 
               <NegotiationCalculator
                 openOfferPrice={negotiation.openOfferPrice}

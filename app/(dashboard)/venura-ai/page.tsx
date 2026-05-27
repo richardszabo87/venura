@@ -9,48 +9,12 @@ type Message = {
   content: string;
 };
 
-const PRELOADED_RESPONSES: Record<string, string> = {
-  "dc metro market":
-    "The DC metro rental market remains resilient with strong job growth from federal employment, defense contractors, and tech. Outer suburban counties often offer lower entry prices with solid rental demand for investors seeking cash flow. Closer-in suburban markets typically command higher rents but tighter margins. Average cap rates can vary widely by submarket — always compare against local comps. Watch for HOA-heavy condos which can compress cash flow significantly.",
-  "rent control":
-    "Maryland does not have statewide rent control, but Montgomery County has a rent stabilization program affecting certain multi-family buildings built before specific dates. DC has its own rent control laws under the Rental Housing Act covering most units built before 1975 (with exemptions). Prince George's County currently has no rent control ordinance. Always verify the jurisdiction and building age before underwriting — rent control can cap your upside and affect exit strategy.",
-  "heloc vs home equity loan":
-    "A HELOC (Home Equity Line of Credit) works like a revolving credit line — you draw as needed and pay interest only on what you use. Rates are typically variable. Best for: flexible access to capital for multiple deals or renovations over time.\n\nA Home Equity Loan gives you a lump sum with fixed payments and a fixed rate. Best for: a single large purchase like a down payment on an investment property.\n\nFor real estate investing, many investors prefer HELOCs for the flexibility to deploy capital across deals, but fixed-rate home equity loans provide payment certainty. Compare current rates — in rising rate environments, fixed loans may offer better predictability.",
-  "deal analysis":
-    "When analyzing a deal, focus on four pillars:\n\n1. **Cash Flow** — Monthly rent minus PITI, HOA, insurance, and reserves. Target positive cash flow from day one.\n\n2. **Cap Rate** — NOI ÷ purchase price. Compare against market averages (5%+ in PG County is solid).\n\n3. **Cash-on-Cash Return** — Annual cash flow ÷ cash invested. Aim for 8%+ on leveraged deals.\n\n4. **50% Rule** — Operating expenses should stay under 50% of gross rent as a quick sanity check.\n\nUse Venura's Analyzer to model scenarios, then stress-test with vacancy (5–8%) and maintenance reserves ($50–100/unit/mo). Never skip the HOA fee review — it can make or break condo deals.",
-};
-
 const SUGGESTED_QUESTIONS = [
-  { label: "DC metro market outlook", key: "dc metro market" },
-  { label: "Rent control in Maryland", key: "rent control" },
-  { label: "HELOC vs home equity loan", key: "heloc vs home equity loan" },
-  { label: "How to analyze a deal", key: "deal analysis" },
+  "What's the DC metro rental market outlook for 2026?",
+  "How does rent control work in Montgomery County?",
+  "HELOC vs home equity loan for a rental down payment?",
+  "How should I analyze my first investment property?",
 ];
-
-function findResponse(input: string): string {
-  const lower = input.toLowerCase();
-
-  for (const [key, response] of Object.entries(PRELOADED_RESPONSES)) {
-    if (lower.includes(key) || key.split(" ").some((word) => lower.includes(word))) {
-      return response;
-    }
-  }
-
-  if (lower.includes("heloc") || lower.includes("home equity")) {
-    return PRELOADED_RESPONSES["heloc vs home equity loan"];
-  }
-  if (lower.includes("rent")) {
-    return PRELOADED_RESPONSES["rent control"];
-  }
-  if (lower.includes("analyze") || lower.includes("analysis") || lower.includes("deal")) {
-    return PRELOADED_RESPONSES["deal analysis"];
-  }
-  if (lower.includes("dc") || lower.includes("metro") || lower.includes("maryland")) {
-    return PRELOADED_RESPONSES["dc metro market"];
-  }
-
-  return "I can help with DC metro market insights, rent control regulations, HELOC vs home equity loans, and deal analysis strategies. Try one of the suggested questions below, or ask about any of these topics!";
-}
 
 export default function VenuraAIPage() {
   const [messages, setMessages] = useState<Message[]>([
@@ -63,6 +27,7 @@ export default function VenuraAIPage() {
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -70,7 +35,7 @@ export default function VenuraAIPage() {
   }, []);
 
   const sendMessage = useCallback(
-    (text: string) => {
+    async (text: string) => {
       if (!text.trim() || isTyping) return;
 
       const userMessage: Message = {
@@ -82,20 +47,45 @@ export default function VenuraAIPage() {
       setMessages((prev) => [...prev, userMessage]);
       setInput("");
       setIsTyping(true);
+      setError(null);
 
-      setTimeout(() => {
-        const response = findResponse(text);
+      try {
+        const res = await fetch("/api/venura-ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text.trim() }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          throw new Error(data.error ?? "Failed to get a response");
+        }
+
         setMessages((prev) => [
           ...prev,
           {
             id: `assistant-${Date.now()}`,
             role: "assistant",
-            content: response,
+            content: data.reply,
           },
         ]);
+      } catch (err) {
+        const errMessage =
+          err instanceof Error ? err.message : "Something went wrong";
+        setError(errMessage);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `error-${Date.now()}`,
+            role: "assistant",
+            content: `Sorry, I couldn't respond right now. ${errMessage}`,
+          },
+        ]);
+      } finally {
         setIsTyping(false);
         setTimeout(scrollToBottom, 50);
-      }, 1200);
+      }
     },
     [isTyping, scrollToBottom],
   );
@@ -105,7 +95,7 @@ export default function VenuraAIPage() {
       <PageHeader
         eyebrow="AI Assistant"
         title="VenuraAI"
-        description="Get instant answers to common real estate investment questions."
+        description="Get expert real estate investment advice powered by Claude."
       />
 
       <div className="flex h-[calc(100vh-220px)] min-h-[500px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#1B4332] shadow-xl">
@@ -160,16 +150,19 @@ export default function VenuraAIPage() {
         </div>
 
         <div className="border-t border-white/10 px-6 py-3">
+          {error && (
+            <p className="mb-2 text-xs text-red-300">{error}</p>
+          )}
           <div className="mb-3 flex flex-wrap gap-2">
             {SUGGESTED_QUESTIONS.map((q) => (
               <button
-                key={q.key}
+                key={q}
                 type="button"
-                onClick={() => sendMessage(q.label)}
+                onClick={() => sendMessage(q)}
                 disabled={isTyping}
                 className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/70 transition hover:border-[#74C69D]/40 hover:text-[#74C69D] disabled:opacity-50"
               >
-                {q.label}
+                {q}
               </button>
             ))}
           </div>
