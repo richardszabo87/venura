@@ -12,6 +12,7 @@ const PLANS: {
   period: string;
   description: string;
   features: string[];
+  excluded?: string[];
   cta: string;
   highlighted: boolean;
 }[] = [
@@ -27,6 +28,7 @@ const PLANS: {
       "50% rule check",
       "Basic verdict scoring",
     ],
+    excluded: ["Saved deals", "Negotiation calculator", "10-year projections"],
     cta: "Current Plan",
     highlighted: false,
   },
@@ -43,6 +45,8 @@ const PLANS: {
       "Negotiation price calculator",
       "Deal alerts (5 active)",
       "10-year projections",
+      "HOA Health Report",
+      "Deal Score™",
     ],
     cta: "Upgrade to Investor",
     highlighted: true,
@@ -61,6 +65,8 @@ const PLANS: {
       "Export reports (PDF/CSV)",
       "Priority support",
       "API access",
+      "City Intelligence",
+      "VenuraAI advisor",
     ],
     cta: "Upgrade to Pro",
     highlighted: false,
@@ -167,6 +173,15 @@ export function PricingPlans() {
                       />
                     </svg>
                     <span className="text-white/80">{feature}</span>
+                  </li>
+                ))}
+                {plan.excluded?.map((feature) => (
+                  <li
+                    key={feature}
+                    className="flex items-start gap-2.5 text-sm text-white/40"
+                  >
+                    <span className="mt-0.5 shrink-0 text-white/30">✗</span>
+                    <span className="line-through">{feature}</span>
                   </li>
                 ))}
               </ul>

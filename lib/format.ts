@@ -19,6 +19,10 @@ export function formatPercent(value: number): string {
   return `${value.toFixed(2)}%`;
 }
 
+export function formatPercentOneDecimal(value: number): string {
+  return `${value.toFixed(1)}%`;
+}
+
 export function formatCashFlow(value: number): string {
   const prefix = value >= 0 ? "+" : "";
   return `${prefix}${formatCurrencyDetailed(value)}/mo`;
