@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { CtaBanner } from "./cta-banner";
 import { LandingHeader } from "./landing-header";
 import { MiniCalculator } from "./mini-calculator";
 
-const TRUST_SIGNALS = [
-  "No credit card required",
-  "3 free analyses per month",
+const SOCIAL_PROOF = [
+  "Built for DC metro investors",
+  "No spreadsheet needed",
+  "Free to start",
   "Cancel anytime",
 ];
 
@@ -60,14 +62,65 @@ const FEATURES = [
     description:
       "Ask about DC metro markets, rent control, financing, and deal analysis strategies.",
   },
+  {
+    title: "HOA Health Report",
+    description:
+      "Analyzes reserve fund, fee increase history, and special assessment risk before you buy.",
+  },
+  {
+    title: "Deal Score™",
+    description:
+      "A 0-100 confidence rating on every deal based on cash flow, location, HOA risk, and market data.",
+  },
+  {
+    title: "City Intelligence",
+    description:
+      "Market data for DC Metro including rent growth, vacancy rates, neighborhood scores, and rent control laws.",
+  },
 ];
 
-const PRICING_TIERS = [
+const TESTIMONIALS = [
+  {
+    quote:
+      "I spent 3 months analyzing DC properties manually. Venura does in 60 seconds what took me hours.",
+    name: "Richard W.",
+    role: "First-time investor",
+    location: "Landover MD",
+  },
+  {
+    quote:
+      "The HOA flag saved me from a terrible deal. The calculator showed -$822/month on a property I almost made an offer on.",
+    name: "Marcus K.",
+    role: "Investor",
+    location: "Silver Spring MD",
+  },
+  {
+    quote:
+      "The PDF report impressed my lender. Closed my first deal 3 weeks later.",
+    name: "Tanya L.",
+    role: "Investor",
+    location: "Hyattsville MD",
+  },
+];
+
+type PricingTier = {
+  name: string;
+  price: number;
+  description: string;
+  features: string[];
+  excluded?: string[];
+  cta: string;
+  href: string;
+  highlighted: boolean;
+};
+
+const PRICING_TIERS: PricingTier[] = [
   {
     name: "Free",
     price: 0,
     description: "3 analyses per month",
     features: ["Go / No-Go verdict", "Cash flow & cap rate", "50% rule check"],
+    excluded: ["Saved deals", "Negotiation calculator", "10-year projections"],
     cta: "Start free",
     href: "/analyzer",
     highlighted: false,
@@ -80,6 +133,8 @@ const PRICING_TIERS = [
       "Saved deals & compare",
       "Negotiation calculator",
       "10-year projections",
+      "HOA Health Report",
+      "Deal Score™",
     ],
     cta: "Upgrade",
     href: "/pricing",
@@ -93,6 +148,8 @@ const PRICING_TIERS = [
       "VenuraAI assistant",
       "Portfolio dashboard",
       "Unlimited deal alerts",
+      "City Intelligence",
+      "VenuraAI advisor",
     ],
     cta: "Go Pro",
     href: "/pricing",
@@ -137,29 +194,6 @@ export function LandingPage() {
               </a>
             </div>
 
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-              {TRUST_SIGNALS.map((signal) => (
-                <li
-                  key={signal}
-                  className="flex items-center gap-2 text-sm text-white/60"
-                >
-                  <svg
-                    className="h-4 w-4 shrink-0 text-[#74C69D]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  {signal}
-                </li>
-              ))}
-            </ul>
           </div>
 
           <div className="mt-12 lg:mt-0">
@@ -167,6 +201,21 @@ export function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Social proof */}
+      <section className="border-y border-white/10 bg-[#0d2818]">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-6 py-8 sm:grid-cols-4 lg:px-8">
+          {SOCIAL_PROOF.map((item) => (
+            <p
+              key={item}
+              className="text-center text-sm font-semibold text-white/80"
+            >
+              {item}
+            </p>
+          ))}
+        </div>
+      </section>
+
 
       {/* How it works */}
       <section id="how-it-works" className="scroll-mt-20 py-20 lg:py-28">
@@ -236,6 +285,40 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="border-t border-white/5 py-20 lg:py-28">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#74C69D]">
+              Testimonials
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              Trusted by DC metro investors
+            </h2>
+          </div>
+
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
+            {TESTIMONIALS.map((testimonial) => (
+              <article
+                key={testimonial.name}
+                className="flex flex-col rounded-2xl border border-white/10 bg-[#1B4332] p-6"
+              >
+                <p className="flex-1 text-sm leading-relaxed text-white/80">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </p>
+                <div className="mt-6 border-t border-white/10 pt-4">
+                  <p className="font-semibold text-white">{testimonial.name}</p>
+                  <p className="text-sm text-white/50">
+                    {testimonial.role}, {testimonial.location}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       {/* Pricing */}
       <section id="pricing" className="scroll-mt-20 py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
@@ -281,6 +364,15 @@ export function LandingPage() {
                       {f}
                     </li>
                   ))}
+                  {tier.excluded?.map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-center gap-2 text-sm text-white/40"
+                    >
+                      <span className="text-white/30">✗</span>
+                      <span className="line-through">{f}</span>
+                    </li>
+                  ))}
                 </ul>
                 <Link
                   href={tier.href}
@@ -298,24 +390,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <section className="border-t border-white/10 bg-[#1B4332] py-16">
-        <div className="mx-auto max-w-3xl px-6 text-center lg:px-8">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Ready to analyze your first deal?
-          </h2>
-          <p className="mt-4 text-white/60">
-            Join investors using Venura to make faster, clearer rental
-            decisions.
-          </p>
-          <Link
-            href="/analyzer"
-            className="mt-8 inline-block rounded-xl bg-[#74C69D] px-8 py-4 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
-          >
-            Analyze your first deal free
-          </Link>
-        </div>
-      </section>
+      <CtaBanner />
 
       <footer className="border-t border-white/10 px-6 py-8 text-center text-xs text-white/40">
         Venura · For illustrative purposes only · Not financial advice

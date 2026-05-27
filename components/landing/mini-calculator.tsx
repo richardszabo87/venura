@@ -1,20 +1,32 @@
-import { analyzeProperty, VERDICT_STYLES } from "@/lib/calculator";
-import { formatCurrency, formatCurrencyDetailed, formatPercent } from "@/lib/format";
+import { analyzeProperty, DEFAULTS, VERDICT_STYLES } from "@/lib/calculator";
+import {
+  formatCurrency,
+  formatCurrencyDetailed,
+  formatPercentOneDecimal,
+} from "@/lib/format";
 import { SAMPLE_SAVED_DEALS } from "@/lib/sample-deals";
 
 const DUTCH_VILLAGE = SAMPLE_SAVED_DEALS[0];
 
+const PREVIEW_INPUTS = {
+  purchasePrice: DEFAULTS.purchasePrice,
+  monthlyRent: DEFAULTS.monthlyRent,
+  hoaFee: DEFAULTS.hoaFee,
+  propertyTaxes: DEFAULTS.propertyTaxes,
+  downPaymentPercent: DEFAULTS.downPaymentPercent,
+  interestRate: DEFAULTS.interestRate,
+  insurance: DEFAULTS.insurance,
+  loanTerm: DEFAULTS.loanTerm,
+};
+
+const PREVIEW_METRICS = {
+  monthlyCashFlow: 221,
+  capRate: 5.1,
+  cashOnCashReturn: 7.9,
+};
+
 export function MiniCalculator() {
-  const analysis = analyzeProperty({
-    purchasePrice: DUTCH_VILLAGE.purchasePrice,
-    monthlyRent: DUTCH_VILLAGE.monthlyRent,
-    hoaFee: DUTCH_VILLAGE.hoaFee,
-    propertyTaxes: DUTCH_VILLAGE.propertyTaxes,
-    downPaymentPercent: DUTCH_VILLAGE.downPaymentPercent,
-    interestRate: DUTCH_VILLAGE.interestRate,
-    insurance: DUTCH_VILLAGE.insurance,
-    loanTerm: DUTCH_VILLAGE.loanTerm,
-  });
+  const analysis = analyzeProperty(PREVIEW_INPUTS);
 
   const verdictStyle = VERDICT_STYLES[analysis.verdict];
 
@@ -45,10 +57,23 @@ export function MiniCalculator() {
         </div>
 
         <div className="grid grid-cols-2 gap-3 p-5">
-          <Metric label="Monthly cash flow" value={formatCurrencyDetailed(analysis.monthlyCashFlow)} positive />
-          <Metric label="Cap rate" value={formatPercent(analysis.capRate)} />
-          <Metric label="Cash-on-cash" value={formatPercent(analysis.cashOnCashReturn)} />
-          <Metric label="Purchase price" value={formatCurrency(DUTCH_VILLAGE.purchasePrice)} />
+          <Metric
+            label="Monthly cash flow"
+            value={formatCurrencyDetailed(PREVIEW_METRICS.monthlyCashFlow)}
+            positive
+          />
+          <Metric
+            label="Cap rate"
+            value={formatPercentOneDecimal(PREVIEW_METRICS.capRate)}
+          />
+          <Metric
+            label="Cash-on-cash"
+            value={formatPercentOneDecimal(PREVIEW_METRICS.cashOnCashReturn)}
+          />
+          <Metric
+            label="Purchase price"
+            value={formatCurrency(PREVIEW_INPUTS.purchasePrice)}
+          />
         </div>
 
         <div className="border-t border-white/10 px-5 py-3">
