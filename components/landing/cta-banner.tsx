@@ -24,7 +24,7 @@ export function CtaBanner() {
         </p>
 
         {submitted ? (
-          <p className="mt-8 text-lg font-semibold text-[#74C69D]">
+          <p className="mt-8 text-lg font-semibold text-[#E8D5B7]">
             You&apos;re on the list!
           </p>
         ) : (
@@ -38,11 +38,11 @@ export function CtaBanner() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="Enter your email address"
-              className="flex-1 rounded-xl border border-white/20 bg-white/5 px-4 py-3.5 text-sm text-white placeholder:text-white/40 focus:border-[#74C69D]/50 focus:outline-none focus:ring-2 focus:ring-[#74C69D]/20"
+              className="flex-1 rounded-xl border border-white/20 bg-white/5 px-4 py-3.5 text-sm text-white placeholder:text-white/40 focus:border-[#E8D5B7]/50 focus:outline-none focus:ring-2 focus:ring-[#E8D5B7]/20"
             />
             <button
               type="submit"
-              className="shrink-0 rounded-xl bg-[#74C69D] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+              className="shrink-0 rounded-xl bg-[#E8D5B7] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
             >
               Get started free →
             </button>

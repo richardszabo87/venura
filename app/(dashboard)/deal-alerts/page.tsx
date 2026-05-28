@@ -46,7 +46,7 @@ export default function DealAlertsPage() {
           onSubmit={handleSubmit}
           className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl"
         >
-          <h2 className="mb-6 text-lg font-semibold text-[#74C69D]">
+          <h2 className="mb-6 text-lg font-semibold text-[#E8D5B7]">
             New Alert
           </h2>
 
@@ -89,7 +89,7 @@ export default function DealAlertsPage() {
                 value={form.zipCodes}
                 onChange={(e) => updateField("zipCodes", e.target.value)}
                 placeholder="20785, 20901, 20782"
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30"
               />
               <p className="mt-1.5 text-xs text-white/40">
                 Comma-separated list of target zip codes
@@ -107,7 +107,7 @@ export default function DealAlertsPage() {
                 id="frequency"
                 value={form.frequency}
                 onChange={(e) => updateField("frequency", e.target.value)}
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30"
               >
                 {FREQUENCIES.map((f) => (
                   <option key={f} value={f} className="bg-[#1B4332]">
@@ -120,13 +120,13 @@ export default function DealAlertsPage() {
 
           <button
             type="submit"
-            className="mt-8 w-full rounded-xl bg-[#74C69D] py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+            className="mt-8 w-full rounded-xl bg-[#E8D5B7] py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
           >
             Create Alert
           </button>
 
           {submitted && (
-            <p className="mt-4 text-center text-sm text-[#74C69D]">
+            <p className="mt-4 text-center text-sm text-[#E8D5B7]">
               Alert created successfully! You&apos;ll receive notifications{" "}
               {form.frequency.toLowerCase()}.
             </p>
@@ -164,7 +164,7 @@ function FormField({
       </label>
       <div className="relative">
         {prefix && (
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#74C69D]">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#E8D5B7]">
             {prefix}
           </span>
         )}
@@ -174,7 +174,7 @@ function FormField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`w-full rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30 ${
+          className={`w-full rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30 ${
             prefix ? "pl-7" : "pl-3"
           } ${suffix ? "pr-12" : "pr-3"}`}
         />

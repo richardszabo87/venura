@@ -66,7 +66,7 @@ export function SavedDealsList() {
         <button
           type="button"
           onClick={fetchDeals}
-          className="mt-4 rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332]"
+          className="mt-4 rounded-xl bg-[#E8D5B7] px-5 py-2.5 text-sm font-semibold text-[#1B4332]"
         >
           Retry
         </button>
@@ -82,7 +82,7 @@ export function SavedDealsList() {
         </p>
         <Link
           href="/analyzer"
-          className="mt-6 rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+          className="mt-6 rounded-xl bg-[#E8D5B7] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
         >
           Go to Analyzer
         </Link>
@@ -105,7 +105,7 @@ export function SavedDealsList() {
         return (
           <article
             key={deal.id}
-            className="group rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl transition hover:border-[#74C69D]/30"
+            className="group rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl transition hover:border-[#E8D5B7]/30"
           >
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -131,7 +131,7 @@ export function SavedDealsList() {
                   </p>
                   <p
                     className={`text-xl font-bold tabular-nums ${
-                      isPositive ? "text-[#74C69D]" : "text-red-400"
+                      isPositive ? "text-[#E8D5B7]" : "text-red-400"
                     }`}
                   >
                     {formatCashFlow(deal.monthlyCashFlow)}
@@ -152,7 +152,7 @@ export function SavedDealsList() {
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <Link
                 href="/analyzer"
-                className="rounded-lg bg-[#74C69D]/20 px-4 py-2 text-sm font-medium text-[#74C69D] transition hover:bg-[#74C69D]/30"
+                className="rounded-lg bg-[#E8D5B7]/20 px-4 py-2 text-sm font-medium text-[#E8D5B7] transition hover:bg-[#E8D5B7]/30"
               >
                 Open in Analyzer
               </Link>

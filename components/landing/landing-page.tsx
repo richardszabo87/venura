@@ -166,12 +166,12 @@ export function LandingPage() {
       <section className="bg-[#1B4332]">
         <div className="mx-auto max-w-6xl px-6 py-16 lg:grid lg:grid-cols-2 lg:items-center lg:gap-12 lg:px-8 lg:py-24">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-[#74C69D]">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
               Real estate investment analysis
             </p>
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
               Analyze any property.{" "}
-              <span className="text-[#74C69D]">Know in 60 seconds.</span>
+              <span className="text-[#E8D5B7]">Know in 60 seconds.</span>
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/70">
               Stop building spreadsheets. Venura gives first-time investors a
@@ -182,7 +182,7 @@ export function LandingPage() {
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
                 href="/analyzer"
-                className="rounded-xl bg-[#74C69D] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+                className="rounded-xl bg-[#E8D5B7] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
               >
                 Analyze your first deal free
               </Link>
@@ -221,7 +221,7 @@ export function LandingPage() {
       <section id="how-it-works" className="scroll-mt-20 py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#74C69D]">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
               How it works
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
@@ -235,7 +235,7 @@ export function LandingPage() {
                 key={item.step}
                 className="rounded-2xl border border-white/10 bg-[#1B4332] p-8"
               >
-                <span className="text-3xl font-black text-[#74C69D]/40">
+                <span className="text-3xl font-black text-[#E8D5B7]/40">
                   {item.step}
                 </span>
                 <h3 className="mt-4 text-xl font-semibold text-white">
@@ -254,7 +254,7 @@ export function LandingPage() {
       <section id="features" className="scroll-mt-20 border-t border-white/5 bg-[#1B4332]/40 py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#74C69D]">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
               Features
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
@@ -270,10 +270,10 @@ export function LandingPage() {
             {FEATURES.map((feature) => (
               <article
                 key={feature.title}
-                className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 transition hover:border-[#74C69D]/30"
+                className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 transition hover:border-[#E8D5B7]/30"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#74C69D]/15">
-                  <span className="h-2 w-2 rounded-full bg-[#74C69D]" />
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#E8D5B7]/15">
+                  <span className="h-2 w-2 rounded-full bg-[#E8D5B7]" />
                 </div>
                 <h3 className="font-semibold text-white">{feature.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-white/60">
@@ -289,7 +289,7 @@ export function LandingPage() {
       <section className="border-t border-white/5 py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#74C69D]">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
               Testimonials
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
@@ -323,7 +323,7 @@ export function LandingPage() {
       <section id="pricing" className="scroll-mt-20 py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#74C69D]">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
               Pricing
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
@@ -337,12 +337,12 @@ export function LandingPage() {
                 key={tier.name}
                 className={`relative flex flex-col rounded-2xl border p-6 ${
                   tier.highlighted
-                    ? "border-[#74C69D] bg-[#1B4332] ring-2 ring-[#74C69D]/30"
+                    ? "border-[#E8D5B7] bg-[#1B4332] ring-2 ring-[#E8D5B7]/30"
                     : "border-white/10 bg-[#1B4332]"
                 }`}
               >
                 {tier.highlighted && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#74C69D] px-3 py-1 text-xs font-semibold text-[#1B4332]">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#E8D5B7] px-3 py-1 text-xs font-semibold text-[#1B4332]">
                     Most popular
                   </span>
                 )}
@@ -360,7 +360,7 @@ export function LandingPage() {
                       key={f}
                       className="flex items-center gap-2 text-sm text-white/80"
                     >
-                      <span className="text-[#74C69D]">✓</span>
+                      <span className="text-[#E8D5B7]">✓</span>
                       {f}
                     </li>
                   ))}
@@ -378,8 +378,8 @@ export function LandingPage() {
                   href={tier.href}
                   className={`mt-8 block rounded-xl py-3 text-center text-sm font-semibold transition ${
                     tier.highlighted
-                      ? "bg-[#74C69D] text-[#1B4332] hover:bg-[#95D5B2]"
-                      : "border border-[#74C69D]/40 bg-[#74C69D]/10 text-[#74C69D] hover:bg-[#74C69D]/20"
+                      ? "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE]"
+                      : "border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 text-[#E8D5B7] hover:bg-[#E8D5B7]/20"
                   }`}
                 >
                   {tier.cta}

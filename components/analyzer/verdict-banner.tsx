@@ -53,8 +53,8 @@ export function NegotiationCalculator({
       label: "Open Offer Price",
       price: openOfferPrice,
       description: "Starting negotiation position — typically 8–10% below list",
-      accent: "border-[#74C69D]/40 bg-[#74C69D]/10",
-      labelColor: "text-[#74C69D]",
+      accent: "border-[#E8D5B7]/40 bg-[#E8D5B7]/10",
+      labelColor: "text-[#E8D5B7]",
     },
     {
       label: "Target Price",
@@ -76,7 +76,7 @@ export function NegotiationCalculator({
     <section className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-[#74C69D]">
+          <h2 className="text-lg font-semibold text-[#E8D5B7]">
             Negotiation Price Calculator
           </h2>
           <p className="mt-1 text-sm text-white/60">

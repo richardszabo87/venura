@@ -104,7 +104,7 @@ export default function ComparePage() {
           </p>
           <Link
             href="/saved-deals"
-            className="mt-6 rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+            className="mt-6 rounded-xl bg-[#E8D5B7] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
           >
             View Saved Deals
           </Link>
@@ -114,7 +114,7 @@ export default function ComparePage() {
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead>
               <tr className="border-b border-white/10">
-                <th className="px-6 py-4 font-semibold text-[#74C69D]">Metric</th>
+                <th className="px-6 py-4 font-semibold text-[#E8D5B7]">Metric</th>
                 {deals.map((deal) => (
                   <th
                     key={deal.id}
@@ -145,7 +145,7 @@ export default function ComparePage() {
                         key={i}
                         className={`px-6 py-4 tabular-nums ${
                           isBest
-                            ? "bg-emerald-500/10 font-bold text-[#74C69D]"
+                            ? "bg-emerald-500/10 font-bold text-[#E8D5B7]"
                             : "text-white/90"
                         }`}
                       >

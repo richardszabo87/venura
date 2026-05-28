@@ -33,7 +33,7 @@ export default function PortfolioPage() {
           </p>
           <Link
             href="/analyzer"
-            className="mt-6 rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+            className="mt-6 rounded-xl bg-[#E8D5B7] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
           >
             Analyze a Property
           </Link>
@@ -82,7 +82,7 @@ export default function PortfolioPage() {
                       <p className="text-xs uppercase tracking-wider text-white/50">
                         Monthly Cash Flow
                       </p>
-                      <p className="text-xl font-bold tabular-nums text-[#74C69D]">
+                      <p className="text-xl font-bold tabular-nums text-[#E8D5B7]">
                         {formatCashFlow(property.monthlyCashFlow)}
                       </p>
                     </div>
@@ -99,7 +99,7 @@ export default function PortfolioPage() {
                     </div>
                     <div className="h-4 overflow-hidden rounded-full bg-white/10">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-[#1B4332] to-[#74C69D] transition-all"
+                        className="h-full rounded-full bg-gradient-to-r from-[#1B4332] to-[#E8D5B7] transition-all"
                         style={{ width: `${equityPercent}%` }}
                       />
                     </div>
@@ -139,7 +139,7 @@ function SummaryCard({
       <p
         className={`mt-2 text-3xl font-bold tabular-nums tracking-tight ${
           highlight === "positive"
-            ? "text-[#74C69D]"
+            ? "text-[#E8D5B7]"
             : highlight === "negative"
               ? "text-red-400"
               : "text-white"

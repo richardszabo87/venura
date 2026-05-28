@@ -132,12 +132,12 @@ export function PricingPlans() {
               key={plan.id}
               className={`relative flex flex-col rounded-2xl border p-6 shadow-xl ${
                 plan.highlighted
-                  ? "border-[#74C69D] bg-[#1B4332] ring-2 ring-[#74C69D]/30"
+                  ? "border-[#E8D5B7] bg-[#1B4332] ring-2 ring-[#E8D5B7]/30"
                   : "border-white/10 bg-[#1B4332]"
               }`}
             >
               {plan.highlighted && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#74C69D] px-3 py-1 text-xs font-semibold text-[#1B4332]">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#E8D5B7] px-3 py-1 text-xs font-semibold text-[#1B4332]">
                   Most Popular
                 </span>
               )}
@@ -160,7 +160,7 @@ export function PricingPlans() {
                     className="flex items-start gap-2.5 text-sm"
                   >
                     <svg
-                      className="mt-0.5 h-4 w-4 shrink-0 text-[#74C69D]"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-[#E8D5B7]"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -196,10 +196,10 @@ export function PricingPlans() {
                 }}
                 className={`w-full rounded-xl py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                   plan.highlighted
-                    ? "bg-[#74C69D] text-[#1B4332] hover:bg-[#95D5B2]"
+                    ? "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE]"
                     : plan.price === 0
                       ? "border border-white/20 bg-white/5 text-white/60"
-                      : "border border-[#74C69D]/40 bg-[#74C69D]/10 text-[#74C69D] hover:bg-[#74C69D]/20"
+                      : "border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 text-[#E8D5B7] hover:bg-[#E8D5B7]/20"
                 }`}
               >
                 {isLoading ? "Redirecting to checkout…" : plan.cta}

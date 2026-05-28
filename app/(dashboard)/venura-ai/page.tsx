@@ -101,12 +101,12 @@ export default function VenuraAIPage() {
       <div className="flex h-[calc(100vh-220px)] min-h-[500px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#1B4332] shadow-xl">
         <div className="border-b border-white/10 bg-[#1B4332] px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#74C69D]/20">
-              <span className="text-sm font-bold text-[#74C69D]">V</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E8D5B7]/20">
+              <span className="text-sm font-bold text-[#E8D5B7]">V</span>
             </div>
             <div>
               <p className="font-semibold text-white">VenuraAI</p>
-              <p className="text-xs text-[#74C69D]">Investment advisor</p>
+              <p className="text-xs text-[#E8D5B7]">Investment advisor</p>
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@ export default function VenuraAIPage() {
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-[#74C69D] text-[#1B4332]"
+                      ? "bg-[#E8D5B7] text-[#1B4332]"
                       : "bg-white/5 text-white/90"
                   }`}
                 >
@@ -138,9 +138,9 @@ export default function VenuraAIPage() {
               <div className="flex justify-start">
                 <div className="rounded-2xl bg-white/5 px-4 py-3">
                   <div className="flex gap-1.5">
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#74C69D] [animation-delay:0ms]" />
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#74C69D] [animation-delay:150ms]" />
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#74C69D] [animation-delay:300ms]" />
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#E8D5B7] [animation-delay:0ms]" />
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#E8D5B7] [animation-delay:150ms]" />
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#E8D5B7] [animation-delay:300ms]" />
                   </div>
                 </div>
               </div>
@@ -160,7 +160,7 @@ export default function VenuraAIPage() {
                 type="button"
                 onClick={() => sendMessage(q)}
                 disabled={isTyping}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/70 transition hover:border-[#74C69D]/40 hover:text-[#74C69D] disabled:opacity-50"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/70 transition hover:border-[#E8D5B7]/40 hover:text-[#E8D5B7] disabled:opacity-50"
               >
                 {q}
               </button>
@@ -180,12 +180,12 @@ export default function VenuraAIPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about markets, financing, or deal analysis..."
               disabled={isTyping}
-              className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30 disabled:opacity-50"
+              className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30 disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!input.trim() || isTyping}
-              className="rounded-xl bg-[#74C69D] px-5 py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2] disabled:opacity-50"
+              className="rounded-xl bg-[#E8D5B7] px-5 py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE] disabled:opacity-50"
             >
               Send
             </button>

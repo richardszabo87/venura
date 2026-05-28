@@ -27,8 +27,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       />
 
       {checkoutSuccess && (
-        <div className="mb-8 rounded-2xl border border-[#74C69D]/40 bg-[#74C69D]/10 px-6 py-5">
-          <p className="font-semibold text-[#74C69D]">Payment successful</p>
+        <div className="mb-8 rounded-2xl border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 px-6 py-5">
+          <p className="font-semibold text-[#E8D5B7]">Payment successful</p>
           <p className="mt-1 text-sm text-white/80">
             Thank you for subscribing. Explore your upgraded tools below.
           </p>
@@ -83,7 +83,7 @@ function QuickLink({
   return (
     <Link
       href={href}
-      className="rounded-2xl border border-white/10 bg-[#1B4332] p-5 shadow-xl transition hover:border-[#74C69D]/30"
+      className="rounded-2xl border border-white/10 bg-[#1B4332] p-5 shadow-xl transition hover:border-[#E8D5B7]/30"
     >
       <h2 className="font-semibold text-white">{title}</h2>
       <p className="mt-1 text-sm text-white/60">{description}</p>

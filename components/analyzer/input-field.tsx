@@ -24,7 +24,7 @@ export function InputField({
       </span>
       <div className="relative">
         {prefix && (
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#74C69D]">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#E8D5B7]">
             {prefix}
           </span>
         )}
@@ -34,7 +34,7 @@ export function InputField({
           step={step}
           value={value}
           onChange={(e) => onChange(Number(e.target.value) || 0)}
-          className={`w-full rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm text-white outline-none transition focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30 ${
+          className={`w-full rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm text-white outline-none transition focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30 ${
             prefix ? "pl-7" : "pl-3"
           } ${suffix ? "pr-9" : "pr-3"}`}
         />
@@ -67,7 +67,7 @@ export function MetricCard({
       <p
         className={`mt-2 text-2xl font-bold tabular-nums tracking-tight ${
           highlight === "positive"
-            ? "text-[#74C69D]"
+            ? "text-[#E8D5B7]"
             : highlight === "negative"
               ? "text-red-400"
               : "text-white"

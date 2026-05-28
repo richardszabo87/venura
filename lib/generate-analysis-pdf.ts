@@ -9,7 +9,7 @@ import {
 } from "./format";
 
 const FOREST = [27, 67, 50] as const;
-const MINT = [116, 198, 157] as const;
+const CREAM = [232, 213, 183] as const;
 const DARK = [13, 40, 24] as const;
 
 export type AnalysisPdfData = {
@@ -29,7 +29,7 @@ export function generateAnalysisPdf(data: AnalysisPdfData): void {
   doc.setFillColor(...DARK);
   doc.rect(0, 0, pageWidth, 72, "F");
 
-  doc.setTextColor(...MINT);
+  doc.setTextColor(...CREAM);
   doc.setFontSize(28);
   doc.setFont("helvetica", "bold");
   doc.text("Venura", margin, 46);
@@ -189,14 +189,14 @@ export function generateAnalysisPdf(data: AnalysisPdfData): void {
     didParseCell(hook) {
       if (hook.row.index === breakdownRows.length - 1) {
         hook.cell.styles.fontStyle = "bold";
-        hook.cell.styles.fillColor = [116, 198, 157];
+        hook.cell.styles.fillColor = [232, 213, 183];
         hook.cell.styles.textColor = [27, 67, 50];
       }
     },
   });
 
   const disclaimerY = doc.internal.pageSize.getHeight() - 72;
-  doc.setDrawColor(...MINT);
+  doc.setDrawColor(...CREAM);
   doc.setLineWidth(0.5);
   doc.line(margin, disclaimerY - 12, pageWidth - margin, disclaimerY - 12);
   doc.setFontSize(8);

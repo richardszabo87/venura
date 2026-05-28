@@ -138,7 +138,7 @@ export function PropertyAnalyzer() {
     <div className="space-y-8">
       <div className="grid gap-6 lg:grid-cols-5 lg:gap-8">
         <section className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl lg:col-span-2">
-          <h2 className="mb-5 text-lg font-semibold text-[#74C69D]">
+          <h2 className="mb-5 text-lg font-semibold text-[#E8D5B7]">
             Property Inputs
           </h2>
           <div className="mb-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -151,7 +151,7 @@ export function PropertyAnalyzer() {
                 value={propertyName}
                 onChange={(e) => setPropertyName(e.target.value)}
                 placeholder="e.g. Capitol Hill Duplex"
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30"
               />
             </label>
             <label className="block sm:col-span-2">
@@ -163,7 +163,7 @@ export function PropertyAnalyzer() {
                 value={propertyAddress}
                 onChange={(e) => setPropertyAddress(e.target.value)}
                 placeholder="123 Main St, Arlington, VA"
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#74C69D] focus:ring-2 focus:ring-[#74C69D]/30"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30"
               />
             </label>
           </div>
@@ -230,7 +230,7 @@ export function PropertyAnalyzer() {
           <button
             type="button"
             onClick={handleAnalyze}
-            className="mt-6 w-full rounded-xl bg-[#74C69D] px-5 py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+            className="mt-6 w-full rounded-xl bg-[#E8D5B7] px-5 py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
           >
             Analyze
           </button>
@@ -255,7 +255,7 @@ export function PropertyAnalyzer() {
                   type="button"
                   onClick={handleSaveDeal}
                   disabled={saveStatus === "saving"}
-                  className="rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2] disabled:opacity-50"
+                  className="rounded-xl bg-[#E8D5B7] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE] disabled:opacity-50"
                 >
                   {saveStatus === "saving"
                     ? "Saving…"
@@ -266,12 +266,12 @@ export function PropertyAnalyzer() {
                 <button
                   type="button"
                   onClick={handleDownloadPdf}
-                  className="rounded-xl border border-[#74C69D]/50 bg-[#74C69D]/10 px-5 py-2.5 text-sm font-semibold text-[#74C69D] transition hover:bg-[#74C69D]/20"
+                  className="rounded-xl border border-[#E8D5B7]/50 bg-[#E8D5B7]/10 px-5 py-2.5 text-sm font-semibold text-[#E8D5B7] transition hover:bg-[#E8D5B7]/20"
                 >
                   Download PDF
                 </button>
                 {saveStatus === "saved" && (
-                  <span className="text-sm text-[#74C69D]">
+                  <span className="text-sm text-[#E8D5B7]">
                     Deal saved to your library.
                   </span>
                 )}
@@ -288,7 +288,7 @@ export function PropertyAnalyzer() {
               />
 
               <section className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
-                <h2 className="mb-5 text-lg font-semibold text-[#74C69D]">
+                <h2 className="mb-5 text-lg font-semibold text-[#E8D5B7]">
                   Key Metrics
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -318,7 +318,7 @@ export function PropertyAnalyzer() {
                     <div
                       className={`flex items-center justify-between rounded-xl border px-5 py-4 ${
                         analysis.fiftyPercentRulePass
-                          ? "border-[#74C69D]/50 bg-[#74C69D]/10"
+                          ? "border-[#E8D5B7]/50 bg-[#E8D5B7]/10"
                           : "border-red-400/50 bg-red-500/10"
                       }`}
                     >
@@ -334,7 +334,7 @@ export function PropertyAnalyzer() {
                       <span
                         className={`rounded-full px-4 py-1.5 text-sm font-bold uppercase tracking-wide ${
                           analysis.fiftyPercentRulePass
-                            ? "bg-[#74C69D] text-[#1B4332]"
+                            ? "bg-[#E8D5B7] text-[#1B4332]"
                             : "bg-red-400 text-[#1B4332]"
                         }`}
                       >
@@ -346,15 +346,15 @@ export function PropertyAnalyzer() {
               </section>
 
               <section className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
-                <h2 className="mb-5 text-lg font-semibold text-[#74C69D]">
+                <h2 className="mb-5 text-lg font-semibold text-[#E8D5B7]">
                   Monthly Expense Breakdown
                 </h2>
                 <div className="space-y-1">
                   <div className="flex items-center justify-between border-b border-white/10 py-3">
-                    <span className="text-sm font-medium text-[#74C69D]">
+                    <span className="text-sm font-medium text-[#E8D5B7]">
                       Gross rental income
                     </span>
-                    <span className="font-semibold tabular-nums text-[#74C69D]">
+                    <span className="font-semibold tabular-nums text-[#E8D5B7]">
                       +{formatCurrencyDetailed(monthlyRent)}
                     </span>
                   </div>
@@ -382,7 +382,7 @@ export function PropertyAnalyzer() {
                     <span
                       className={`text-xl font-bold tabular-nums ${
                         analysis.monthlyCashFlow >= 0
-                          ? "text-[#74C69D]"
+                          ? "text-[#E8D5B7]"
                           : "text-red-400"
                       }`}
                     >

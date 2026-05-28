@@ -8,7 +8,7 @@ export function LandingHeader() {
           <span className="text-xl font-bold tracking-tight text-white">
             Venura
           </span>
-          <span className="text-xl font-bold text-[#74C69D]">.</span>
+          <span className="text-xl font-bold text-[#E8D5B7]">.</span>
         </Link>
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-white/70 md:flex">
@@ -32,7 +32,7 @@ export function LandingHeader() {
           </Link>
           <Link
             href="/sign-up"
-            className="rounded-lg bg-[#74C69D] px-4 py-2 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+            className="rounded-lg bg-[#E8D5B7] px-4 py-2 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
           >
             Get started
           </Link>

@@ -32,7 +32,7 @@ export function Sidebar() {
           <span className="text-2xl font-bold tracking-tight text-white">
             Venura
           </span>
-          <span className="text-2xl font-bold text-[#74C69D]">.</span>
+          <span className="text-2xl font-bold text-[#E8D5B7]">.</span>
         </Link>
         <p className="mt-1 text-xs text-white/50">Investment Dashboard</p>
       </div>
@@ -49,7 +49,7 @@ export function Sidebar() {
                   href={item.href}
                   className={`flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                     isActive
-                      ? "bg-[#74C69D]/20 text-[#74C69D]"
+                      ? "bg-[#E8D5B7]/20 text-[#E8D5B7]"
                       : "text-white/70 hover:bg-white/5 hover:text-white"
                   }`}
                 >

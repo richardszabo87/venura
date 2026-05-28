@@ -4,14 +4,14 @@
   --background: #0d2818;
   --foreground: #ffffff;
   --forest: #1B4332;
-  --mint: #74C69D;
+  --cream: #E8D5B7;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-forest: var(--forest);
-  --color-mint: var(--mint);
+  --color-cream: var(--cream);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -24,7 +24,7 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(116, 198, 157, 0.3) transparent;
+  scrollbar-color: rgba(232, 213, 183, 0.3) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -36,6 +36,6 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(116, 198, 157, 0.3);
+  background: rgba(232, 213, 183, 0.3);
   border-radius: 3px;
 }

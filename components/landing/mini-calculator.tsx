@@ -30,7 +30,7 @@ export function MiniCalculator() {
     <div className="mx-auto w-full max-w-md">
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0d2818] shadow-2xl shadow-black/30">
         <div className="border-b border-white/10 px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[#74C69D]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#E8D5B7]">
             Example analysis
           </p>
           <h3 className="mt-1 font-semibold text-white">
@@ -77,7 +77,7 @@ export function MiniCalculator() {
             <span className="text-white/50">50% rule</span>
             <span
               className={`font-semibold ${
-                analysis.fiftyPercentRulePass ? "text-[#74C69D]" : "text-red-400"
+                analysis.fiftyPercentRulePass ? "text-[#E8D5B7]" : "text-red-400"
               }`}
             >
               {analysis.fiftyPercentRulePass ? "Pass" : "Fail"}
@@ -103,7 +103,7 @@ function Metric({
       <p className="text-xs text-white/50">{label}</p>
       <p
         className={`mt-1 text-sm font-bold tabular-nums ${
-          positive ? "text-[#74C69D]" : "text-white"
+          positive ? "text-[#E8D5B7]" : "text-white"
         }`}
       >
         {positive && !value.startsWith("-") ? "+" : ""}

@@ -16,9 +16,9 @@ const clerkAppearance = {
     headerTitle: "text-white",
     headerSubtitle: "text-white/60",
     formButtonPrimary:
-      "bg-[#74C69D] text-[#1B4332] hover:bg-[#95D5B2] border-none",
-    footerActionLink: "text-[#74C69D] hover:text-[#95D5B2]",
-    identityPreviewEditButton: "text-[#74C69D]",
+      "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE] border-none",
+    footerActionLink: "text-[#E8D5B7] hover:text-[#F0E4CE]",
+    identityPreviewEditButton: "text-[#E8D5B7]",
     formFieldInput: "border-white/10 bg-white/5 text-white",
     dividerLine: "bg-white/10",
     dividerText: "text-white/40",

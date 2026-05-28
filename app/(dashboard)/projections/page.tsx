@@ -102,7 +102,7 @@ export default function ProjectionsPage() {
     equity: {
       dataKey: "equity" as const,
       label: "Equity",
-      color: "#74C69D",
+      color: "#E8D5B7",
     },
     cashflow: {
       dataKey: "cashFlow" as const,
@@ -133,7 +133,7 @@ export default function ProjectionsPage() {
           </p>
           <Link
             href="/analyzer"
-            className="mt-6 rounded-xl bg-[#74C69D] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#95D5B2]"
+            className="mt-6 rounded-xl bg-[#E8D5B7] px-5 py-2.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
           >
             Go to Analyzer
           </Link>
@@ -148,7 +148,7 @@ export default function ProjectionsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
                   activeTab === tab.id
-                    ? "bg-[#74C69D] text-[#1B4332]"
+                    ? "bg-[#E8D5B7] text-[#1B4332]"
                     : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
                 }`}
               >
@@ -160,7 +160,7 @@ export default function ProjectionsPage() {
           <div className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <h2 className="text-lg font-semibold text-[#74C69D]">
+                <h2 className="text-lg font-semibold text-[#E8D5B7]">
                   {config.label}
                 </h2>
                 <p className="mt-1 text-sm text-white/60">
