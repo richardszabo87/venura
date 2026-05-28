@@ -75,7 +75,7 @@ export function generateAnalysisPdf(data: AnalysisPdfData): void {
   doc.text("INVESTMENT VERDICT", margin + 16, y + 22);
   doc.setFontSize(26);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(...verdictRgb);
+  doc.setTextColor(verdictRgb[0], verdictRgb[1], verdictRgb[2]);
   doc.text(verdictLabel, margin + 16, y + 46);
   y += 72;
 
