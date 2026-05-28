@@ -8,9 +8,9 @@ import {
   formatPercent,
 } from "./format";
 
-const FOREST = [27, 67, 50] as const;
-const CREAM = [232, 213, 183] as const;
-const DARK = [13, 40, 24] as const;
+const FOREST: [number, number, number] = [27, 67, 50];
+const CREAM: [number, number, number] = [232, 213, 183];
+const DARK: [number, number, number] = [13, 40, 24];
 
 export type AnalysisPdfData = {
   propertyName: string;
@@ -61,7 +61,7 @@ export function generateAnalysisPdf(data: AnalysisPdfData): void {
 
   const verdictStyle = VERDICT_STYLES[analysis.verdict];
   const verdictLabel = verdictStyle.label;
-  const verdictRgb =
+  const verdictRgb: [number, number, number] =
     analysis.verdict === "go"
       ? [46, 125, 50]
       : analysis.verdict === "no-go"
