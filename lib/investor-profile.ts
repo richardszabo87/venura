@@ -395,10 +395,27 @@ export function getInvestorProfile(): InvestorProfile | null {
 export function getAnalyzerDefaultsFromProfile(
   profile: InvestorProfile,
 ): Partial<PropertyInputs> {
+  const purchasePrice = profile.maxPurchasePrice ?? DEFAULTS.purchasePrice;
+  const monthlyRent = Math.round(purchasePrice * 0.009);
+  const hoaFee =
+    profile.maxHoa === 0
+      ? 0
+      : profile.maxHoa != null
+        ? Math.round(profile.maxHoa * 0.85)
+        : profile.answers.propertyType === "condo" ||
+            profile.answers.propertyType === "townhouse"
+          ? 250
+          : 0;
+  const propertyTaxes = Math.round((purchasePrice * 0.01) / 12);
+
   return {
-    purchasePrice: profile.maxPurchasePrice ?? DEFAULTS.purchasePrice,
+    purchasePrice,
+    monthlyRent,
+    hoaFee,
+    propertyTaxes,
     downPaymentPercent: profile.downPaymentPercent,
     interestRate: profile.interestRate,
+    insurance: 55,
     loanTerm: profile.loanTerm,
   };
 }

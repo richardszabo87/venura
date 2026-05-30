@@ -33,6 +33,7 @@ const clerkAppearance = {
 };
 
 export function SignUpWithProfile() {
+  const [ready, setReady] = useState(false);
   const [emailAddress, setEmailAddress] = useState<string | undefined>();
 
   useEffect(() => {
@@ -40,7 +41,12 @@ export function SignUpWithProfile() {
     if (profile?.email) {
       setEmailAddress(profile.email);
     }
+    setReady(true);
   }, []);
+
+  if (!ready) {
+    return <div className="mx-auto h-96 w-full max-w-md" aria-hidden />;
+  }
 
   return (
     <SignUp

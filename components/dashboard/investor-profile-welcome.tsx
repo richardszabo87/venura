@@ -31,13 +31,16 @@ export function InvestorProfileWelcome() {
       <p className="mt-1 text-sm text-white/80">{summary.description}</p>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {defaults.purchasePrice != null && (
+        {defaults.purchasePrice != null && defaults.purchasePrice > 0 && (
           <ProfileChip label={`Budget ~${formatCurrency(defaults.purchasePrice)}`} />
         )}
         {defaults.downPaymentPercent != null && (
           <ProfileChip label={`${defaults.downPaymentPercent}% down`} />
         )}
         <ProfileChip label={`Target: ${summary.targetCashFlow}`} />
+        {profile.marketRecommendations[0] && (
+          <ProfileChip label={`Top market: ${profile.marketRecommendations[0].name}`} />
+        )}
       </div>
 
       <Link

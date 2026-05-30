@@ -10,13 +10,15 @@ import {
   type QuizAnswers,
 } from "@/lib/investor-profile";
 
-type QuizStep = "questions" | "results";
+type QuizStep = "questions" | "results" | "email";
 
 export function FirstTimeInvestorQuiz() {
   const router = useRouter();
   const [step, setStep] = useState<QuizStep>("questions");
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Partial<QuizAnswers>>({});
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const currentQuestion = QUIZ_QUESTIONS[questionIndex];
   const selectedValue = currentQuestion ? answers[currentQuestion.id] : undefined;
@@ -47,6 +49,12 @@ export function FirstTimeInvestorQuiz() {
   }
 
   function goBack() {
+    if (step === "email") {
+      setStep("results");
+      setEmailError(null);
+      return;
+    }
+
     if (step === "results") {
       setStep("questions");
       setQuestionIndex(QUIZ_QUESTIONS.length - 1);
@@ -58,9 +66,21 @@ export function FirstTimeInvestorQuiz() {
     }
   }
 
-  function handleSignUp() {
-    if (!profile) return;
-    saveInvestorProfile(profile);
+  function handleContinueToEmail() {
+    setStep("email");
+  }
+
+  function handleSignUp(e: React.FormEvent) {
+    e.preventDefault();
+    if (!completedAnswers) return;
+
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setEmailError("Enter a valid email address.");
+      return;
+    }
+
+    saveInvestorProfile(buildInvestorProfile(completedAnswers, trimmed));
     router.push("/sign-up");
   }
 
@@ -91,12 +111,16 @@ export function FirstTimeInvestorQuiz() {
           <h1 className="mt-3 text-2xl font-bold tracking-tight text-[#1B4332] sm:text-3xl">
             {step === "questions"
               ? "Build your investor profile"
-              : "Your investor profile is ready"}
+              : step === "results"
+                ? "Your investor profile is ready"
+                : "Save your profile"}
           </h1>
           <p className="mt-3 text-sm text-[#1B4332]/70 sm:text-base">
             {step === "questions"
               ? "Answer 7 quick questions to get personalized DC metro market recommendations."
-              : "Sign up free to analyze deals matched to your profile."}
+              : step === "results"
+                ? "Sign up free to analyze deals matched to your profile."
+                : "Enter your email to create your free Venura account."}
           </p>
         </div>
 
@@ -210,10 +234,10 @@ export function FirstTimeInvestorQuiz() {
               </p>
               <button
                 type="button"
-                onClick={handleSignUp}
+                onClick={handleContinueToEmail}
                 className="mt-6 w-full rounded-xl bg-[#E8D5B7] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE] sm:w-auto"
               >
-                Sign up free at venura.io/sign-up
+                Continue with email
               </button>
               <button
                 type="button"
@@ -223,6 +247,58 @@ export function FirstTimeInvestorQuiz() {
                 ← Review answers
               </button>
             </div>
+          </div>
+        )}
+
+        {step === "email" && completedAnswers && (
+          <div className="rounded-2xl border border-[#1B4332]/10 bg-white p-5 shadow-sm sm:p-8">
+            <h2 className="text-xl font-semibold text-[#1B4332] sm:text-2xl">
+              Where should we send your profile?
+            </h2>
+            <p className="mt-3 text-sm text-[#1B4332]/70">
+              We&apos;ll save your investor profile and pre-fill your Venura
+              dashboard when you sign up.
+            </p>
+
+            <form onSubmit={handleSignUp} className="mt-6">
+              <label
+                htmlFor="quiz-email"
+                className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[#1B4332]/70"
+              >
+                Email address
+              </label>
+              <input
+                id="quiz-email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError(null);
+                }}
+                placeholder="you@example.com"
+                className="w-full rounded-lg border border-[#1B4332]/15 bg-[#F7F1E8] px-4 py-3 text-sm text-[#1B4332] outline-none transition placeholder:text-[#1B4332]/30 focus:border-[#1B4332] focus:ring-2 focus:ring-[#E8D5B7]/50"
+              />
+              {emailError && (
+                <p className="mt-2 text-sm text-red-600">{emailError}</p>
+              )}
+
+              <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+                <button
+                  type="button"
+                  onClick={goBack}
+                  className="rounded-lg px-4 py-2.5 text-sm font-medium text-[#1B4332]/70 transition hover:text-[#1B4332]"
+                >
+                  ← Back
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-xl bg-[#E8D5B7] px-6 py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
+                >
+                  Create my account
+                </button>
+              </div>
+            </form>
           </div>
         )}
       </main>
