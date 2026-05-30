@@ -351,6 +351,25 @@ export function LandingPage() {
                 </Link>
               </article>
             ))}
+
+            <article className="flex flex-col rounded-2xl border border-[#E8D5B7]/20 bg-[#1B4332] p-6 shadow-xl sm:col-span-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#E8D5B7]/70">
+                Agent Widget
+              </p>
+              <h3 className="mt-3 text-xl font-semibold text-[#E8D5B7]">
+                For real estate agents
+              </h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-white/75">
+                Add a branded deal analyzer to your website. Your clients analyze
+                deals, you get the credit.
+              </p>
+              <Link
+                href="/widget"
+                className="mt-6 inline-flex w-fit rounded-xl border border-[#E8D5B7]/40 bg-[#E8D5B7] px-5 py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
+              >
+                See agent tools →
+              </Link>
+            </article>
           </div>
         </div>
       </section>
@@ -460,11 +479,88 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* For Agents */}
+      <section
+        id="for-agents"
+        className="scroll-mt-20 border-t border-white/10 bg-[#0d2818] py-20 lg:py-28"
+      >
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2 lg:px-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
+              For Agents
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              Give your investor clients a deal analyzer — branded as yours.
+            </h2>
+            <p className="mt-5 text-base leading-relaxed text-white/70">
+              Agents on Venura give clients an instant property analysis tool on
+              their own website. Your name, your colors, your contact info.
+              Powered by Venura underneath.
+            </p>
+            <Link
+              href="/widget"
+              className="mt-8 inline-flex rounded-xl bg-[#E8D5B7] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
+            >
+              Set up your widget →
+            </Link>
+          </div>
+
+          <AgentWidgetMockup />
+        </div>
+      </section>
+
       <CtaBanner />
 
       <footer className="border-t border-white/10 px-6 py-8 text-center text-xs text-white/40">
         Venura · For illustrative purposes only · Not financial advice
       </footer>
+    </div>
+  );
+}
+
+function AgentWidgetMockup() {
+  return (
+    <div className="mx-auto w-full max-w-sm rounded-2xl border border-[#E8D5B7]/20 bg-white shadow-2xl">
+      <div className="rounded-t-2xl bg-[#1B4332] px-5 py-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-[#E8D5B7]/70">
+          Powered by Venura
+        </p>
+        <p className="mt-1 text-lg font-bold text-[#E8D5B7]">
+          Analyze this investment property
+        </p>
+      </div>
+
+      <div className="space-y-4 p-5">
+        <div className="flex items-center gap-4 rounded-xl border border-[#1B4332]/10 bg-[#F7F1E8] p-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1B4332] text-sm font-bold text-[#E8D5B7]">
+            JS
+          </div>
+          <div>
+            <p className="font-semibold text-[#1B4332]">Jane Smith</p>
+            <p className="text-sm text-[#1B4332]/70">
+              Investment Property Specialist
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-center text-xs">
+          <div className="rounded-lg border border-[#1B4332]/10 bg-[#F7F1E8] px-2 py-3">
+            <p className="font-semibold text-[#1B4332]">Cash flow</p>
+            <p className="mt-1 text-[#1B4332]/70">+$312/mo</p>
+          </div>
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-3">
+            <p className="font-semibold text-[#1B4332]">Verdict</p>
+            <p className="mt-1 text-lg font-black text-emerald-700">GO</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="w-full rounded-xl bg-[#1B4332] px-4 py-3 text-sm font-semibold text-[#E8D5B7]"
+        >
+          Get your free analysis
+        </button>
+      </div>
     </div>
   );
 }
