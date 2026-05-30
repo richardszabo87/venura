@@ -21,6 +21,12 @@ export function LandingHeader() {
           <Link href="/quiz" className="transition hover:text-white">
             Investor Quiz
           </Link>
+          <Link href="/rent" className="transition hover:text-white">
+            RentCheck
+          </Link>
+          <Link href="/markets" className="transition hover:text-white">
+            Market Pulse
+          </Link>
           <a href="#pricing" className="transition hover:text-white">
             Pricing
           </a>

@@ -79,6 +79,37 @@ const FEATURES = [
   },
 ];
 
+const FREE_TOOLS = [
+  {
+    title: "Investor Quiz",
+    headline: "Find your investor profile",
+    subtitle: "7 questions. Personalized market recommendations.",
+    cta: "Take the quiz →",
+    href: "/quiz",
+  },
+  {
+    title: "HOA Danger Score",
+    headline: "Check any HOA before you buy",
+    subtitle: "Reserve fund analysis. Fee trend. Risk rating.",
+    cta: "Check an HOA →",
+    href: "/hoa",
+  },
+  {
+    title: "RentCheck",
+    headline: "Instant rent estimates",
+    subtitle: "Comparable rentals. Market trends. Vacancy data.",
+    cta: "Check rent →",
+    href: "/rent",
+  },
+  {
+    title: "Market Pulse",
+    headline: "DC metro market intelligence",
+    subtitle: "Live data for 6 markets. Updated weekly.",
+    cta: "View markets →",
+    href: "/markets",
+  },
+];
+
 const TESTIMONIALS = [
   {
     quote:
@@ -285,25 +316,41 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Investor Quiz */}
-      <section className="border-t border-white/5 py-16 lg:py-20">
+      {/* Free Tools */}
+      <section id="tools" className="scroll-mt-20 border-t border-[#1B4332]/10 bg-[#F7F1E8] py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
-          <div className="rounded-2xl border border-[#E8D5B7]/30 bg-[#1B4332] px-6 py-10 text-center shadow-xl sm:px-10 sm:py-12">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
-              First-Time Investor Quiz
-            </p>
-            <h2 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-              Discover your investor profile
+          <div className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-[#1B4332] sm:text-4xl">
+              Free investor tools
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">
-              7 questions. Personalized DC metro market recommendations. Free.
+            <p className="mx-auto mt-4 max-w-2xl text-[#1B4332]/70">
+              No signup required.
             </p>
-            <Link
-              href="/quiz"
-              className="mt-8 inline-flex rounded-xl bg-[#E8D5B7] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
-            >
-              Take the quiz →
-            </Link>
+          </div>
+
+          <div className="mt-14 grid gap-6 sm:grid-cols-2">
+            {FREE_TOOLS.map((tool) => (
+              <article
+                key={tool.title}
+                className="flex flex-col rounded-2xl border border-[#1B4332]/20 bg-white p-6 shadow-sm"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#1B4332]/50">
+                  {tool.title}
+                </p>
+                <h3 className="mt-3 text-xl font-semibold text-[#1B4332]">
+                  {tool.headline}
+                </h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-[#1B4332]/70">
+                  {tool.subtitle}
+                </p>
+                <Link
+                  href={tool.href}
+                  className="mt-6 inline-flex w-fit rounded-xl bg-[#E8D5B7] px-5 py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
+                >
+                  {tool.cta}
+                </Link>
+              </article>
+            ))}
           </div>
         </div>
       </section>
