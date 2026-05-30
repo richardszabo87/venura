@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   analyzeProperty,
   calculateNegotiationPrices,
@@ -8,6 +8,10 @@ import {
   type PropertyInputs,
 } from "@/lib/calculator";
 import { saveLastAnalysis } from "@/lib/analyzer-session";
+import {
+  getAnalyzerDefaultsFromProfile,
+  getInvestorProfile,
+} from "@/lib/investor-profile";
 import { generateAnalysisPdf } from "@/lib/generate-analysis-pdf";
 import {
   formatCurrency,
@@ -41,6 +45,23 @@ export function PropertyAnalyzer() {
     "idle" | "saving" | "saved" | "error"
   >("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const profile = getInvestorProfile();
+    if (!profile) return;
+
+    const defaults = getAnalyzerDefaultsFromProfile(profile);
+    if (defaults.purchasePrice != null) setPurchasePrice(defaults.purchasePrice);
+    if (defaults.monthlyRent != null) setMonthlyRent(defaults.monthlyRent);
+    if (defaults.hoaFee != null) setHoaFee(defaults.hoaFee);
+    if (defaults.propertyTaxes != null) setPropertyTaxes(defaults.propertyTaxes);
+    if (defaults.downPaymentPercent != null) {
+      setDownPaymentPercent(defaults.downPaymentPercent);
+    }
+    if (defaults.interestRate != null) setInterestRate(defaults.interestRate);
+    if (defaults.insurance != null) setInsurance(defaults.insurance);
+    if (defaults.loanTerm != null) setLoanTerm(defaults.loanTerm);
+  }, []);
 
   const currentInputs = useMemo(
     () => ({

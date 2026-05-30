@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/dashboard/page-header";
+import {
+  getDealAlertDefaultsFromProfile,
+  getInvestorProfile,
+} from "@/lib/investor-profile";
 
 type AlertForm = {
   maxPrice: string;
@@ -22,6 +26,12 @@ export default function DealAlertsPage() {
     frequency: "Weekly",
   });
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const profile = getInvestorProfile();
+    if (!profile) return;
+    setForm((prev) => ({ ...prev, ...getDealAlertDefaultsFromProfile(profile) }));
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { InvestorProfileWelcome } from "@/components/dashboard/investor-profile-welcome";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { setSessionCookie } from "@/lib/auth/session";
 
@@ -25,6 +26,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             : "Your investment command center."
         }
       />
+
+      {!checkoutSuccess && <InvestorProfileWelcome />}
 
       {checkoutSuccess && (
         <div className="mb-8 rounded-2xl border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 px-6 py-5">
