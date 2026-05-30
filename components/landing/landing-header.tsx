@@ -18,6 +18,9 @@ export function LandingHeader() {
           <a href="#features" className="transition hover:text-white">
             Features
           </a>
+          <Link href="/quiz" className="transition hover:text-white">
+            Investor Quiz
+          </Link>
           <a href="#pricing" className="transition hover:text-white">
             Pricing
           </a>

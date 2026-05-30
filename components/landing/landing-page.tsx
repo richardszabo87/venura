@@ -285,6 +285,29 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Investor Quiz */}
+      <section className="border-t border-white/5 py-16 lg:py-20">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="rounded-2xl border border-[#E8D5B7]/30 bg-[#1B4332] px-6 py-10 text-center shadow-xl sm:px-10 sm:py-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
+              First-Time Investor Quiz
+            </p>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Discover your investor profile
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">
+              7 questions. Personalized DC metro market recommendations. Free.
+            </p>
+            <Link
+              href="/quiz"
+              className="mt-8 inline-flex rounded-xl bg-[#E8D5B7] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
+            >
+              Take the quiz →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="border-t border-white/5 py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
