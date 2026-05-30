@@ -27,6 +27,9 @@ export function LandingHeader() {
           <Link href="/markets" className="transition hover:text-white">
             Market Pulse
           </Link>
+          <Link href="/widget" className="transition hover:text-white">
+            For Agents
+          </Link>
           <a href="#pricing" className="transition hover:text-white">
             Pricing
           </a>
