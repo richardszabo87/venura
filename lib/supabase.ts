@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let supabase: SupabaseClient | null = null;
+let supabaseAdmin: SupabaseClient | null = null;
 
 const PLACEHOLDER_URLS = new Set([
   "https://your-project.supabase.co",
@@ -124,4 +125,47 @@ export function getSupabase(): SupabaseClient {
   }
 
   return supabase;
+}
+
+function resolveServiceRoleKey(): string | undefined {
+  return readEnv("SUPABASE_SERVICE_ROLE_KEY");
+}
+
+export function getSupabaseAdmin(): SupabaseClient {
+  if (supabaseAdmin) return supabaseAdmin;
+
+  const rawUrl = resolveSupabaseUrl();
+  const serviceRoleKey = resolveServiceRoleKey();
+
+  if (!rawUrl) {
+    throw new Error(
+      "Missing NEXT_PUBLIC_SUPABASE_URL. Add your Supabase project URL to .env.local.",
+    );
+  }
+
+  if (!serviceRoleKey) {
+    throw new Error(
+      "Missing SUPABASE_SERVICE_ROLE_KEY. Add your Supabase service role key to .env.local (Settings → API → service_role). Never expose this key to the browser.",
+    );
+  }
+
+  const url = normalizeSupabaseUrl(rawUrl);
+  assertValidSupabaseUrl(url);
+
+  if (PLACEHOLDER_KEYS.has(serviceRoleKey)) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is still set to a placeholder. Use the service_role secret from the Supabase dashboard.",
+    );
+  }
+
+  try {
+    supabaseAdmin = createClient(url, serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : "Unknown error";
+    throw new Error(`Failed to initialize Supabase admin client: ${detail}`);
+  }
+
+  return supabaseAdmin;
 }

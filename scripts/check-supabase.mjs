@@ -1,5 +1,5 @@
 /**
- * Verifies Supabase env vars and that public.saved_deals is reachable.
+ * Verifies Supabase env vars and that public.saved_deals is reachable via service role.
  * Usage: node scripts/check-supabase.mjs
  * Loads .env.local when present (same as Next.js dev).
  */
@@ -40,12 +40,11 @@ function normalizeUrl(raw) {
 
 const rawUrl =
   readEnv("NEXT_PUBLIC_SUPABASE_URL") ?? readEnv("SUPABASE_URL");
-const anonKey =
-  readEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") ?? readEnv("SUPABASE_ANON_KEY");
+const serviceRoleKey = readEnv("SUPABASE_SERVICE_ROLE_KEY");
 
-if (!rawUrl || !anonKey) {
+if (!rawUrl || !serviceRoleKey) {
   console.error(
-    "Missing Supabase env vars. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local",
+    "Missing Supabase env vars. Add NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to .env.local",
   );
   process.exit(1);
 }
@@ -64,7 +63,9 @@ if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
   process.exit(1);
 }
 
-const client = createClient(url, anonKey);
+const client = createClient(url, serviceRoleKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 const { error, count } = await client
   .from("saved_deals")
   .select("id", { count: "exact", head: true });
@@ -79,4 +80,6 @@ if (error) {
   process.exit(1);
 }
 
-console.log(`OK: connected to ${parsed.host}, saved_deals exists (row count: ${count ?? 0})`);
+console.log(
+  `OK: service role connected to ${parsed.host}, saved_deals exists (row count: ${count ?? 0})`,
+);

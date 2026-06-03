@@ -5,7 +5,7 @@ import {
   type SaveDealPayload,
   type SavedDealRow,
 } from "@/lib/saved-deals";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
   const { userId } = await auth();
@@ -14,7 +14,7 @@ export async function GET() {
   }
 
   try {
-    const supabase = getSupabase();
+    const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
       .from("saved_deals")
       .select("*")
@@ -22,13 +22,13 @@ export async function GET() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Saved deals fetch error:", error);
+      console.error("Deals fetch error:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ deals: (data ?? []) as SavedDealRow[] });
   } catch (error) {
-    console.error("Saved deals GET error:", error);
+    console.error("Deals GET error:", error);
     const message = error instanceof Error ? error.message : "Failed to fetch deals";
     return NextResponse.json({ error: message }, { status: 500 });
   }
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const supabase = getSupabase();
+    const supabase = getSupabaseAdmin();
     const row = buildDealInsert(userId, {
       name: body.name.trim(),
       address: body.address.trim(),
@@ -64,13 +64,13 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      console.error("Saved deal insert error:", error);
+      console.error("Deal insert error:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ deal: data as SavedDealRow });
   } catch (error) {
-    console.error("Saved deals POST error:", error);
+    console.error("Deals POST error:", error);
     const message = error instanceof Error ? error.message : "Failed to save deal";
     return NextResponse.json({ error: message }, { status: 500 });
   }

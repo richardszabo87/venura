@@ -17,7 +17,7 @@ export function SavedDealsList() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/saved-deals");
+      const res = await fetch("/api/deals");
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error ?? "Failed to load saved deals");
@@ -38,7 +38,7 @@ export function SavedDealsList() {
   async function handleDelete(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/saved-deals/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/deals/${id}`, { method: "DELETE" });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error ?? "Failed to delete deal");

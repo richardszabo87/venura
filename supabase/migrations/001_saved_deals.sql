@@ -23,3 +23,4 @@ create table if not exists public.saved_deals (
 create index if not exists saved_deals_user_id_idx on public.saved_deals (user_id);
 
 -- Deals are read/written only through Venura API routes (Clerk auth + user_id filter).
+-- Then run 002_saved_deals_rls.sql to enable RLS and block direct client access.
