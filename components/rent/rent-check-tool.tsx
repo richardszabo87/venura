@@ -80,8 +80,9 @@ export function RentCheckTool() {
             RentCheck
           </h1>
           <p className="mt-3 text-sm text-[#1B4332]/70 sm:text-base">
-            Estimate market rent, compare nearby listings, and understand DC metro
-            rental trends before you analyze a deal.
+            Estimate market rent, compare nearby listings, and understand local
+            rental trends across DC metro, Baltimore, NoVA, Atlanta, Miami, and
+            Phoenix before you analyze a deal.
           </p>
         </div>
 

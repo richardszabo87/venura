@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -52,8 +52,9 @@ export function MarketPulseDashboard() {
             Rental Market Pulse
           </h1>
           <p className="mt-3 text-sm text-[#1B4332]/70 sm:text-base">
-            Live market intelligence for six DC metro submarkets — investor
-            scores, rent trends, and signals updated for rental investors.
+            Market intelligence across DC metro, Baltimore, Northern Virginia,
+            Atlanta, Miami, and Phoenix — investor scores, zip-level data, and
+            signals for rental investors.
           </p>
         </div>
 
@@ -76,7 +77,7 @@ export function MarketPulseDashboard() {
                   <span
                     className={`block text-xs ${active ? "text-[#E8D5B7]/70" : "text-[#1B4332]/60"}`}
                   >
-                    {item.zip}
+                    {item.region}
                   </span>
                 </button>
               );
@@ -108,7 +109,7 @@ function MarketPanel({ market }: { market: MarketPulse }) {
                 <span className="text-2xl font-semibold text-white/40">/100</span>
               </p>
               <p className="mt-2 text-sm text-white/75">
-                {scoreLabel} investor outlook · {market.name} {market.zip}
+                {scoreLabel} investor outlook · {market.name} · {market.zip}
               </p>
             </div>
             <span
@@ -135,16 +136,78 @@ function MarketPanel({ market }: { market: MarketPulse }) {
         </div>
       </div>
 
-      {market.rentControlWarning && (
-        <div className="rounded-2xl border border-amber-400/40 bg-amber-950/10 px-5 py-4 sm:px-6">
-          <p className="text-sm font-semibold text-amber-900">
-            ⚠ {market.rentControlWarning.title}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-amber-950/80">
-            {market.rentControlWarning.detail}
-          </p>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {market.rentControlWarning ? (
+          <div className="rounded-2xl border border-amber-400/40 bg-amber-950/10 px-5 py-4 sm:px-6">
+            <p className="text-sm font-semibold text-amber-900">
+              Rent control: {market.rentControlWarning.title}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-amber-950/80">
+              {market.rentControlWarning.detail}
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-emerald-400/30 bg-emerald-50 px-5 py-4 sm:px-6">
+            <p className="text-sm font-semibold text-emerald-900">
+              Rent control: No local rent control
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-900/75">
+              This market does not impose local rent stabilization. Annual
+              increases generally follow lease terms and market conditions.
+            </p>
+          </div>
+        )}
+
+        {market.climateWarning ? (
+          <div className="rounded-2xl border border-sky-400/40 bg-sky-50 px-5 py-4 sm:px-6">
+            <p className="text-sm font-semibold text-sky-900">
+              Climate: {market.climateWarning.title}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-sky-900/80">
+              {market.climateWarning.detail}
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-[#1B4332]/10 bg-white px-5 py-4 sm:px-6">
+            <p className="text-sm font-semibold text-[#1B4332]/80">
+              Climate: No major climate flags
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-[#1B4332]/60">
+              Standard hazard insurance assumptions apply. Still verify flood
+              maps for any waterfront or low-lying parcel.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-[#1B4332]/10 bg-white p-5 shadow-sm sm:p-8">
+        <h2 className="text-lg font-semibold text-[#1B4332]">
+          Key zip codes
+        </h2>
+        <p className="mt-1 text-sm text-[#1B4332]/70">
+          Six submarket zips with individual investor scores.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {market.keyZipCodes.map((zip) => (
+            <div
+              key={zip.zip + zip.neighborhood}
+              className="rounded-xl border border-[#1B4332]/10 bg-[#F7F1E8] p-4"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-bold text-[#1B4332]">{zip.zip}</p>
+                  <p className="mt-0.5 text-xs text-[#1B4332]/65">
+                    {zip.neighborhood}
+                  </p>
+                </div>
+                <span className="rounded-lg bg-[#1B4332] px-2.5 py-1 text-sm font-bold text-[#E8D5B7]">
+                  {zip.investorScore}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
 
       <div className="rounded-2xl border border-[#1B4332]/10 bg-white p-5 shadow-sm sm:p-8">
         <h2 className="text-lg font-semibold text-[#1B4332]">
@@ -170,15 +233,15 @@ function MarketPanel({ market }: { market: MarketPulse }) {
 
       <div className="rounded-2xl border border-[#1B4332]/10 bg-white p-5 shadow-sm sm:p-8">
         <h2 className="text-lg font-semibold text-[#1B4332]">
-          Rent growth trend
+          3-year rent growth trend
         </h2>
         <p className="mt-1 text-sm text-[#1B4332]/70">
           Year-over-year rent growth (%)
         </p>
         <div className="mt-6 h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={market.rentGrowthTrend}>
-              <CartesianGrid stroke="#1B4332" strokeOpacity={0.08} />
+            <BarChart data={market.rentGrowthTrend}>
+              <CartesianGrid stroke="#1B4332" strokeOpacity={0.08} vertical={false} />
               <XAxis
                 dataKey="year"
                 tick={{ fill: "#1B4332", fontSize: 12 }}
@@ -200,15 +263,13 @@ function MarketPanel({ market }: { market: MarketPulse }) {
                   color: "#E8D5B7",
                 }}
               />
-              <Line
-                type="monotone"
+              <Bar
                 dataKey="growth"
-                stroke="#1B4332"
-                strokeWidth={3}
-                dot={{ fill: "#E8D5B7", stroke: "#1B4332", strokeWidth: 2, r: 5 }}
-                activeDot={{ r: 6, fill: "#E8D5B7" }}
+                fill="#1B4332"
+                radius={[6, 6, 0, 0]}
+                activeBar={{ fill: "#E8D5B7", stroke: "#1B4332", strokeWidth: 2 }}
               />
-            </LineChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>

@@ -1,8 +1,14 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { buildCityIntelligencePrompt } from "@/lib/market-pulse";
 
-const SYSTEM_PROMPT =
-  "You are VenuraAI, an expert real estate investment advisor specializing in the DC metro area. You know DC, Maryland and Virginia markets deeply including rent control laws, HOA benchmarks, neighborhood data, and investment strategies. Give concise, specific, actionable advice to first-time residential investors. Always be honest about risks.";
+const SYSTEM_PROMPT = [
+  "You are VenuraAI, an expert real estate investment advisor for first-time residential investors.",
+  "You have deep knowledge of DC metro, Baltimore MD, Northern Virginia (Arlington/Alexandria/Fairfax), Atlanta GA, Miami FL, and Phoenix AZ.",
+  "You understand rent control laws, HOA benchmarks, neighborhood-level zip data, climate and insurance risks, and cash-flow underwriting.",
+  "Give concise, specific, actionable advice. Always be honest about risks.",
+  buildCityIntelligencePrompt(),
+].join("\n\n");
 
 const MODEL = "claude-sonnet-4-20250514";
 

@@ -20,9 +20,21 @@ export type RentControlWarning = {
   detail: string;
 };
 
+export type ClimateWarning = {
+  title: string;
+  detail: string;
+};
+
+export type KeyZipCode = {
+  zip: string;
+  neighborhood: string;
+  investorScore: number;
+};
+
 export type MarketPulse = {
   id: string;
   name: string;
+  region: string;
   zip: string;
   investorScore: number;
   temperature: MarketTemperature;
@@ -31,15 +43,18 @@ export type MarketPulse = {
   vacancyRate: number;
   daysOnMarket: number;
   rentGrowthTrend: RentGrowthPoint[];
+  keyZipCodes: KeyZipCode[];
   bullishSignals: MarketSignal[];
   bearishSignals: MarketSignal[];
   rentControlWarning: RentControlWarning | null;
+  climateWarning: ClimateWarning | null;
 };
 
 export const MARKET_PULSE_DATA: MarketPulse[] = [
   {
     id: "landover",
     name: "Landover",
+    region: "Prince George's County, MD",
     zip: "20785",
     investorScore: 78,
     temperature: "warm",
@@ -53,11 +68,17 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
     vacancyRate: 5.8,
     daysOnMarket: 18,
     rentGrowthTrend: [
-      { year: "2021", growth: 2.8 },
-      { year: "2022", growth: 3.4 },
       { year: "2023", growth: 3.9 },
       { year: "2024", growth: 4.2 },
       { year: "2025", growth: 4.5 },
+    ],
+    keyZipCodes: [
+      { zip: "20785", neighborhood: "Landover", investorScore: 78 },
+      { zip: "20784", neighborhood: "Landover Hills", investorScore: 76 },
+      { zip: "20782", neighborhood: "Hyattsville", investorScore: 74 },
+      { zip: "20743", neighborhood: "Capitol Heights", investorScore: 72 },
+      { zip: "20770", neighborhood: "Glenarden", investorScore: 75 },
+      { zip: "20705", neighborhood: "Beltsville", investorScore: 71 },
     ],
     bullishSignals: [
       { text: "Strong cash-flow potential with lower entry prices than inner Beltway markets." },
@@ -69,10 +90,12 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
       { text: "Appreciation lags closer-in DC submarkets over a 5-year horizon." },
     ],
     rentControlWarning: null,
+    climateWarning: null,
   },
   {
     id: "hyattsville",
     name: "Hyattsville",
+    region: "Prince George's County, MD",
     zip: "20783",
     investorScore: 74,
     temperature: "warm",
@@ -86,11 +109,17 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
     vacancyRate: 5.5,
     daysOnMarket: 16,
     rentGrowthTrend: [
-      { year: "2021", growth: 2.5 },
-      { year: "2022", growth: 3.1 },
       { year: "2023", growth: 3.6 },
       { year: "2024", growth: 3.9 },
       { year: "2025", growth: 4.1 },
+    ],
+    keyZipCodes: [
+      { zip: "20783", neighborhood: "Hyattsville", investorScore: 74 },
+      { zip: "20782", neighborhood: "Hyattsville", investorScore: 73 },
+      { zip: "20785", neighborhood: "Landover", investorScore: 78 },
+      { zip: "20784", neighborhood: "Landover Hills", investorScore: 76 },
+      { zip: "20737", neighborhood: "Riverdale Park", investorScore: 72 },
+      { zip: "20740", neighborhood: "College Park", investorScore: 70 },
     ],
     bullishSignals: [
       { text: "Arts District revitalization is attracting younger professional tenants." },
@@ -102,10 +131,12 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
       { text: "Older building stock may require higher capex reserves." },
     ],
     rentControlWarning: null,
+    climateWarning: null,
   },
   {
     id: "silver-spring",
     name: "Silver Spring",
+    region: "Montgomery County, MD",
     zip: "20901",
     investorScore: 71,
     temperature: "balanced",
@@ -119,11 +150,17 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
     vacancyRate: 4.9,
     daysOnMarket: 14,
     rentGrowthTrend: [
-      { year: "2021", growth: 1.8 },
-      { year: "2022", growth: 2.4 },
       { year: "2023", growth: 2.9 },
       { year: "2024", growth: 3.2 },
       { year: "2025", growth: 3.4 },
+    ],
+    keyZipCodes: [
+      { zip: "20901", neighborhood: "Silver Spring", investorScore: 71 },
+      { zip: "20910", neighborhood: "Downtown Silver Spring", investorScore: 69 },
+      { zip: "20902", neighborhood: "Wheaton", investorScore: 68 },
+      { zip: "20903", neighborhood: "Silver Spring", investorScore: 70 },
+      { zip: "20904", neighborhood: "Colesville", investorScore: 67 },
+      { zip: "20906", neighborhood: "Aspen Hill", investorScore: 66 },
     ],
     bullishSignals: [
       { text: "Red Line Metro access drives consistent rental demand." },
@@ -139,10 +176,12 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
       detail:
         "Montgomery County limits annual rent increases on covered units. Verify whether a property is subject to county rent stabilization before projecting growth.",
     },
+    climateWarning: null,
   },
   {
     id: "takoma-park",
     name: "Takoma Park",
+    region: "Montgomery County, MD",
     zip: "20912",
     investorScore: 65,
     temperature: "balanced",
@@ -156,11 +195,17 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
     vacancyRate: 4.4,
     daysOnMarket: 12,
     rentGrowthTrend: [
-      { year: "2021", growth: 1.5 },
-      { year: "2022", growth: 2.0 },
       { year: "2023", growth: 2.3 },
       { year: "2024", growth: 2.6 },
       { year: "2025", growth: 2.8 },
+    ],
+    keyZipCodes: [
+      { zip: "20912", neighborhood: "Takoma Park", investorScore: 65 },
+      { zip: "20901", neighborhood: "Silver Spring", investorScore: 71 },
+      { zip: "20910", neighborhood: "Downtown Silver Spring", investorScore: 69 },
+      { zip: "20902", neighborhood: "Wheaton", investorScore: 68 },
+      { zip: "20903", neighborhood: "Silver Spring", investorScore: 70 },
+      { zip: "20783", neighborhood: "Hyattsville", investorScore: 74 },
     ],
     bullishSignals: [
       { text: "Walkable, transit-oriented neighborhood with strong tenant retention." },
@@ -176,10 +221,12 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
       detail:
         "Takoma Park limits annual rent increases and requires registration for rental properties. Factor capped rent growth into your 10-year projections.",
     },
+    climateWarning: null,
   },
   {
     id: "dc-20011",
     name: "Washington, DC",
+    region: "District of Columbia",
     zip: "20011",
     investorScore: 68,
     temperature: "hot",
@@ -193,11 +240,17 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
     vacancyRate: 4.0,
     daysOnMarket: 11,
     rentGrowthTrend: [
-      { year: "2021", growth: 1.2 },
-      { year: "2022", growth: 1.8 },
       { year: "2023", growth: 2.1 },
       { year: "2024", growth: 2.4 },
       { year: "2025", growth: 2.5 },
+    ],
+    keyZipCodes: [
+      { zip: "20011", neighborhood: "Petworth / Brightwood", investorScore: 68 },
+      { zip: "20010", neighborhood: "Columbia Heights", investorScore: 66 },
+      { zip: "20012", neighborhood: "Takoma DC", investorScore: 64 },
+      { zip: "20009", neighborhood: "Adams Morgan", investorScore: 62 },
+      { zip: "20002", neighborhood: "Capitol Hill", investorScore: 60 },
+      { zip: "20001", neighborhood: "Mount Vernon Triangle", investorScore: 58 },
     ],
     bullishSignals: [
       { text: "Petworth and Brightwood seeing sustained gentrification-driven demand." },
@@ -213,10 +266,12 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
       detail:
         "District of Columbia rent control limits annual increases on covered units built before 2006 (with exceptions). Registration with DCRA is required. Model conservative rent growth.",
     },
+    climateWarning: null,
   },
   {
     id: "bowie",
     name: "Bowie",
+    region: "Prince George's County, MD",
     zip: "20715",
     investorScore: 76,
     temperature: "warm",
@@ -230,11 +285,17 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
     vacancyRate: 5.2,
     daysOnMarket: 15,
     rentGrowthTrend: [
-      { year: "2021", growth: 2.6 },
-      { year: "2022", growth: 3.2 },
       { year: "2023", growth: 3.7 },
       { year: "2024", growth: 4.0 },
       { year: "2025", growth: 4.3 },
+    ],
+    keyZipCodes: [
+      { zip: "20715", neighborhood: "Bowie", investorScore: 76 },
+      { zip: "20716", neighborhood: "Bowie", investorScore: 75 },
+      { zip: "20720", neighborhood: "Bowie", investorScore: 74 },
+      { zip: "20721", neighborhood: "Bowie South", investorScore: 73 },
+      { zip: "20708", neighborhood: "Laurel", investorScore: 72 },
+      { zip: "20774", neighborhood: "Upper Marlboro", investorScore: 70 },
     ],
     bullishSignals: [
       { text: "Family-oriented market with strong single-family rental demand." },
@@ -246,6 +307,237 @@ export const MARKET_PULSE_DATA: MarketPulse[] = [
       { text: "Rent growth strong but appreciation slower than closer-in DC." },
     ],
     rentControlWarning: null,
+    climateWarning: null,
+  },
+  {
+    id: "baltimore",
+    name: "Baltimore",
+    region: "Baltimore, MD",
+    zip: "21224",
+    investorScore: 72,
+    temperature: "warm",
+    temperatureLabel: "Warm",
+    averageRentByBedroom: [
+      { bedrooms: 1, label: "1 BR", averageRent: 1200 },
+      { bedrooms: 2, label: "2 BR", averageRent: 1650 },
+      { bedrooms: 3, label: "3 BR", averageRent: 2100 },
+      { bedrooms: 4, label: "4 BR", averageRent: 2500 },
+    ],
+    vacancyRate: 6.2,
+    daysOnMarket: 19,
+    rentGrowthTrend: [
+      { year: "2023", growth: 3.2 },
+      { year: "2024", growth: 3.6 },
+      { year: "2025", growth: 3.9 },
+    ],
+    keyZipCodes: [
+      { zip: "21224", neighborhood: "Canton", investorScore: 76 },
+      { zip: "21230", neighborhood: "Federal Hill", investorScore: 75 },
+      { zip: "21231", neighborhood: "Fells Point", investorScore: 73 },
+      { zip: "21218", neighborhood: "Charles Village", investorScore: 74 },
+      { zip: "21201", neighborhood: "Downtown", investorScore: 68 },
+      { zip: "21213", neighborhood: "Belair-Edison", investorScore: 71 },
+    ],
+    bullishSignals: [
+      { text: "Lower basis prices than DC metro with solid cash-flow on rowhouses and duplexes." },
+      { text: "Canton and Federal Hill attract young professionals with strong lease-up velocity." },
+      { text: "Maryland landlord-friendly framework relative to DC rent control markets." },
+    ],
+    bearishSignals: [
+      { text: "Vacancy runs higher than inner suburbs — vet block-level demand carefully." },
+      { text: "Property taxes and water bills can surprise out-of-state buyers." },
+      { text: "Some neighborhoods still carry elevated crime perception — research micro-markets." },
+    ],
+    rentControlWarning: {
+      title: "Baltimore rent increase notice rules apply",
+      detail:
+        "Baltimore requires written notice for rent increases and has tenant protections on certain properties. Maryland does not have statewide rent control, but verify local registration and notice requirements.",
+    },
+    climateWarning: {
+      title: "Waterfront flood risk in harbor neighborhoods",
+      detail:
+        "Canton, Fells Point, and Inner Harbor areas face FEMA flood zones. Budget for flood insurance and elevation risk on ground-floor units.",
+    },
+  },
+  {
+    id: "northern-virginia",
+    name: "Northern Virginia",
+    region: "Arlington / Alexandria / Fairfax, VA",
+    zip: "22201",
+    investorScore: 70,
+    temperature: "hot",
+    temperatureLabel: "Hot",
+    averageRentByBedroom: [
+      { bedrooms: 1, label: "1 BR", averageRent: 1950 },
+      { bedrooms: 2, label: "2 BR", averageRent: 2550 },
+      { bedrooms: 3, label: "3 BR", averageRent: 3200 },
+      { bedrooms: 4, label: "4 BR", averageRent: 3800 },
+    ],
+    vacancyRate: 4.3,
+    daysOnMarket: 11,
+    rentGrowthTrend: [
+      { year: "2023", growth: 2.4 },
+      { year: "2024", growth: 2.6 },
+      { year: "2025", growth: 2.8 },
+    ],
+    keyZipCodes: [
+      { zip: "22201", neighborhood: "Arlington (Clarendon)", investorScore: 72 },
+      { zip: "22304", neighborhood: "Alexandria (West)", investorScore: 74 },
+      { zip: "22030", neighborhood: "Fairfax City", investorScore: 71 },
+      { zip: "22101", neighborhood: "McLean", investorScore: 65 },
+      { zip: "20171", neighborhood: "Herndon", investorScore: 73 },
+      { zip: "22046", neighborhood: "Falls Church", investorScore: 70 },
+    ],
+    bullishSignals: [
+      { text: "Federal contractor and tech employment base supports durable rental demand." },
+      { text: "Metro Silver and Orange lines keep transit-oriented premiums in Arlington and Alexandria." },
+      { text: "Virginia prohibits local rent control — landlords retain annual increase flexibility." },
+    ],
+    bearishSignals: [
+      { text: "High purchase prices in Arlington and McLean compress cash-on-cash returns." },
+      { text: "Condo inventory carries HOA fee risk — run HOA Danger Score before buying." },
+      { text: "Competition from new apartment supply in Tysons and Potomac Yard." },
+    ],
+    rentControlWarning: null,
+    climateWarning: null,
+  },
+  {
+    id: "atlanta",
+    name: "Atlanta",
+    region: "Atlanta, GA",
+    zip: "30309",
+    investorScore: 77,
+    temperature: "warm",
+    temperatureLabel: "Warm",
+    averageRentByBedroom: [
+      { bedrooms: 1, label: "1 BR", averageRent: 1550 },
+      { bedrooms: 2, label: "2 BR", averageRent: 1950 },
+      { bedrooms: 3, label: "3 BR", averageRent: 2450 },
+      { bedrooms: 4, label: "4 BR", averageRent: 2900 },
+    ],
+    vacancyRate: 5.4,
+    daysOnMarket: 16,
+    rentGrowthTrend: [
+      { year: "2023", growth: 4.1 },
+      { year: "2024", growth: 4.4 },
+      { year: "2025", growth: 4.7 },
+    ],
+    keyZipCodes: [
+      { zip: "30309", neighborhood: "Midtown", investorScore: 78 },
+      { zip: "30318", neighborhood: "Westside / West Midtown", investorScore: 75 },
+      { zip: "30324", neighborhood: "Buckhead Adjacent", investorScore: 72 },
+      { zip: "30349", neighborhood: "College Park", investorScore: 80 },
+      { zip: "30033", neighborhood: "Decatur", investorScore: 74 },
+      { zip: "30303", neighborhood: "Downtown", investorScore: 70 },
+    ],
+    bullishSignals: [
+      { text: "Strong population in-migration and corporate relocations fuel rent growth." },
+      { text: "Georgia prohibits rent control — annual increases track market conditions." },
+      { text: "Suburban SFR markets (College Park, Decatur) offer higher cash-flow spreads." },
+    ],
+    bearishSignals: [
+      { text: "Car-dependent submarkets require realistic vacancy and turnover assumptions." },
+      { text: "Insurance costs rising in hail-prone metro counties." },
+      { text: "Midtown condo saturation can lengthen days-on-market for investor units." },
+    ],
+    rentControlWarning: null,
+    climateWarning: {
+      title: "Severe storm and tree-damage risk",
+      detail:
+        "Atlanta metro sees periodic severe thunderstorms and tornado activity. Budget for roof reserves and landlord insurance deductibles in underwriting.",
+    },
+  },
+  {
+    id: "miami",
+    name: "Miami",
+    region: "Miami, FL",
+    zip: "33130",
+    investorScore: 69,
+    temperature: "hot",
+    temperatureLabel: "Hot",
+    averageRentByBedroom: [
+      { bedrooms: 1, label: "1 BR", averageRent: 2100 },
+      { bedrooms: 2, label: "2 BR", averageRent: 2800 },
+      { bedrooms: 3, label: "3 BR", averageRent: 3500 },
+      { bedrooms: 4, label: "4 BR", averageRent: 4200 },
+    ],
+    vacancyRate: 5.9,
+    daysOnMarket: 17,
+    rentGrowthTrend: [
+      { year: "2023", growth: 3.8 },
+      { year: "2024", growth: 3.2 },
+      { year: "2025", growth: 2.9 },
+    ],
+    keyZipCodes: [
+      { zip: "33130", neighborhood: "Brickell", investorScore: 71 },
+      { zip: "33132", neighborhood: "Edgewater", investorScore: 68 },
+      { zip: "33139", neighborhood: "Miami Beach", investorScore: 65 },
+      { zip: "33142", neighborhood: "Allapattah", investorScore: 74 },
+      { zip: "33125", neighborhood: "Little Havana", investorScore: 76 },
+      { zip: "33166", neighborhood: "Doral", investorScore: 73 },
+    ],
+    bullishSignals: [
+      { text: "International buyer demand and no state income tax support investor appetite." },
+      { text: "Little Havana and Allapattah offer value-add cash-flow plays below Brickell basis." },
+      { text: "Florida prohibits local rent control ordinances." },
+    ],
+    bearishSignals: [
+      { text: "Insurance premiums surged post-hurricane cycle — verify quotes before closing." },
+      { text: "Condo special assessments common in aging coastal buildings." },
+      { text: "Rent growth cooling from 2022 peaks — underwrite conservatively." },
+    ],
+    rentControlWarning: null,
+    climateWarning: {
+      title: "Hurricane, flood, and wind insurance critical",
+      detail:
+        "Miami-Dade properties require robust windstorm and flood coverage. FEMA flood zones affect Brickell, Edgewater, and Miami Beach. Model insurance as a first-class expense, not an afterthought.",
+    },
+  },
+  {
+    id: "phoenix",
+    name: "Phoenix",
+    region: "Phoenix Metro, AZ",
+    zip: "85004",
+    investorScore: 75,
+    temperature: "warm",
+    temperatureLabel: "Warm",
+    averageRentByBedroom: [
+      { bedrooms: 1, label: "1 BR", averageRent: 1350 },
+      { bedrooms: 2, label: "2 BR", averageRent: 1750 },
+      { bedrooms: 3, label: "3 BR", averageRent: 2200 },
+      { bedrooms: 4, label: "4 BR", averageRent: 2650 },
+    ],
+    vacancyRate: 5.1,
+    daysOnMarket: 14,
+    rentGrowthTrend: [
+      { year: "2023", growth: 5.2 },
+      { year: "2024", growth: 3.8 },
+      { year: "2025", growth: 3.1 },
+    ],
+    keyZipCodes: [
+      { zip: "85004", neighborhood: "Downtown Phoenix", investorScore: 76 },
+      { zip: "85016", neighborhood: "Arcadia", investorScore: 72 },
+      { zip: "85018", neighborhood: "Biltmore", investorScore: 70 },
+      { zip: "85251", neighborhood: "Scottsdale", investorScore: 74 },
+      { zip: "85281", neighborhood: "Tempe", investorScore: 77 },
+      { zip: "85308", neighborhood: "Glendale", investorScore: 78 },
+    ],
+    bullishSignals: [
+      { text: "Strong net migration and job growth from California and tech relocations." },
+      { text: "Arizona prohibits rent control — landlords set market rents annually." },
+      { text: "Tempe and Glendale SFR inventory offers attractive cash-flow spreads." },
+    ],
+    bearishSignals: [
+      { text: "Rent growth normalized after 2021–2023 surge — avoid trailing-rent comps." },
+      { text: "Summer cooling costs materially affect tenant utility budgets and turnover." },
+      { text: "New-build supply in West Valley may pressure older Class B rents." },
+    ],
+    rentControlWarning: null,
+    climateWarning: {
+      title: "Extreme heat and water-cost pressure",
+      detail:
+        "Phoenix metro faces 110°F+ summers and rising water rates. Budget for HVAC maintenance, pool upkeep, and landscaping water costs in operating expense models.",
+    },
   },
 ];
 
@@ -275,4 +567,38 @@ export function getInvestorScoreLabel(score: number): string {
   if (score >= 75) return "Strong";
   if (score >= 65) return "Moderate";
   return "Cautious";
+}
+
+export function buildCityIntelligencePrompt(): string {
+  const marketSummaries = MARKET_PULSE_DATA.map((market) => {
+    const zips = market.keyZipCodes
+      .map((z) => `${z.zip} ${z.neighborhood} (score ${z.investorScore})`)
+      .join("; ");
+    const rents = market.averageRentByBedroom
+      .map((r) => `${r.label} ${r.averageRent}`)
+      .join(", ");
+    const rentControl = market.rentControlWarning
+      ? market.rentControlWarning.title
+      : "No local rent control";
+    const climate = market.climateWarning
+      ? market.climateWarning.title
+      : "No major climate flags";
+    const growth = market.rentGrowthTrend
+      .map((p) => `${p.year} +${p.growth}%`)
+      .join(", ");
+
+    return [
+      `${market.name} (${market.region}): investor score ${market.investorScore}/100, ${market.temperatureLabel} market, vacancy ${market.vacancyRate}%, DOM ${market.daysOnMarket}.`,
+      `Avg rent: ${rents}. 3yr rent growth: ${growth}.`,
+      `Key zips: ${zips}.`,
+      `Rent control: ${rentControl}. Climate: ${climate}.`,
+      `Bullish: ${market.bullishSignals.map((s) => s.text).join(" ")}`,
+      `Bearish: ${market.bearishSignals.map((s) => s.text).join(" ")}`,
+    ].join(" ");
+  });
+
+  return [
+    "City intelligence database (investor scores, rents, zip-level data, rent control, climate):",
+    ...marketSummaries,
+  ].join("\n");
 }

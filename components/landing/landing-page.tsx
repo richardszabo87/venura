@@ -111,7 +111,7 @@ const FREE_TOOLS = [
   {
     title: "Market Pulse",
     headline: "DC metro market intelligence",
-    subtitle: "Live data for 6 markets. Updated weekly.",
+    subtitle: "Live data for 11 markets. Updated weekly.",
     cta: "View markets →",
     href: "/markets",
   },

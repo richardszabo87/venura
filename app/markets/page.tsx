@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Rental Market Pulse | Venura",
   description:
-    "Free DC metro rental market intelligence. Compare investor scores, rent trends, vacancy, and market signals across Landover, Hyattsville, Silver Spring, and more.",
+    "Free rental market intelligence for DC metro, Baltimore, Northern Virginia, Atlanta, Miami, and Phoenix. Investor scores, zip-level data, rent trends, and market signals.",
 };
 
 export default function MarketsPage() {

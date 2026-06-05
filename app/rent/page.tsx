@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "RentCheck | Venura",
   description:
-    "Free DC metro rent estimate tool. Check market rent ranges, vacancy, rent growth, and comparable rentals before analyzing your investment deal.",
+    "Free rent estimate tool for DC metro, Baltimore, Northern Virginia, Atlanta, Miami, and Phoenix. Market rent ranges, vacancy, and comparable rentals.",
 };
 
 export default function RentPage() {
