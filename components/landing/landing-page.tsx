@@ -102,6 +102,13 @@ const FREE_TOOLS = [
     href: "/rent",
   },
   {
+    title: "Cost Calculator",
+    headline: "True cost of ownership",
+    subtitle: "Monthly breakdown. Affordability check. Equity projections.",
+    cta: "Calculate costs →",
+    href: "/cost",
+  },
+  {
     title: "Market Pulse",
     headline: "DC metro market intelligence",
     subtitle: "Live data for 6 markets. Updated weekly.",

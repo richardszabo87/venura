@@ -24,6 +24,9 @@ export function LandingHeader() {
           <Link href="/rent" className="transition hover:text-white">
             RentCheck
           </Link>
+          <Link href="/cost" className="transition hover:text-white">
+            Cost Calculator
+          </Link>
           <Link href="/markets" className="transition hover:text-white">
             Market Pulse
           </Link>
