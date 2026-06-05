@@ -1,4 +1,5 @@
 import { formatCurrency } from "./format";
+import { MARKET_PULSE_DATA } from "./market-pulse";
 
 export type RentPropertyType = "condo" | "townhouse" | "single-family" | "multi-family";
 
@@ -51,7 +52,7 @@ type ZipMarket = {
   streetNames: string[];
 };
 
-const ZIP_MARKETS: ZipMarket[] = [
+const BASE_ZIP_MARKETS: ZipMarket[] = [
   {
     zip: "20785",
     area: "Hyattsville / Landover, MD",
@@ -412,6 +413,36 @@ const ZIP_MARKETS: ZipMarket[] = [
     daysOnMarket: 15,
     streetNames: ["Bell Rd", "59th Ave", "Union Hills Dr", "Olive Ave"],
   },
+];
+
+function pulseDerivedZipMarkets(): ZipMarket[] {
+  const seen = new Set(BASE_ZIP_MARKETS.map((market) => market.zip));
+  const derived: ZipMarket[] = [];
+  const defaultStreets = ["Main St", "Oak Ave", "Maple Dr", "Park Rd"];
+
+  for (const market of MARKET_PULSE_DATA) {
+    const rentGrowth = market.rentGrowthTrend.at(-1)?.growth ?? 3;
+    for (const zip of market.keyZipCodes) {
+      if (seen.has(zip.zip)) continue;
+      seen.add(zip.zip);
+      derived.push({
+        zip: zip.zip,
+        area: `${zip.neighborhood}, ${market.name}`,
+        baseRent2Br: zip.averageRent,
+        rentGrowth,
+        vacancyRate: market.vacancyRate,
+        daysOnMarket: market.daysOnMarket,
+        streetNames: defaultStreets,
+      });
+    }
+  }
+
+  return derived;
+}
+
+const ZIP_MARKETS: ZipMarket[] = [
+  ...BASE_ZIP_MARKETS,
+  ...pulseDerivedZipMarkets(),
 ];
 
 const DEFAULT_MARKET: ZipMarket = {

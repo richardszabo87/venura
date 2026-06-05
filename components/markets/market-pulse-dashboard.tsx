@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -14,15 +14,62 @@ import {
 import { formatCurrency } from "@/lib/format";
 import {
   getInvestorScoreLabel,
+  getInvestorScoreStyle,
   MARKET_PULSE_DATA,
   TEMPERATURE_STYLES,
+  US_REGION_LABELS,
+  US_REGION_ORDER,
   type MarketPulse,
+  type UsRegion,
 } from "@/lib/market-pulse";
 
 export function MarketPulseDashboard() {
   const [activeId, setActiveId] = useState(MARKET_PULSE_DATA[0].id);
+  const [search, setSearch] = useState("");
+
+  const filteredMarkets = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return MARKET_PULSE_DATA;
+
+    return MARKET_PULSE_DATA.filter((market) => {
+      const haystack = [
+        market.name,
+        market.region,
+        US_REGION_LABELS[market.usRegion],
+        market.zip,
+        ...market.keyZipCodes.map((z) => `${z.zip} ${z.neighborhood}`),
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(query);
+    });
+  }, [search]);
+
+  const marketsByRegion = useMemo(() => {
+    const grouped = new Map<UsRegion, MarketPulse[]>();
+    for (const region of US_REGION_ORDER) {
+      grouped.set(region, []);
+    }
+    for (const market of filteredMarkets) {
+      grouped.get(market.usRegion)?.push(market);
+    }
+    return grouped;
+  }, [filteredMarkets]);
+
+  useEffect(() => {
+    if (
+      filteredMarkets.length > 0 &&
+      !filteredMarkets.some((item) => item.id === activeId)
+    ) {
+      setActiveId(filteredMarkets[0].id);
+    }
+  }, [filteredMarkets, activeId]);
+
   const market =
-    MARKET_PULSE_DATA.find((item) => item.id === activeId) ?? MARKET_PULSE_DATA[0];
+    MARKET_PULSE_DATA.find((item) => item.id === activeId) ??
+    filteredMarkets[0] ??
+    MARKET_PULSE_DATA[0];
 
   return (
     <div className="min-h-full bg-[#F7F1E8] text-[#1B4332]">
@@ -52,40 +99,93 @@ export function MarketPulseDashboard() {
             Rental Market Pulse
           </h1>
           <p className="mt-3 text-sm text-[#1B4332]/70 sm:text-base">
-            Market intelligence across DC metro, Baltimore, Northern Virginia,
-            Atlanta, Miami, and Phoenix — investor scores, zip-level data, and
-            signals for rental investors.
+            {MARKET_PULSE_DATA.length} markets across five US regions — investor
+            scores, zip-level rents, rent control, and climate signals.
           </p>
         </div>
 
-        <div className="overflow-x-auto pb-2">
-          <div className="flex min-w-max gap-2">
-            {MARKET_PULSE_DATA.map((item) => {
-              const active = item.id === activeId;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setActiveId(item.id)}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${
-                    active
-                      ? "border-[#1B4332] bg-[#1B4332] text-[#E8D5B7]"
-                      : "border-[#1B4332]/15 bg-white text-[#1B4332] hover:border-[#1B4332]/40"
-                  }`}
-                >
-                  <span className="block text-sm font-semibold">{item.name}</span>
-                  <span
-                    className={`block text-xs ${active ? "text-[#E8D5B7]/70" : "text-[#1B4332]/60"}`}
-                  >
-                    {item.region}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        <div className="rounded-2xl border border-[#1B4332]/10 bg-white p-4 shadow-sm sm:p-5">
+          <label className="block">
+            <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#1B4332]/60">
+              Search cities
+            </span>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by city, region, or zip code..."
+              className="w-full rounded-xl border border-[#1B4332]/15 bg-[#F7F1E8] px-4 py-3 text-sm text-[#1B4332] outline-none transition placeholder:text-[#1B4332]/35 focus:border-[#1B4332] focus:ring-2 focus:ring-[#E8D5B7]/60"
+            />
+          </label>
+          {search && (
+            <p className="mt-2 text-xs text-[#1B4332]/60">
+              {filteredMarkets.length} market
+              {filteredMarkets.length === 1 ? "" : "s"} match your search
+            </p>
+          )}
         </div>
 
-        <MarketPanel market={market} />
+        <div className="mt-6 space-y-5">
+          {US_REGION_ORDER.map((region) => {
+            const regionMarkets = marketsByRegion.get(region) ?? [];
+            if (regionMarkets.length === 0) return null;
+
+            return (
+              <section key={region}>
+                <h2 className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-[#1B4332]/50">
+                  {US_REGION_LABELS[region]}
+                </h2>
+                <div className="overflow-x-auto pb-1">
+                  <div className="flex min-w-max gap-2">
+                    {regionMarkets.map((item) => {
+                      const active = item.id === activeId;
+                      const scoreStyle = getInvestorScoreStyle(item.investorScore);
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setActiveId(item.id)}
+                          className={`min-w-[148px] rounded-xl border px-4 py-3 text-left transition ${
+                            active
+                              ? "border-[#1B4332] bg-[#1B4332] text-[#E8D5B7]"
+                              : "border-[#1B4332]/15 bg-white text-[#1B4332] hover:border-[#1B4332]/40"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="block text-sm font-semibold leading-tight">
+                              {item.name}
+                            </span>
+                            <span
+                              className={`shrink-0 rounded-md border px-1.5 py-0.5 text-xs font-bold ${scoreStyle.bg} ${scoreStyle.text} ${scoreStyle.border}`}
+                            >
+                              {item.investorScore}
+                            </span>
+                          </div>
+                          <span
+                            className={`mt-1 block text-xs ${active ? "text-[#E8D5B7]/70" : "text-[#1B4332]/60"}`}
+                          >
+                            {item.region}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            );
+          })}
+        </div>
+
+        {filteredMarkets.length === 0 ? (
+          <div className="mt-8 rounded-2xl border border-[#1B4332]/10 bg-white px-6 py-12 text-center">
+            <p className="text-sm text-[#1B4332]/70">
+              No markets match &ldquo;{search}&rdquo;. Try a city name, state, or
+              zip code.
+            </p>
+          </div>
+        ) : (
+          <MarketPanel market={market} />
+        )}
       </main>
     </div>
   );
@@ -94,6 +194,7 @@ export function MarketPulseDashboard() {
 function MarketPanel({ market }: { market: MarketPulse }) {
   const tempStyle = TEMPERATURE_STYLES[market.temperature];
   const scoreLabel = getInvestorScoreLabel(market.investorScore);
+  const scoreStyle = getInvestorScoreStyle(market.investorScore);
 
   return (
     <div className="mt-6 space-y-6">
@@ -104,12 +205,19 @@ function MarketPanel({ market }: { market: MarketPulse }) {
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E8D5B7]/70">
                 Investor Score
               </p>
-              <p className="mt-2 text-5xl font-black text-[#E8D5B7]">
-                {market.investorScore}
-                <span className="text-2xl font-semibold text-white/40">/100</span>
-              </p>
+              <div className="mt-2 flex items-end gap-3">
+                <p className="text-5xl font-black text-[#E8D5B7]">
+                  {market.investorScore}
+                  <span className="text-2xl font-semibold text-white/40">/100</span>
+                </p>
+                <span
+                  className={`mb-2 rounded-lg border px-2.5 py-1 text-sm font-bold ${scoreStyle.bg} ${scoreStyle.text} ${scoreStyle.border}`}
+                >
+                  {scoreLabel}
+                </span>
+              </div>
               <p className="mt-2 text-sm text-white/75">
-                {scoreLabel} investor outlook · {market.name} · {market.zip}
+                {market.name} · {market.region} · {US_REGION_LABELS[market.usRegion]}
               </p>
             </div>
             <span
@@ -181,31 +289,40 @@ function MarketPanel({ market }: { market: MarketPulse }) {
       </div>
 
       <div className="rounded-2xl border border-[#1B4332]/10 bg-white p-5 shadow-sm sm:p-8">
-        <h2 className="text-lg font-semibold text-[#1B4332]">
-          Key zip codes
-        </h2>
+        <h2 className="text-lg font-semibold text-[#1B4332]">Key zip codes</h2>
         <p className="mt-1 text-sm text-[#1B4332]/70">
-          Six submarket zips with individual investor scores.
+          Six submarket zips with investor scores and average 2-bedroom rents.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {market.keyZipCodes.map((zip) => (
-            <div
-              key={zip.zip + zip.neighborhood}
-              className="rounded-xl border border-[#1B4332]/10 bg-[#F7F1E8] p-4"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-bold text-[#1B4332]">{zip.zip}</p>
-                  <p className="mt-0.5 text-xs text-[#1B4332]/65">
-                    {zip.neighborhood}
-                  </p>
+          {market.keyZipCodes.map((zip) => {
+            const zipScoreStyle = getInvestorScoreStyle(zip.investorScore);
+            return (
+              <div
+                key={zip.zip + zip.neighborhood}
+                className="rounded-xl border border-[#1B4332]/10 bg-[#F7F1E8] p-4"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-bold text-[#1B4332]">{zip.zip}</p>
+                    <p className="mt-0.5 text-xs text-[#1B4332]/65">
+                      {zip.neighborhood}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-[#1B4332]">
+                      {formatCurrency(zip.averageRent)}
+                      <span className="text-xs font-normal text-[#1B4332]/60">
+                        /mo avg
+                      </span>
+                    </p>
+                  </div>
+                  <span
+                    className={`rounded-lg border px-2.5 py-1 text-sm font-bold ${zipScoreStyle.bg} ${zipScoreStyle.text} ${zipScoreStyle.border}`}
+                  >
+                    {zip.investorScore}
+                  </span>
                 </div>
-                <span className="rounded-lg bg-[#1B4332] px-2.5 py-1 text-sm font-bold text-[#E8D5B7]">
-                  {zip.investorScore}
-                </span>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -241,7 +358,11 @@ function MarketPanel({ market }: { market: MarketPulse }) {
         <div className="mt-6 h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={market.rentGrowthTrend}>
-              <CartesianGrid stroke="#1B4332" strokeOpacity={0.08} vertical={false} />
+              <CartesianGrid
+                stroke="#1B4332"
+                strokeOpacity={0.08}
+                vertical={false}
+              />
               <XAxis
                 dataKey="year"
                 tick={{ fill: "#1B4332", fontSize: 12 }}
@@ -255,7 +376,10 @@ function MarketPanel({ market }: { market: MarketPulse }) {
                 tickFormatter={(value) => `${value}%`}
               />
               <Tooltip
-                formatter={(value: number) => [`${value.toFixed(1)}%`, "Rent growth"]}
+                formatter={(value: number) => [
+                  `${value.toFixed(1)}%`,
+                  "Rent growth",
+                ]}
                 contentStyle={{
                   backgroundColor: "#1B4332",
                   border: "none",
@@ -267,14 +391,18 @@ function MarketPanel({ market }: { market: MarketPulse }) {
                 dataKey="growth"
                 fill="#1B4332"
                 radius={[6, 6, 0, 0]}
-                activeBar={{ fill: "#E8D5B7", stroke: "#1B4332", strokeWidth: 2 }}
+                activeBar={{
+                  fill: "#E8D5B7",
+                  stroke: "#1B4332",
+                  strokeWidth: 2,
+                }}
               />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
         <SignalPanel
           title="Bullish signals"
           signals={market.bullishSignals}
@@ -284,6 +412,11 @@ function MarketPanel({ market }: { market: MarketPulse }) {
           title="Bearish signals"
           signals={market.bearishSignals}
           tone="bearish"
+        />
+        <SignalPanel
+          title="Neutral signals"
+          signals={market.neutralSignals}
+          tone="neutral"
         />
       </div>
 
@@ -347,9 +480,14 @@ function SignalPanel({
 }: {
   title: string;
   signals: { text: string }[];
-  tone: "bullish" | "bearish";
+  tone: "bullish" | "bearish" | "neutral";
 }) {
-  const dotColor = tone === "bullish" ? "bg-emerald-600" : "bg-red-500";
+  const dotColor =
+    tone === "bullish"
+      ? "bg-emerald-600"
+      : tone === "bearish"
+        ? "bg-red-500"
+        : "bg-[#1B4332]/40";
 
   return (
     <div className="rounded-2xl border border-[#1B4332]/10 bg-white p-5 shadow-sm sm:p-8">
@@ -360,7 +498,9 @@ function SignalPanel({
             key={signal.text}
             className="flex gap-3 rounded-xl border border-[#1B4332]/10 bg-[#F7F1E8] px-4 py-3 text-sm leading-relaxed text-[#1B4332]/85"
           >
-            <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${dotColor}`} />
+            <span
+              className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${dotColor}`}
+            />
             {signal.text}
           </li>
         ))}
