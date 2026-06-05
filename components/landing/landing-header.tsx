@@ -18,6 +18,7 @@ const INVESTOR_LINKS: NavLink[] = [
 
 const BUYER_LINKS: NavLink[] = [
   { label: "True Cost Calculator", href: "/cost" },
+  { label: "Rent vs Buy Calculator", href: "/rvb" },
   { label: "Investor Quiz", href: "/quiz" },
 ];
 
