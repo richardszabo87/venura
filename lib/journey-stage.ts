@@ -14,11 +14,11 @@ export const JOURNEY_STAGE_TIPS: Record<
   { text: string; href: string }
 > = {
   exploring: {
-    text: "Start by taking the investor quiz to find your ideal market",
+    text: "Take the investor quiz to find your ideal market",
     href: "/quiz",
   },
   educating: {
-    text: "Run your first property analysis in the Analyzer",
+    text: "Run your first property analysis",
     href: "/analyzer",
   },
   searching: {
@@ -26,15 +26,15 @@ export const JOURNEY_STAGE_TIPS: Record<
     href: "/deal-alerts",
   },
   ready: {
-    text: "You have saved deals — time to make an offer. Check your HOA Health Reports first",
+    text: "Check HOA Health before making an offer",
     href: "/hoa",
   },
   under_contract: {
-    text: "Track your closing checklist",
+    text: "Review your saved deals and closing checklist",
     href: "/saved-deals",
   },
   owner: {
-    text: "Your portfolio is live. Track your cash flow in Portfolio",
+    text: "Track your cash flow in Portfolio",
     href: "/portfolio",
   },
 };

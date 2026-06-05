@@ -7,5 +7,5 @@ export function getTimeOfDayGreeting(date = new Date()): string {
 
 export function formatGreeting(firstName: string | null | undefined): string {
   const name = firstName?.trim() || "there";
-  return `${getTimeOfDayGreeting()} ${name}.`;
+  return `${getTimeOfDayGreeting()} ${name}`;
 }
