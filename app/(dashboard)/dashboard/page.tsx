@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
+import { DashboardGreeting } from "@/components/dashboard/dashboard-greeting";
 import { JourneyStageTracker } from "@/components/dashboard/journey-stage-tracker";
 import { getQuickActions } from "@/lib/dashboard-quick-actions";
-import { formatGreeting } from "@/lib/dashboard-greeting";
 import {
   daysOnVenura,
   extractMarketChips,
@@ -27,7 +27,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     await setSessionCookie(params.session_id);
   }
 
-  const [{ userId }, user] = await Promise.all([auth(), currentUser()]);
+  const { userId } = await auth();
 
   if (!userId) {
     redirect("/sign-in");
@@ -38,8 +38,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   if (!profile) {
     redirect("/onboarding");
   }
-
-  const greeting = formatGreeting(user?.firstName);
   const journeyStage: JourneyStage = profile.journey_stage ?? "exploring";
   const marketChips = extractMarketChips(profile.target_markets ?? []);
   const quickActions = getQuickActions(profile.buyer_type);
@@ -49,7 +47,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     <>
       <header className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          {greeting}
+          <DashboardGreeting />
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-white/60">
           {checkoutSuccess
