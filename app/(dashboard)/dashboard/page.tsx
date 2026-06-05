@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { DashboardGreeting } from "@/components/dashboard/dashboard-greeting";
+import { HoaHealthCard } from "@/components/dashboard/hoa-health-card";
 import { JourneyStageTracker } from "@/components/dashboard/journey-stage-tracker";
 import { getQuickActions } from "@/lib/dashboard-quick-actions";
 import {
@@ -108,6 +109,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             )}
           </SnapshotCard>
         </div>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">
+          HOA intelligence
+        </h2>
+        <HoaHealthCard />
       </section>
 
       <section className="mb-8">

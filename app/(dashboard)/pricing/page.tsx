@@ -1,5 +1,8 @@
+import { auth } from "@clerk/nextjs/server";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { PricingPlans } from "@/components/pricing/pricing-plans";
+import { getSubscriptionTier } from "@/lib/subscription";
+import { fetchProfileByClerkId } from "@/lib/user-profile-server";
 
 type PricingPageProps = {
   searchParams: Promise<{ canceled?: string }>;
@@ -8,6 +11,12 @@ type PricingPageProps = {
 export default async function PricingPage({ searchParams }: PricingPageProps) {
   const params = await searchParams;
   const canceled = params.canceled === "true";
+
+  const { userId } = await auth();
+  const profile = userId
+    ? await fetchProfileByClerkId(userId).catch(() => null)
+    : null;
+  const currentTier = getSubscriptionTier(profile);
 
   return (
     <>
@@ -23,7 +32,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
         </div>
       )}
 
-      <PricingPlans />
+      <PricingPlans currentTier={currentTier} />
     </>
   );
 }

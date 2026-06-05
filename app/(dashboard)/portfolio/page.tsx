@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { PortfolioGate } from "@/app/(dashboard)/portfolio/portfolio-gate";
 import { SAMPLE_SAVED_DEALS } from "@/lib/sample-deals";
 import { formatCashFlow, formatCurrency } from "@/lib/format";
 
@@ -26,6 +27,7 @@ export default function PortfolioPage() {
         description="Track owned properties, equity positions, and passive income."
       />
 
+      <PortfolioGate>
       {ownedProperties.length === 0 ? (
         <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-[#1B4332]/50 p-8 text-center">
           <p className="max-w-md text-base text-white/70">
@@ -116,6 +118,7 @@ export default function PortfolioPage() {
           </div>
         </>
       )}
+      </PortfolioGate>
     </>
   );
 }

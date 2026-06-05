@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { isStripeConfigured } from "@/lib/stripe-config";
+import type { SubscriptionTier } from "@/lib/user-profile";
 
 type PlanId = "free" | "investor" | "pro";
 
@@ -12,7 +13,6 @@ const PLANS: {
   period: string;
   description: string;
   features: string[];
-  excluded?: string[];
   cta: string;
   highlighted: boolean;
 }[] = [
@@ -23,12 +23,13 @@ const PLANS: {
     period: "forever",
     description: "Get started with basic property analysis.",
     features: [
-      "Property analyzer (3 deals/mo)",
+      "3 analyses per month",
+      "5 saved deals",
+      "5 VenuraAI messages/month",
+      "1 deal alert",
+      "Basic projections (no export)",
       "Cash flow & cap rate metrics",
-      "50% rule check",
-      "Basic verdict scoring",
     ],
-    excluded: ["Saved deals", "Negotiation calculator", "10-year projections"],
     cta: "Current Plan",
     highlighted: false,
   },
@@ -39,16 +40,17 @@ const PLANS: {
     period: "mo",
     description: "For active investors analyzing multiple deals.",
     features: [
-      "Unlimited deal analysis",
-      "Saved deals library",
-      "Side-by-side comparison",
-      "Negotiation price calculator",
-      "Deal alerts (5 active)",
-      "10-year projections",
+      "Unlimited analyses",
+      "Up to 50 saved deals",
+      "PDF report downloads",
+      "Full Deal Score™",
       "HOA Health Report",
-      "Deal Score™",
+      "Unlimited VenuraAI",
+      "10 deal alerts",
+      "10-year projections with export",
+      "Zip-level market data",
     ],
-    cta: "Upgrade to Investor",
+    cta: "Start 7-day free trial",
     highlighted: true,
   },
   {
@@ -59,21 +61,63 @@ const PLANS: {
     description: "Full toolkit for serious portfolio builders.",
     features: [
       "Everything in Investor",
-      "VenuraAI assistant",
-      "Portfolio dashboard",
+      "Unlimited saved deals",
       "Unlimited deal alerts",
-      "Export reports (PDF/CSV)",
-      "Priority support",
-      "API access",
       "City Intelligence",
-      "VenuraAI advisor",
+      "VenuraAI priority responses",
+      "Portfolio tracker",
+      "API access",
+      "White label reports",
     ],
     cta: "Upgrade to Pro",
     highlighted: false,
   },
 ];
 
-export function PricingPlans() {
+const COMPARISON_FEATURES: {
+  label: string;
+  free: string | boolean;
+  investor: string | boolean;
+  pro: string | boolean;
+}[] = [
+  { label: "Analyses per month", free: "3", investor: "Unlimited", pro: "Unlimited" },
+  { label: "Saved deals", free: "5", investor: "50", pro: "Unlimited" },
+  { label: "VenuraAI messages", free: "5/mo", investor: "Unlimited", pro: "Unlimited" },
+  { label: "Deal alerts", free: "1", investor: "10", pro: "Unlimited" },
+  { label: "PDF downloads", free: false, investor: true, pro: true },
+  { label: "Deal Score™", free: false, investor: true, pro: true },
+  { label: "HOA Health Report", free: false, investor: true, pro: true },
+  { label: "Projection export", free: false, investor: true, pro: true },
+  { label: "Portfolio tracker", free: false, investor: false, pro: true },
+  { label: "City Intelligence", free: false, investor: false, pro: true },
+  { label: "API access", free: false, investor: false, pro: true },
+  { label: "White label reports", free: false, investor: false, pro: true },
+];
+
+function CellValue({ value }: { value: string | boolean }) {
+  if (typeof value === "string") {
+    return <span className="text-white/80">{value}</span>;
+  }
+  return value ? (
+    <svg
+      className="mx-auto h-4 w-4 text-[#E8D5B7]"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  ) : (
+    <span className="text-white/30">—</span>
+  );
+}
+
+type PricingPlansProps = {
+  currentTier?: SubscriptionTier;
+};
+
+export function PricingPlans({ currentTier = "free" }: PricingPlansProps) {
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -126,6 +170,7 @@ export function PricingPlans() {
         {PLANS.map((plan) => {
           const isPaid = plan.id === "investor" || plan.id === "pro";
           const isLoading = loadingPlan === plan.id;
+          const isCurrent = plan.id === currentTier;
 
           return (
             <article
@@ -136,7 +181,12 @@ export function PricingPlans() {
                   : "border-white/10 bg-[#1B4332]"
               }`}
             >
-              {plan.highlighted && (
+              {isCurrent && (
+                <span className="absolute -top-3 right-4 rounded-full border border-[#E8D5B7]/40 bg-[#0d2818] px-3 py-1 text-xs font-semibold text-[#E8D5B7]">
+                  Current plan
+                </span>
+              )}
+              {plan.highlighted && !isCurrent && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#E8D5B7] px-3 py-1 text-xs font-semibold text-[#1B4332]">
                   Most Popular
                 </span>
@@ -175,39 +225,72 @@ export function PricingPlans() {
                     <span className="text-white/80">{feature}</span>
                   </li>
                 ))}
-                {plan.excluded?.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-start gap-2.5 text-sm text-white/40"
-                  >
-                    <span className="mt-0.5 shrink-0 text-white/30">✗</span>
-                    <span className="line-through">{feature}</span>
-                  </li>
-                ))}
               </ul>
 
               <button
                 type="button"
-                disabled={!isPaid || isLoading || loadingPlan !== null}
+                disabled={isCurrent || !isPaid || isLoading || loadingPlan !== null}
                 onClick={() => {
                   if (plan.id === "investor" || plan.id === "pro") {
                     void startCheckout(plan.id);
                   }
                 }}
                 className={`w-full rounded-xl py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                  plan.highlighted
-                    ? "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE]"
-                    : plan.price === 0
-                      ? "border border-white/20 bg-white/5 text-white/60"
-                      : "border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 text-[#E8D5B7] hover:bg-[#E8D5B7]/20"
+                  isCurrent
+                    ? "border border-white/20 bg-white/5 text-white/60"
+                    : plan.highlighted
+                      ? "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE]"
+                      : plan.price === 0
+                        ? "border border-white/20 bg-white/5 text-white/60"
+                        : "border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 text-[#E8D5B7] hover:bg-[#E8D5B7]/20"
                 }`}
               >
-                {isLoading ? "Redirecting to checkout…" : plan.cta}
+                {isCurrent
+                  ? "Current Plan"
+                  : isLoading
+                    ? "Redirecting to checkout…"
+                    : plan.cta}
               </button>
             </article>
           );
         })}
       </div>
+
+      <section className="mt-12 overflow-hidden rounded-2xl border border-white/10 bg-[#1B4332] shadow-xl">
+        <div className="border-b border-white/10 px-6 py-5">
+          <h2 className="text-lg font-semibold text-[#E8D5B7]">
+            Feature comparison
+          </h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-white/10 text-white/60">
+                <th className="px-6 py-4 font-medium">Feature</th>
+                <th className="px-4 py-4 text-center font-medium">Free</th>
+                <th className="px-4 py-4 text-center font-medium">Investor</th>
+                <th className="px-4 py-4 text-center font-medium">Pro</th>
+              </tr>
+            </thead>
+            <tbody>
+              {COMPARISON_FEATURES.map((row) => (
+                <tr key={row.label} className="border-b border-white/5">
+                  <td className="px-6 py-3 text-white/80">{row.label}</td>
+                  <td className="px-4 py-3 text-center">
+                    <CellValue value={row.free} />
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <CellValue value={row.investor} />
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <CellValue value={row.pro} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </>
   );
 }

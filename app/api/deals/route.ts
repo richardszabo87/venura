@@ -5,7 +5,11 @@ import {
   type SaveDealPayload,
   type SavedDealRow,
 } from "@/lib/saved-deals";
-import { incrementProfileStats } from "@/lib/user-profile-server";
+import { getSubscriptionTier, getTierLimits } from "@/lib/subscription";
+import {
+  fetchProfileByClerkId,
+  incrementProfileStats,
+} from "@/lib/user-profile-server";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
@@ -50,7 +54,34 @@ export async function POST(request: Request) {
       );
     }
 
+    const profile = await fetchProfileByClerkId(userId);
+    const tier = getSubscriptionTier(profile);
+    const limits = getTierLimits(tier);
+
     const supabase = getSupabaseAdmin();
+    const { count, error: countError } = await supabase
+      .from("saved_deals")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId);
+
+    if (countError) {
+      return NextResponse.json({ error: countError.message }, { status: 500 });
+    }
+
+    if (
+      Number.isFinite(limits.savedDeals) &&
+      (count ?? 0) >= limits.savedDeals
+    ) {
+      return NextResponse.json(
+        {
+          code: "LIMIT_REACHED",
+          reason: "saved_deals",
+          tier,
+        },
+        { status: 403 },
+      );
+    }
+
     const row = buildDealInsert(userId, {
       name: body.name.trim(),
       address: body.address.trim(),

@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { useSubscription } from "@/components/subscription/subscription-provider";
 
 type Message = {
   id: string;
@@ -17,6 +18,7 @@ const SUGGESTED_QUESTIONS = [
 ];
 
 export default function VenuraAIPage() {
+  const { tier, usage, showUpgrade, refreshProfile } = useSubscription();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -58,9 +60,17 @@ export default function VenuraAIPage() {
 
         const data = await res.json().catch(() => ({}));
 
+        if (res.status === 403 && data.code === "LIMIT_REACHED") {
+          showUpgrade("ai_messages");
+          setMessages((prev) => prev.filter((m) => m.id !== userMessage.id));
+          return;
+        }
+
         if (!res.ok) {
           throw new Error(data.error ?? "Failed to get a response");
         }
+
+        await refreshProfile();
 
         setMessages((prev) => [
           ...prev,
@@ -87,7 +97,7 @@ export default function VenuraAIPage() {
         setTimeout(scrollToBottom, 50);
       }
     },
-    [isTyping, scrollToBottom],
+    [isTyping, scrollToBottom, showUpgrade, refreshProfile],
   );
 
   return (
@@ -150,6 +160,12 @@ export default function VenuraAIPage() {
         </div>
 
         <div className="border-t border-white/10 px-6 py-3">
+          {tier === "free" && usage && Number.isFinite(usage.aiMessages.limit) && (
+            <p className="mb-2 text-center text-xs text-white/60">
+              {usage.aiMessages.used} of {usage.aiMessages.limit} messages used
+              this month
+            </p>
+          )}
           {error && (
             <p className="mb-2 text-xs text-red-300">{error}</p>
           )}

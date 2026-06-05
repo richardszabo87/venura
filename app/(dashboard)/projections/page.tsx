@@ -12,7 +12,9 @@ import {
   YAxis,
 } from "recharts";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { useSubscription } from "@/components/subscription/subscription-provider";
 import { getLastAnalysis } from "@/lib/analyzer-session";
+import { canExportProjections } from "@/lib/subscription";
 import {
   calculateMortgagePayment,
   type PropertyInputs,
@@ -85,7 +87,27 @@ function buildProjectionData(inputs: PropertyInputs) {
   return data;
 }
 
+function exportProjectionCsv(
+  data: ReturnType<typeof buildProjectionData>,
+) {
+  const header = "Year,Equity,Annual Cash Flow,Property Value";
+  const rows = data.map(
+    (row) =>
+      `${row.yearNum},${row.equity},${row.cashFlow},${row.propertyValue}`,
+  );
+  const blob = new Blob([[header, ...rows].join("\n")], {
+    type: "text/csv;charset=utf-8;",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "venura-projections.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function ProjectionsPage() {
+  const { tier, showUpgrade } = useSubscription();
   const [activeTab, setActiveTab] = useState<ProjectionTab>("equity");
   const [inputs, setInputs] = useState<PropertyInputs | null>(null);
 
@@ -168,13 +190,28 @@ export default function ProjectionsPage() {
                   growth
                 </p>
               </div>
-              <div className="text-right">
-                <p className="text-xs uppercase tracking-wider text-white/50">
-                  Year 10
-                </p>
-                <p className="text-2xl font-bold tabular-nums text-white">
-                  {formatCurrency(data[10][config.dataKey])}
-                </p>
+              <div className="flex items-end gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!canExportProjections(tier)) {
+                      showUpgrade("projection_export");
+                      return;
+                    }
+                    exportProjectionCsv(data);
+                  }}
+                  className="rounded-lg border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 px-4 py-2 text-sm font-medium text-[#E8D5B7] transition hover:bg-[#E8D5B7]/20"
+                >
+                  Export CSV
+                </button>
+                <div className="text-right">
+                  <p className="text-xs uppercase tracking-wider text-white/50">
+                    Year 10
+                  </p>
+                  <p className="text-2xl font-bold tabular-nums text-white">
+                    {formatCurrency(data[10][config.dataKey])}
+                  </p>
+                </div>
               </div>
             </div>
 

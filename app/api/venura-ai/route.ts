@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { buildCityIntelligencePrompt } from "@/lib/market-pulse";
+import { incrementAiMessageUsage } from "@/lib/user-profile-server";
 
 const SYSTEM_PROMPT = [
   "You are VenuraAI, an expert real estate investment advisor for first-time residential investors.",
@@ -32,6 +33,11 @@ export async function POST(request: Request) {
 
     if (!message) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
+    }
+
+    const usageResult = await incrementAiMessageUsage(userId);
+    if ("error" in usageResult) {
+      return NextResponse.json(usageResult.error, { status: 403 });
     }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -73,7 +79,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Empty AI response" }, { status: 502 });
     }
 
-    return NextResponse.json({ reply: text });
+    return NextResponse.json({
+      reply: text,
+      profile: usageResult.profile,
+    });
   } catch (error) {
     console.error("VenuraAI route error:", error);
     const errMessage = error instanceof Error ? error.message : "AI request failed";

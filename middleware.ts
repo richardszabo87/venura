@@ -6,6 +6,7 @@ const isProtectedRoute = createRouteMatcher([
   "/api/profile(.*)",
   "/api/deals(.*)",
   "/api/venura-ai(.*)",
+  "/api/usage(.*)",
   "/analyzer(.*)",
   "/saved-deals(.*)",
   "/compare(.*)",
@@ -39,8 +40,14 @@ const isApiRoute = createRouteMatcher([
   "/__clerk(.*)",
 ]);
 
+const isCheckoutRoute = createRouteMatcher(["/api/checkout(.*)"]);
+
+const isStripeWebhook = createRouteMatcher(["/api/webhooks/stripe(.*)"]);
+
 export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
+  if (isStripeWebhook(req)) return;
+
+  if (isProtectedRoute(req) || isCheckoutRoute(req)) {
     await auth.protect();
   }
 

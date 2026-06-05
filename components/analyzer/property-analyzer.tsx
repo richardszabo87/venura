@@ -12,12 +12,11 @@ import {
   getAnalyzerDefaultsFromProfile,
   getInvestorProfile,
 } from "@/lib/investor-profile";
-import {
-  fetchUserProfile,
-  incrementPropertiesAnalyzed,
-} from "@/lib/profile-client";
+import { useSubscription } from "@/components/subscription/subscription-provider";
+import { fetchUserProfile } from "@/lib/profile-client";
 import { userProfileToAnalyzerDefaults } from "@/lib/user-profile";
 import { generateAnalysisPdf } from "@/lib/generate-analysis-pdf";
+import { canDownloadPdf, canViewDealScore } from "@/lib/subscription";
 import {
   formatCurrency,
   formatCurrencyDetailed,
@@ -29,7 +28,25 @@ import {
   VerdictBanner,
 } from "@/components/analyzer/verdict-banner";
 
+function computeDealScore(analysis: ReturnType<typeof analyzeProperty>): number {
+  let score = 50;
+  if (analysis.monthlyCashFlow >= 200) score += 20;
+  else if (analysis.monthlyCashFlow >= 100) score += 12;
+  else if (analysis.monthlyCashFlow >= 0) score += 4;
+  else score -= 15;
+
+  if (analysis.capRate >= 0.07) score += 15;
+  else if (analysis.capRate >= 0.05) score += 8;
+
+  if (analysis.cashOnCashReturn >= 0.1) score += 10;
+  else if (analysis.cashOnCashReturn >= 0.06) score += 5;
+
+  if (analysis.fiftyPercentRulePass) score += 5;
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
 export function PropertyAnalyzer() {
+  const { tier, usage, showUpgrade, refreshProfile } = useSubscription();
   const [propertyName, setPropertyName] = useState("");
   const [propertyAddress, setPropertyAddress] = useState("");
   const [purchasePrice, setPurchasePrice] = useState(DEFAULTS.purchasePrice);
@@ -125,15 +142,29 @@ export function PropertyAnalyzer() {
     [analyzedInputs],
   );
 
-  function handleAnalyze() {
-    setAnalyzedInputs({ ...currentInputs });
-    saveLastAnalysis(currentInputs);
-    setHasAnalyzed(true);
-    setSaveStatus("idle");
-    setSaveError(null);
-    void incrementPropertiesAnalyzed().catch((error) => {
-      console.error("Failed to increment properties_analyzed:", error);
-    });
+  async function handleAnalyze() {
+    try {
+      const res = await fetch("/api/usage/analyze", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 403 && data.code === "LIMIT_REACHED") {
+        showUpgrade("analyses");
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error ?? "Could not record analysis");
+      }
+
+      await refreshProfile();
+      setAnalyzedInputs({ ...currentInputs });
+      saveLastAnalysis(currentInputs);
+      setHasAnalyzed(true);
+      setSaveStatus("idle");
+      setSaveError(null);
+    } catch (error) {
+      console.error("Failed to record analysis:", error);
+    }
   }
 
   async function handleSaveDeal() {
@@ -162,11 +193,19 @@ export function PropertyAnalyzer() {
         }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 403 && data.code === "LIMIT_REACHED") {
+        showUpgrade("saved_deals");
+        setSaveStatus("idle");
+        return;
+      }
+
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
         throw new Error(data.error ?? "Failed to save deal");
       }
 
+      await refreshProfile();
       setSaveStatus("saved");
     } catch (err) {
       setSaveStatus("error");
@@ -176,6 +215,11 @@ export function PropertyAnalyzer() {
 
   function handleDownloadPdf() {
     if (!analyzedInputs || !analysis) return;
+
+    if (!canDownloadPdf(tier)) {
+      showUpgrade("pdf_download");
+      return;
+    }
 
     generateAnalysisPdf({
       propertyName: propertyName.trim() || "Property Analysis",
@@ -280,11 +324,17 @@ export function PropertyAnalyzer() {
           </div>
           <button
             type="button"
-            onClick={handleAnalyze}
+            onClick={() => void handleAnalyze()}
             className="mt-6 w-full rounded-xl bg-[#E8D5B7] px-5 py-3 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
           >
             Analyze
           </button>
+          {tier === "free" && usage && Number.isFinite(usage.analyses.limit) && (
+            <p className="mt-2 text-center text-xs text-white/60">
+              {usage.analyses.used} of {usage.analyses.limit} analyses used this
+              month
+            </p>
+          )}
         </section>
 
         <div className="flex flex-col gap-6 lg:col-span-3">
@@ -300,6 +350,37 @@ export function PropertyAnalyzer() {
           ) : (
             <>
               <VerdictBanner analysis={analysis} />
+
+              <section className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-[#E8D5B7]">
+                      Deal Score™
+                    </h2>
+                    <p className="mt-1 text-sm text-white/60">
+                      Composite investment quality score (0–100)
+                    </p>
+                  </div>
+                  {canViewDealScore(tier) ? (
+                    <div className="text-center">
+                      <p className="text-5xl font-black text-[#E8D5B7]">
+                        {computeDealScore(analysis)}
+                      </p>
+                      <p className="mt-1 text-xs uppercase tracking-wider text-white/50">
+                        out of 100
+                      </p>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => showUpgrade("deal_score")}
+                      className="rounded-xl border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 px-5 py-3 text-sm font-semibold text-[#E8D5B7] transition hover:bg-[#E8D5B7]/20"
+                    >
+                      Unlock Deal Score™
+                    </button>
+                  )}
+                </div>
+              </section>
 
               <div className="flex flex-wrap items-center gap-3">
                 <button

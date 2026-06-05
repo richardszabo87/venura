@@ -36,6 +36,8 @@ export type JourneyStage =
   | "under_contract"
   | "owner";
 
+export type SubscriptionTier = "free" | "investor" | "pro";
+
 export type UserProfileRow = {
   id: string;
   clerk_user_id: string;
@@ -54,6 +56,13 @@ export type UserProfileRow = {
   properties_saved: number;
   journey_stage: JourneyStage;
   onboarding_completed: boolean;
+  analyses_this_month: number;
+  analyses_month_reset: string;
+  ai_messages_this_month: number;
+  ai_month_reset: string;
+  subscription_tier: SubscriptionTier;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
   created_at: string;
   updated_at: string;
 };

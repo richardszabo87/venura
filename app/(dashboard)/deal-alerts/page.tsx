@@ -2,10 +2,35 @@
 
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { useSubscription } from "@/components/subscription/subscription-provider";
 import {
   getDealAlertDefaultsFromProfile,
   getInvestorProfile,
 } from "@/lib/investor-profile";
+import { getTierLimits } from "@/lib/subscription";
+
+const ALERTS_STORAGE_KEY = "venura:dealAlerts";
+
+function getStoredAlertCount(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = localStorage.getItem(ALERTS_STORAGE_KEY);
+    const alerts = raw ? (JSON.parse(raw) as unknown[]) : [];
+    return Array.isArray(alerts) ? alerts.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function saveAlert(form: AlertForm) {
+  const existing = localStorage.getItem(ALERTS_STORAGE_KEY);
+  const alerts = existing ? (JSON.parse(existing) as unknown[]) : [];
+  const next = [
+    ...(Array.isArray(alerts) ? alerts : []),
+    { ...form, createdAt: new Date().toISOString() },
+  ];
+  localStorage.setItem(ALERTS_STORAGE_KEY, JSON.stringify(next));
+}
 
 type AlertForm = {
   maxPrice: string;
@@ -18,6 +43,8 @@ type AlertForm = {
 const FREQUENCIES = ["Daily", "Weekly", "Instant"];
 
 export default function DealAlertsPage() {
+  const { tier, showUpgrade } = useSubscription();
+  const [activeAlerts, setActiveAlerts] = useState(0);
   const [form, setForm] = useState<AlertForm>({
     maxPrice: "",
     maxHoa: "",
@@ -31,10 +58,21 @@ export default function DealAlertsPage() {
     const profile = getInvestorProfile();
     if (!profile) return;
     setForm((prev) => ({ ...prev, ...getDealAlertDefaultsFromProfile(profile) }));
+    setActiveAlerts(getStoredAlertCount());
   }, []);
+
+  const alertLimit = getTierLimits(tier).dealAlerts;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (Number.isFinite(alertLimit) && activeAlerts >= alertLimit) {
+      showUpgrade(tier === "free" ? "deal_alerts" : "portfolio");
+      return;
+    }
+
+    saveAlert(form);
+    setActiveAlerts((count) => count + 1);
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
   }
@@ -52,6 +90,13 @@ export default function DealAlertsPage() {
       />
 
       <div className="mx-auto max-w-xl">
+        {Number.isFinite(alertLimit) && (
+          <p className="mb-4 text-center text-sm text-white/60">
+            {activeAlerts} of {alertLimit} active alert
+            {alertLimit === 1 ? "" : "s"} used
+          </p>
+        )}
+
         <form
           onSubmit={handleSubmit}
           className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl"

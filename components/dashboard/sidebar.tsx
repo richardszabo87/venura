@@ -3,6 +3,7 @@
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SidebarUsage } from "@/components/dashboard/sidebar-usage";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard" },
@@ -62,6 +63,7 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-white/10 px-6 py-4">
+        <SidebarUsage />
         {isLoaded && displayName && (
           <p className="mb-3 truncate text-sm font-medium text-white/80">
             {displayName}
