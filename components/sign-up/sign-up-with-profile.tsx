@@ -52,7 +52,7 @@ export function SignUpWithProfile() {
     <SignUp
       appearance={clerkAppearance}
       initialValues={emailAddress ? { emailAddress } : undefined}
-      forceRedirectUrl="/dashboard"
+      forceRedirectUrl="/onboarding"
     />
   );
 }

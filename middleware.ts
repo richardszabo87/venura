@@ -18,19 +18,23 @@ const isProtectedRoute = createRouteMatcher([
   "/onboarding(.*)",
 ]);
 
-const requiresOnboarding = createRouteMatcher([
-  "/analyzer(.*)",
-  "/saved-deals(.*)",
-  "/compare(.*)",
-  "/projections(.*)",
-  "/portfolio(.*)",
-  "/deal-alerts(.*)",
-  "/venura-ai(.*)",
-  "/pricing(.*)",
-  "/dashboard(.*)",
+const isPublicRoute = createRouteMatcher([
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/hoa(.*)",
+  "/rent(.*)",
+  "/quiz(.*)",
+  "/markets(.*)",
+  "/widget(.*)",
 ]);
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
+
+const isApiRoute = createRouteMatcher([
+  "/api(.*)",
+  "/trpc(.*)",
+  "/__clerk(.*)",
+]);
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
@@ -40,9 +44,7 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
   if (!userId) return;
 
-  if (!requiresOnboarding(req) && !isOnboardingRoute(req)) {
-    return;
-  }
+  if (isPublicRoute(req) || isApiRoute(req)) return;
 
   let onboardingCompleted = false;
   try {
@@ -50,15 +52,25 @@ export default clerkMiddleware(async (auth, req) => {
     onboardingCompleted = profile?.onboarding_completed ?? false;
   } catch (error) {
     console.error("Middleware profile check failed:", error);
+    if (!isOnboardingRoute(req)) {
+      return NextResponse.redirect(new URL("/onboarding", req.url));
+    }
     return;
   }
 
-  if (isOnboardingRoute(req) && onboardingCompleted) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  if (isOnboardingRoute(req)) {
+    if (onboardingCompleted) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+    return;
   }
 
-  if (requiresOnboarding(req) && !onboardingCompleted) {
+  if (!onboardingCompleted) {
     return NextResponse.redirect(new URL("/onboarding", req.url));
+  }
+
+  if (req.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 });
 
