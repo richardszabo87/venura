@@ -7,6 +7,7 @@ const isProtectedRoute = createRouteMatcher([
   "/api/deals(.*)",
   "/api/venura-ai(.*)",
   "/api/usage(.*)",
+  "/api/analysis-history(.*)",
   "/analyzer(.*)",
   "/saved-deals(.*)",
   "/compare(.*)",
@@ -15,6 +16,7 @@ const isProtectedRoute = createRouteMatcher([
   "/deal-alerts(.*)",
   "/venura-ai(.*)",
   "/pricing(.*)",
+  "/settings(.*)",
   "/dashboard(.*)",
   "/onboarding(.*)",
 ]);

@@ -100,13 +100,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    let stageAdvanced = null;
     try {
-      await incrementProfileStats(userId, { properties_saved: 1 });
+      const incrementResult = await incrementProfileStats(userId, {
+        properties_saved: 1,
+      });
+      stageAdvanced = incrementResult?.stageAdvanced ?? null;
     } catch (counterError) {
       console.error("Profile properties_saved increment error:", counterError);
     }
 
-    return NextResponse.json({ deal: data as SavedDealRow });
+    return NextResponse.json({
+      deal: data as SavedDealRow,
+      stageAdvanced,
+    });
   } catch (error) {
     console.error("Deals POST error:", error);
     const message = error instanceof Error ? error.message : "Failed to save deal";

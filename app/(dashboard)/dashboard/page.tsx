@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { DashboardGreeting } from "@/components/dashboard/dashboard-greeting";
 import { HoaHealthCard } from "@/components/dashboard/hoa-health-card";
+import { JourneyCelebrationBanner } from "@/components/dashboard/journey-celebration-banner";
 import { JourneyStageTracker } from "@/components/dashboard/journey-stage-tracker";
+import { RecentlyAnalyzed } from "@/components/dashboard/recently-analyzed";
 import { getQuickActions } from "@/lib/dashboard-quick-actions";
 import {
   daysOnVenura,
@@ -66,7 +68,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       )}
 
+      <JourneyCelebrationBanner />
+
       <JourneyStageTracker stage={journeyStage} />
+
+      <RecentlyAnalyzed />
 
       <section className="mb-8">
         <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-[#E8D5B7]">

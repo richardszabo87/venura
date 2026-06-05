@@ -1,6 +1,9 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { storeJourneyCelebration } from "@/lib/journey-advancement";
+import type { JourneyStage } from "@/lib/user-profile";
 import {
   analyzeProperty,
   calculateNegotiationPrices,
@@ -46,6 +49,8 @@ function computeDealScore(analysis: ReturnType<typeof analyzeProperty>): number 
 }
 
 export function PropertyAnalyzer() {
+  const searchParams = useSearchParams();
+  const historyId = searchParams.get("historyId");
   const { tier, usage, showUpgrade, refreshProfile } = useSubscription();
   const [propertyName, setPropertyName] = useState("");
   const [propertyAddress, setPropertyAddress] = useState("");
@@ -107,6 +112,50 @@ export function PropertyAnalyzer() {
     void applyProfileDefaults();
   }, []);
 
+  useEffect(() => {
+    if (!historyId) return;
+
+    async function loadHistoryAnalysis() {
+      try {
+        const res = await fetch(`/api/analysis-history/${historyId}`);
+        const data = await res.json();
+        if (!res.ok || !data.analysis) return;
+
+        const record = data.analysis as {
+          property_name: string | null;
+          address: string | null;
+          purchase_price: number | null;
+          monthly_rent: number | null;
+        };
+
+        if (record.property_name) setPropertyName(record.property_name);
+        if (record.address) setPropertyAddress(record.address);
+
+        const inputs: PropertyInputs = {
+          purchasePrice: record.purchase_price ?? DEFAULTS.purchasePrice,
+          monthlyRent: record.monthly_rent ?? DEFAULTS.monthlyRent,
+          hoaFee: DEFAULTS.hoaFee,
+          propertyTaxes: DEFAULTS.propertyTaxes,
+          downPaymentPercent: DEFAULTS.downPaymentPercent,
+          interestRate: DEFAULTS.interestRate,
+          insurance: DEFAULTS.insurance,
+          loanTerm: DEFAULTS.loanTerm,
+        };
+
+        setPurchasePrice(inputs.purchasePrice);
+        setMonthlyRent(inputs.monthlyRent);
+        setAnalyzedInputs(inputs);
+        saveLastAnalysis(inputs);
+        setHasAnalyzed(true);
+      } catch (error) {
+        console.error("Failed to load analysis history:", error);
+      }
+    }
+
+    void loadHistoryAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load once per historyId
+  }, [historyId]);
+
   const currentInputs = useMemo(
     () => ({
       purchasePrice,
@@ -143,8 +192,20 @@ export function PropertyAnalyzer() {
   );
 
   async function handleAnalyze() {
+    const analysisResult = analyzeProperty(currentInputs);
+
     try {
-      const res = await fetch("/api/usage/analyze", { method: "POST" });
+      const res = await fetch("/api/usage/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyName: propertyName.trim() || undefined,
+          address: propertyAddress.trim() || undefined,
+          purchasePrice,
+          monthlyRent,
+          analysis: analysisResult,
+        }),
+      });
       const data = await res.json().catch(() => ({}));
 
       if (res.status === 403 && data.code === "LIMIT_REACHED") {
@@ -154,6 +215,10 @@ export function PropertyAnalyzer() {
 
       if (!res.ok) {
         throw new Error(data.error ?? "Could not record analysis");
+      }
+
+      if (data.stageAdvanced) {
+        storeJourneyCelebration(data.stageAdvanced as JourneyStage);
       }
 
       await refreshProfile();
@@ -203,6 +268,10 @@ export function PropertyAnalyzer() {
 
       if (!res.ok) {
         throw new Error(data.error ?? "Failed to save deal");
+      }
+
+      if (data.stageAdvanced) {
+        storeJourneyCelebration(data.stageAdvanced as JourneyStage);
       }
 
       await refreshProfile();

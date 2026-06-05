@@ -78,11 +78,19 @@ export async function PATCH(request: Request) {
       profile = await upsertProfile(userId, parsed.upsert);
     }
 
+    let stageAdvanced = null;
+    let previousStage = null;
+
     if (parsed.increment) {
-      profile = await incrementProfileStats(userId, parsed.increment);
+      const incrementResult = await incrementProfileStats(userId, parsed.increment);
+      if (incrementResult) {
+        profile = incrementResult.profile;
+        stageAdvanced = incrementResult.stageAdvanced ?? null;
+        previousStage = incrementResult.previousStage ?? null;
+      }
     }
 
-    return NextResponse.json({ profile });
+    return NextResponse.json({ profile, stageAdvanced, previousStage });
   } catch (error) {
     console.error("Profile PATCH error:", error);
     const message =

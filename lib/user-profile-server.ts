@@ -1,11 +1,19 @@
+import { computeJourneyAdvancement } from "./journey-advancement";
 import { getSubscriptionTier, getTierLimits } from "./subscription";
 import { getSupabaseAdmin } from "./supabase";
 import type {
+  JourneyStage,
   ProfileIncrement,
   SubscriptionTier,
   UserProfileRow,
   UserProfileUpsert,
 } from "./user-profile";
+
+export type ProfileUpdateResult = {
+  profile: UserProfileRow;
+  stageAdvanced?: JourneyStage;
+  previousStage?: JourneyStage;
+};
 
 function firstOfMonth(): string {
   const now = new Date();
@@ -136,7 +144,7 @@ export async function upsertProfile(
 export async function incrementProfileStats(
   clerkUserId: string,
   increment: ProfileIncrement,
-): Promise<UserProfileRow | null> {
+): Promise<ProfileUpdateResult | null> {
   const supabase = getSupabaseAdmin();
   let profile = await fetchProfileByClerkId(clerkUserId);
 
@@ -159,6 +167,8 @@ export async function incrementProfileStats(
     profile = data as UserProfileRow;
   }
 
+  const previousStage = profile.journey_stage;
+  const previousSaved = profile.properties_saved;
   const updates: Partial<UserProfileRow> = {};
 
   if (increment.properties_analyzed) {
@@ -172,7 +182,18 @@ export async function incrementProfileStats(
   }
 
   if (Object.keys(updates).length === 0) {
-    return profile;
+    return { profile };
+  }
+
+  if (increment.properties_saved) {
+    const advancement = computeJourneyAdvancement(profile.journey_stage, {
+      type: "save",
+      previousSaved,
+      newSaved: updates.properties_saved!,
+    });
+    if (advancement.advanced) {
+      updates.journey_stage = advancement.nextStage;
+    }
   }
 
   const { data, error } = await supabase
@@ -186,7 +207,17 @@ export async function incrementProfileStats(
     throw new Error(error.message);
   }
 
-  return data as UserProfileRow;
+  const nextProfile = data as UserProfileRow;
+  const stageAdvanced =
+    nextProfile.journey_stage !== previousStage
+      ? nextProfile.journey_stage
+      : undefined;
+
+  return {
+    profile: nextProfile,
+    stageAdvanced,
+    previousStage: stageAdvanced ? previousStage : undefined,
+  };
 }
 
 export type UsageLimitError = {
@@ -197,7 +228,7 @@ export type UsageLimitError = {
 
 export async function incrementAnalysisUsage(
   clerkUserId: string,
-): Promise<{ profile: UserProfileRow } | { error: UsageLimitError }> {
+): Promise<ProfileUpdateResult | { error: UsageLimitError }> {
   const profile = await fetchProfileByClerkId(clerkUserId);
   if (!profile) {
     throw new Error("Profile not found");
@@ -205,10 +236,11 @@ export async function incrementAnalysisUsage(
 
   const tier = getSubscriptionTier(profile);
   const limits = getTierLimits(tier);
+  const previousAnalysesThisMonth = profile.analyses_this_month ?? 0;
 
   if (
     Number.isFinite(limits.analysesPerMonth) &&
-    (profile.analyses_this_month ?? 0) >= limits.analysesPerMonth
+    previousAnalysesThisMonth >= limits.analysesPerMonth
   ) {
     return {
       error: {
@@ -219,15 +251,27 @@ export async function incrementAnalysisUsage(
     };
   }
 
+  const previousStage = profile.journey_stage;
+  const advancement = computeJourneyAdvancement(profile.journey_stage, {
+    type: "analysis",
+    previousAnalysesThisMonth,
+  });
+
   const supabase = getSupabaseAdmin();
   const monthStart = firstOfMonth();
+  const updates: Partial<UserProfileRow> = {
+    analyses_this_month: previousAnalysesThisMonth + 1,
+    analyses_month_reset: monthStart,
+    properties_analyzed: profile.properties_analyzed + 1,
+  };
+
+  if (advancement.advanced) {
+    updates.journey_stage = advancement.nextStage;
+  }
+
   const { data, error } = await supabase
     .from("user_profiles")
-    .update({
-      analyses_this_month: (profile.analyses_this_month ?? 0) + 1,
-      analyses_month_reset: monthStart,
-      properties_analyzed: profile.properties_analyzed + 1,
-    })
+    .update(updates)
     .eq("clerk_user_id", clerkUserId)
     .select()
     .single();
@@ -236,7 +280,17 @@ export async function incrementAnalysisUsage(
     throw new Error(error.message);
   }
 
-  return { profile: data as UserProfileRow };
+  const nextProfile = data as UserProfileRow;
+  const stageAdvanced =
+    nextProfile.journey_stage !== previousStage
+      ? nextProfile.journey_stage
+      : undefined;
+
+  return {
+    profile: nextProfile,
+    stageAdvanced,
+    previousStage: stageAdvanced ? previousStage : undefined,
+  };
 }
 
 export async function incrementAiMessageUsage(

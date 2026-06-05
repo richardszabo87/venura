@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { useSubscription } from "@/components/subscription/subscription-provider";
 
@@ -8,6 +8,13 @@ type Message = {
   id: string;
   role: "user" | "assistant";
   content: string;
+};
+
+const WELCOME_MESSAGE: Message = {
+  id: "welcome",
+  role: "assistant",
+  content:
+    "Hi! I'm VenuraAI, your real estate investment assistant. Ask me about the DC metro market, rent control, financing strategies, or how to analyze deals.",
 };
 
 const SUGGESTED_QUESTIONS = [
@@ -19,14 +26,7 @@ const SUGGESTED_QUESTIONS = [
 
 export default function VenuraAIPage() {
   const { tier, usage, showUpgrade, refreshProfile } = useSubscription();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content:
-        "Hi! I'm VenuraAI, your real estate investment assistant. Ask me about the DC metro market, rent control, financing strategies, or how to analyze deals.",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +35,37 @@ export default function VenuraAIPage() {
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
+
+  useEffect(() => {
+    async function loadHistory() {
+      try {
+        const res = await fetch("/api/venura-ai");
+        const data = await res.json();
+        if (!res.ok) return;
+
+        const rows = (data.messages ?? []) as {
+          id: string;
+          role: "user" | "assistant";
+          content: string;
+        }[];
+
+        if (rows.length > 0) {
+          setMessages(
+            rows.map((row) => ({
+              id: row.id,
+              role: row.role,
+              content: row.content,
+            })),
+          );
+          setTimeout(scrollToBottom, 50);
+        }
+      } catch (err) {
+        console.error("Failed to load VenuraAI history:", err);
+      }
+    }
+
+    void loadHistory();
+  }, [scrollToBottom]);
 
   const sendMessage = useCallback(
     async (text: string) => {

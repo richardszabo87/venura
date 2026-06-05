@@ -1,5 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import {
+  fetchRecentConversations,
+  saveConversationMessages,
+} from "@/lib/ai-conversations-server";
 import { buildCityIntelligencePrompt } from "@/lib/market-pulse";
 import { incrementAiMessageUsage } from "@/lib/user-profile-server";
 
@@ -12,6 +16,23 @@ const SYSTEM_PROMPT = [
 ].join("\n\n");
 
 const MODEL = "claude-sonnet-4-20250514";
+
+export async function GET() {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const messages = await fetchRecentConversations(userId);
+    return NextResponse.json({ messages });
+  } catch (error) {
+    console.error("VenuraAI history error:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to load conversation";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
   const { userId } = await auth();
@@ -40,6 +61,15 @@ export async function POST(request: Request) {
       return NextResponse.json(usageResult.error, { status: 403 });
     }
 
+    const history = await fetchRecentConversations(userId);
+    const claudeMessages = [
+      ...history.map((row) => ({
+        role: row.role as "user" | "assistant",
+        content: row.content,
+      })),
+      { role: "user" as const, content: message },
+    ];
+
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -51,7 +81,7 @@ export async function POST(request: Request) {
         model: MODEL,
         max_tokens: 1024,
         system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: message }],
+        messages: claudeMessages,
       }),
     });
 
@@ -78,6 +108,11 @@ export async function POST(request: Request) {
     if (!text) {
       return NextResponse.json({ error: "Empty AI response" }, { status: 502 });
     }
+
+    await saveConversationMessages(userId, [
+      { role: "user", content: message },
+      { role: "assistant", content: text },
+    ]);
 
     return NextResponse.json({
       reply: text,
