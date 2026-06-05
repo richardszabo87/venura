@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { InvestorProfileWelcome } from "@/components/dashboard/investor-profile-welcome";
-import { PageHeader } from "@/components/dashboard/page-header";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { JourneyStageTracker } from "@/components/dashboard/journey-stage-tracker";
+import { formatGreeting } from "@/lib/dashboard-greeting";
 import { setSessionCookie } from "@/lib/auth/session";
+import { fetchProfileByClerkId } from "@/lib/user-profile-server";
+import type { JourneyStage } from "@/lib/user-profile";
 
 type DashboardPageProps = {
   searchParams: Promise<{ session_id?: string }>;
@@ -15,19 +18,27 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     await setSessionCookie(params.session_id);
   }
 
+  const [{ userId }, user] = await Promise.all([auth(), currentUser()]);
+  const profile =
+    userId != null
+      ? await fetchProfileByClerkId(userId).catch(() => null)
+      : null;
+
+  const greeting = formatGreeting(user?.firstName);
+  const journeyStage: JourneyStage = profile?.journey_stage ?? "exploring";
+
   return (
     <>
-      <PageHeader
-        eyebrow="Welcome"
-        title="Dashboard"
-        description={
-          checkoutSuccess
-            ? "Your subscription is active. You now have full access to Venura."
-            : "Your investment command center."
-        }
-      />
-
-      {!checkoutSuccess && <InvestorProfileWelcome />}
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          {greeting}
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm text-white/60">
+          {checkoutSuccess
+            ? "Your subscription is active. Here's your Venura snapshot."
+            : "Here's your Venura snapshot."}
+        </p>
+      </header>
 
       {checkoutSuccess && (
         <div className="mb-8 rounded-2xl border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 px-6 py-5">
@@ -37,6 +48,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </p>
         </div>
       )}
+
+      <JourneyStageTracker stage={journeyStage} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <QuickLink
