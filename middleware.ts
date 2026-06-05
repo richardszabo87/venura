@@ -32,6 +32,7 @@ const isPublicRoute = createRouteMatcher([
   "/quiz(.*)",
   "/markets(.*)",
   "/widget(.*)",
+  "/mortgage(.*)",
 ]);
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);

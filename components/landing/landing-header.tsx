@@ -20,6 +20,7 @@ const BUYER_LINKS: NavLink[] = [
   { label: "First-Time Buyer Guide", href: "/guide" },
   { label: "True Cost Calculator", href: "/cost" },
   { label: "Rent vs Buy Calculator", href: "/rvb" },
+  { label: "Mortgage Comparison", href: "/mortgage" },
   { label: "Investor Quiz", href: "/quiz" },
 ];
 
