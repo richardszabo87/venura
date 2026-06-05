@@ -1,10 +1,6 @@
 import type { MarketPulse } from "./market-pulse-types";
 
-type LegacyMarket = Omit<MarketPulse, "usRegion" | "neutralSignals"> & {
-  keyZipCodes: (Omit<MarketPulse["keyZipCodes"][number], "averageRent"> & {
-    averageRent?: number;
-  })[];
-};
+type LegacyMarket = Omit<MarketPulse, "usRegion" | "neutralSignals">;
 
 export const LEGACY_MARKET_DATA: LegacyMarket[] = [
   {
@@ -29,12 +25,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 4.5 },
     ],
     keyZipCodes: [
-      { zip: "20785", neighborhood: "Landover", investorScore: 78 },
-      { zip: "20784", neighborhood: "Landover Hills", investorScore: 76 },
-      { zip: "20782", neighborhood: "Hyattsville", investorScore: 74 },
-      { zip: "20743", neighborhood: "Capitol Heights", investorScore: 72 },
-      { zip: "20770", neighborhood: "Glenarden", investorScore: 75 },
-      { zip: "20705", neighborhood: "Beltsville", investorScore: 71 },
+      { zip: "20785", neighborhood: "Landover", investorScore: 78, averageRent: 1900 },
+      { zip: "20784", neighborhood: "Landover Hills", investorScore: 76, averageRent: 1880 },
+      { zip: "20782", neighborhood: "Hyattsville", investorScore: 74, averageRent: 1950 },
+      { zip: "20743", neighborhood: "Capitol Heights", investorScore: 72, averageRent: 1800 },
+      { zip: "20770", neighborhood: "Glenarden", investorScore: 75, averageRent: 1850 },
+      { zip: "20705", neighborhood: "Beltsville", investorScore: 71, averageRent: 1780 },
     ],
     bullishSignals: [
       { text: "Strong cash-flow potential with lower entry prices than inner Beltway markets." },
@@ -70,12 +66,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 4.1 },
     ],
     keyZipCodes: [
-      { zip: "20783", neighborhood: "Hyattsville", investorScore: 74 },
-      { zip: "20782", neighborhood: "Hyattsville", investorScore: 73 },
-      { zip: "20785", neighborhood: "Landover", investorScore: 78 },
-      { zip: "20784", neighborhood: "Landover Hills", investorScore: 76 },
-      { zip: "20737", neighborhood: "Riverdale Park", investorScore: 72 },
-      { zip: "20740", neighborhood: "College Park", investorScore: 70 },
+      { zip: "20783", neighborhood: "Hyattsville", investorScore: 74, averageRent: 1950 },
+      { zip: "20782", neighborhood: "Hyattsville", investorScore: 73, averageRent: 1920 },
+      { zip: "20785", neighborhood: "Landover", investorScore: 78, averageRent: 1850 },
+      { zip: "20784", neighborhood: "Landover Hills", investorScore: 76, averageRent: 1870 },
+      { zip: "20737", neighborhood: "Riverdale Park", investorScore: 72, averageRent: 1980 },
+      { zip: "20740", neighborhood: "College Park", investorScore: 70, averageRent: 2050 },
     ],
     bullishSignals: [
       { text: "Arts District revitalization is attracting younger professional tenants." },
@@ -111,12 +107,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 3.4 },
     ],
     keyZipCodes: [
-      { zip: "20901", neighborhood: "Silver Spring", investorScore: 71 },
-      { zip: "20910", neighborhood: "Downtown Silver Spring", investorScore: 69 },
-      { zip: "20902", neighborhood: "Wheaton", investorScore: 68 },
-      { zip: "20903", neighborhood: "Silver Spring", investorScore: 70 },
-      { zip: "20904", neighborhood: "Colesville", investorScore: 67 },
-      { zip: "20906", neighborhood: "Aspen Hill", investorScore: 66 },
+      { zip: "20901", neighborhood: "Silver Spring", investorScore: 71, averageRent: 2280 },
+      { zip: "20910", neighborhood: "Downtown Silver Spring", investorScore: 69, averageRent: 2400 },
+      { zip: "20902", neighborhood: "Wheaton", investorScore: 68, averageRent: 2180 },
+      { zip: "20903", neighborhood: "Silver Spring", investorScore: 70, averageRent: 2250 },
+      { zip: "20904", neighborhood: "Colesville", investorScore: 67, averageRent: 2350 },
+      { zip: "20906", neighborhood: "Aspen Hill", investorScore: 66, averageRent: 2220 },
     ],
     bullishSignals: [
       { text: "Red Line Metro access drives consistent rental demand." },
@@ -156,12 +152,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 2.8 },
     ],
     keyZipCodes: [
-      { zip: "20912", neighborhood: "Takoma Park", investorScore: 65 },
-      { zip: "20901", neighborhood: "Silver Spring", investorScore: 71 },
-      { zip: "20910", neighborhood: "Downtown Silver Spring", investorScore: 69 },
-      { zip: "20902", neighborhood: "Wheaton", investorScore: 68 },
-      { zip: "20903", neighborhood: "Silver Spring", investorScore: 70 },
-      { zip: "20783", neighborhood: "Hyattsville", investorScore: 74 },
+      { zip: "20912", neighborhood: "Takoma Park", investorScore: 65, averageRent: 2250 },
+      { zip: "20901", neighborhood: "Silver Spring", investorScore: 71, averageRent: 2280 },
+      { zip: "20910", neighborhood: "Downtown Silver Spring", investorScore: 69, averageRent: 2400 },
+      { zip: "20902", neighborhood: "Wheaton", investorScore: 68, averageRent: 2180 },
+      { zip: "20903", neighborhood: "Silver Spring", investorScore: 70, averageRent: 2250 },
+      { zip: "20783", neighborhood: "Hyattsville", investorScore: 74, averageRent: 1950 },
     ],
     bullishSignals: [
       { text: "Walkable, transit-oriented neighborhood with strong tenant retention." },
@@ -201,12 +197,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 2.5 },
     ],
     keyZipCodes: [
-      { zip: "20011", neighborhood: "Petworth / Brightwood", investorScore: 68 },
-      { zip: "20010", neighborhood: "Columbia Heights", investorScore: 66 },
-      { zip: "20012", neighborhood: "Takoma DC", investorScore: 64 },
-      { zip: "20009", neighborhood: "Adams Morgan", investorScore: 62 },
-      { zip: "20002", neighborhood: "Capitol Hill", investorScore: 60 },
-      { zip: "20001", neighborhood: "Mount Vernon Triangle", investorScore: 58 },
+      { zip: "20011", neighborhood: "Petworth / Brightwood", investorScore: 68, averageRent: 2580 },
+      { zip: "20010", neighborhood: "Columbia Heights", investorScore: 66, averageRent: 2650 },
+      { zip: "20012", neighborhood: "Takoma DC", investorScore: 64, averageRent: 2480 },
+      { zip: "20009", neighborhood: "Adams Morgan", investorScore: 62, averageRent: 2900 },
+      { zip: "20002", neighborhood: "Capitol Hill", investorScore: 60, averageRent: 3100 },
+      { zip: "20001", neighborhood: "Mount Vernon Triangle", investorScore: 58, averageRent: 3200 },
     ],
     bullishSignals: [
       { text: "Petworth and Brightwood seeing sustained gentrification-driven demand." },
@@ -246,12 +242,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 4.3 },
     ],
     keyZipCodes: [
-      { zip: "20715", neighborhood: "Bowie", investorScore: 76 },
-      { zip: "20716", neighborhood: "Bowie", investorScore: 75 },
-      { zip: "20720", neighborhood: "Bowie", investorScore: 74 },
-      { zip: "20721", neighborhood: "Bowie South", investorScore: 73 },
-      { zip: "20708", neighborhood: "Laurel", investorScore: 72 },
-      { zip: "20774", neighborhood: "Upper Marlboro", investorScore: 70 },
+      { zip: "20715", neighborhood: "Bowie", investorScore: 76, averageRent: 1800 },
+      { zip: "20716", neighborhood: "Bowie", investorScore: 75, averageRent: 1790 },
+      { zip: "20720", neighborhood: "Bowie", investorScore: 74, averageRent: 1780 },
+      { zip: "20721", neighborhood: "Bowie South", investorScore: 73, averageRent: 1750 },
+      { zip: "20708", neighborhood: "Laurel", investorScore: 72, averageRent: 1820 },
+      { zip: "20774", neighborhood: "Upper Marlboro", investorScore: 70, averageRent: 1680 },
     ],
     bullishSignals: [
       { text: "Family-oriented market with strong single-family rental demand." },
@@ -287,12 +283,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 3.9 },
     ],
     keyZipCodes: [
-      { zip: "21224", neighborhood: "Canton", investorScore: 76 },
-      { zip: "21230", neighborhood: "Federal Hill", investorScore: 75 },
-      { zip: "21231", neighborhood: "Fells Point", investorScore: 73 },
-      { zip: "21218", neighborhood: "Charles Village", investorScore: 74 },
-      { zip: "21201", neighborhood: "Downtown", investorScore: 68 },
-      { zip: "21213", neighborhood: "Belair-Edison", investorScore: 71 },
+      { zip: "21224", neighborhood: "Canton", investorScore: 76, averageRent: 1850 },
+      { zip: "21230", neighborhood: "Federal Hill", investorScore: 75, averageRent: 1900 },
+      { zip: "21231", neighborhood: "Fells Point", investorScore: 73, averageRent: 1950 },
+      { zip: "21218", neighborhood: "Charles Village", investorScore: 74, averageRent: 1750 },
+      { zip: "21201", neighborhood: "Downtown", investorScore: 68, averageRent: 1700 },
+      { zip: "21213", neighborhood: "Belair-Edison", investorScore: 71, averageRent: 1550 },
     ],
     bullishSignals: [
       { text: "Lower basis prices than DC metro with solid cash-flow on rowhouses and duplexes." },
@@ -337,12 +333,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 2.8 },
     ],
     keyZipCodes: [
-      { zip: "22201", neighborhood: "Arlington (Clarendon)", investorScore: 72 },
-      { zip: "22304", neighborhood: "Alexandria (West)", investorScore: 74 },
-      { zip: "22030", neighborhood: "Fairfax City", investorScore: 71 },
-      { zip: "22101", neighborhood: "McLean", investorScore: 65 },
-      { zip: "20171", neighborhood: "Herndon", investorScore: 73 },
-      { zip: "22046", neighborhood: "Falls Church", investorScore: 70 },
+      { zip: "22201", neighborhood: "Arlington (Clarendon)", investorScore: 72, averageRent: 2800 },
+      { zip: "22304", neighborhood: "Alexandria (West)", investorScore: 74, averageRent: 2400 },
+      { zip: "22030", neighborhood: "Fairfax City", investorScore: 71, averageRent: 2350 },
+      { zip: "22101", neighborhood: "McLean", investorScore: 65, averageRent: 3200 },
+      { zip: "20171", neighborhood: "Herndon", investorScore: 73, averageRent: 2450 },
+      { zip: "22046", neighborhood: "Falls Church", investorScore: 70, averageRent: 2650 },
     ],
     bullishSignals: [
       { text: "Federal contractor and tech employment base supports durable rental demand." },
@@ -379,12 +375,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 4.7 },
     ],
     keyZipCodes: [
-      { zip: "30309", neighborhood: "Midtown", investorScore: 78 },
-      { zip: "30318", neighborhood: "Westside / West Midtown", investorScore: 75 },
-      { zip: "30324", neighborhood: "Buckhead Adjacent", investorScore: 72 },
-      { zip: "30349", neighborhood: "College Park", investorScore: 80 },
-      { zip: "30033", neighborhood: "Decatur", investorScore: 74 },
-      { zip: "30303", neighborhood: "Downtown", investorScore: 70 },
+      { zip: "30309", neighborhood: "Midtown", investorScore: 78, averageRent: 2100 },
+      { zip: "30318", neighborhood: "Westside / West Midtown", investorScore: 75, averageRent: 2050 },
+      { zip: "30324", neighborhood: "Buckhead Adjacent", investorScore: 72, averageRent: 2200 },
+      { zip: "30349", neighborhood: "College Park", investorScore: 80, averageRent: 1650 },
+      { zip: "30033", neighborhood: "Decatur", investorScore: 74, averageRent: 1950 },
+      { zip: "30303", neighborhood: "Downtown", investorScore: 70, averageRent: 2000 },
     ],
     bullishSignals: [
       { text: "Strong population in-migration and corporate relocations fuel rent growth." },
@@ -425,12 +421,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 2.9 },
     ],
     keyZipCodes: [
-      { zip: "33130", neighborhood: "Brickell", investorScore: 71 },
-      { zip: "33132", neighborhood: "Edgewater", investorScore: 68 },
-      { zip: "33139", neighborhood: "Miami Beach", investorScore: 65 },
-      { zip: "33142", neighborhood: "Allapattah", investorScore: 74 },
-      { zip: "33125", neighborhood: "Little Havana", investorScore: 76 },
-      { zip: "33166", neighborhood: "Doral", investorScore: 73 },
+      { zip: "33130", neighborhood: "Brickell", investorScore: 71, averageRent: 3100 },
+      { zip: "33132", neighborhood: "Edgewater", investorScore: 68, averageRent: 2650 },
+      { zip: "33139", neighborhood: "Miami Beach", investorScore: 65, averageRent: 3400 },
+      { zip: "33142", neighborhood: "Allapattah", investorScore: 74, averageRent: 2200 },
+      { zip: "33125", neighborhood: "Little Havana", investorScore: 76, averageRent: 2350 },
+      { zip: "33166", neighborhood: "Doral", investorScore: 73, averageRent: 2450 },
     ],
     bullishSignals: [
       { text: "International buyer demand and no state income tax support investor appetite." },
@@ -471,12 +467,12 @@ export const LEGACY_MARKET_DATA: LegacyMarket[] = [
       { year: "2025", growth: 3.1 },
     ],
     keyZipCodes: [
-      { zip: "85004", neighborhood: "Downtown Phoenix", investorScore: 76 },
-      { zip: "85016", neighborhood: "Arcadia", investorScore: 72 },
-      { zip: "85018", neighborhood: "Biltmore", investorScore: 70 },
-      { zip: "85251", neighborhood: "Scottsdale", investorScore: 74 },
-      { zip: "85281", neighborhood: "Tempe", investorScore: 77 },
-      { zip: "85308", neighborhood: "Glendale", investorScore: 78 },
+      { zip: "85004", neighborhood: "Downtown Phoenix", investorScore: 76, averageRent: 1850 },
+      { zip: "85016", neighborhood: "Arcadia", investorScore: 72, averageRent: 2200 },
+      { zip: "85018", neighborhood: "Biltmore", investorScore: 70, averageRent: 2100 },
+      { zip: "85251", neighborhood: "Scottsdale", investorScore: 74, averageRent: 2150 },
+      { zip: "85281", neighborhood: "Tempe", investorScore: 77, averageRent: 1900 },
+      { zip: "85308", neighborhood: "Glendale", investorScore: 78, averageRent: 1650 },
     ],
     bullishSignals: [
       { text: "Strong net migration and job growth from California and tech relocations." },
