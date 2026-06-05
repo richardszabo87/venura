@@ -12,6 +12,11 @@ import {
   getAnalyzerDefaultsFromProfile,
   getInvestorProfile,
 } from "@/lib/investor-profile";
+import {
+  fetchUserProfile,
+  incrementPropertiesAnalyzed,
+} from "@/lib/profile-client";
+import { userProfileToAnalyzerDefaults } from "@/lib/user-profile";
 import { generateAnalysisPdf } from "@/lib/generate-analysis-pdf";
 import {
   formatCurrency,
@@ -47,20 +52,42 @@ export function PropertyAnalyzer() {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
-    const profile = getInvestorProfile();
-    if (!profile) return;
+    async function applyProfileDefaults() {
+      try {
+        const serverProfile = await fetchUserProfile();
+        if (serverProfile?.onboarding_completed) {
+          const fromServer = userProfileToAnalyzerDefaults(serverProfile);
+          if (fromServer.purchasePrice != null) {
+            setPurchasePrice(fromServer.purchasePrice);
+          }
+          if (fromServer.monthlyRent != null) setMonthlyRent(fromServer.monthlyRent);
+          if (fromServer.hoaFee != null) setHoaFee(fromServer.hoaFee);
+          if (fromServer.propertyTaxes != null) {
+            setPropertyTaxes(fromServer.propertyTaxes);
+          }
+          return;
+        }
+      } catch {
+        // Fall back to local quiz profile when not signed in or API unavailable.
+      }
 
-    const defaults = getAnalyzerDefaultsFromProfile(profile);
-    if (defaults.purchasePrice != null) setPurchasePrice(defaults.purchasePrice);
-    if (defaults.monthlyRent != null) setMonthlyRent(defaults.monthlyRent);
-    if (defaults.hoaFee != null) setHoaFee(defaults.hoaFee);
-    if (defaults.propertyTaxes != null) setPropertyTaxes(defaults.propertyTaxes);
-    if (defaults.downPaymentPercent != null) {
-      setDownPaymentPercent(defaults.downPaymentPercent);
+      const profile = getInvestorProfile();
+      if (!profile) return;
+
+      const defaults = getAnalyzerDefaultsFromProfile(profile);
+      if (defaults.purchasePrice != null) setPurchasePrice(defaults.purchasePrice);
+      if (defaults.monthlyRent != null) setMonthlyRent(defaults.monthlyRent);
+      if (defaults.hoaFee != null) setHoaFee(defaults.hoaFee);
+      if (defaults.propertyTaxes != null) setPropertyTaxes(defaults.propertyTaxes);
+      if (defaults.downPaymentPercent != null) {
+        setDownPaymentPercent(defaults.downPaymentPercent);
+      }
+      if (defaults.interestRate != null) setInterestRate(defaults.interestRate);
+      if (defaults.insurance != null) setInsurance(defaults.insurance);
+      if (defaults.loanTerm != null) setLoanTerm(defaults.loanTerm);
     }
-    if (defaults.interestRate != null) setInterestRate(defaults.interestRate);
-    if (defaults.insurance != null) setInsurance(defaults.insurance);
-    if (defaults.loanTerm != null) setLoanTerm(defaults.loanTerm);
+
+    void applyProfileDefaults();
   }, []);
 
   const currentInputs = useMemo(
@@ -104,6 +131,9 @@ export function PropertyAnalyzer() {
     setHasAnalyzed(true);
     setSaveStatus("idle");
     setSaveError(null);
+    void incrementPropertiesAnalyzed().catch((error) => {
+      console.error("Failed to increment properties_analyzed:", error);
+    });
   }
 
   async function handleSaveDeal() {

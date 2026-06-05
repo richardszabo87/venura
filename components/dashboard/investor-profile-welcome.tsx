@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import {
   getAnalyzerDefaultsFromProfile,
@@ -8,38 +9,83 @@ import {
   getInvestorProfileSummary,
   type InvestorProfile,
 } from "@/lib/investor-profile";
+import { fetchUserProfile } from "@/lib/profile-client";
 import { formatCurrency } from "@/lib/format";
+import type { UserProfileRow } from "@/lib/user-profile";
+import { userProfileToAnalyzerDefaults } from "@/lib/user-profile";
 
 export function InvestorProfileWelcome() {
-  const [profile, setProfile] = useState<InvestorProfile | null>(null);
+  const { isSignedIn } = useAuth();
+  const [localProfile, setLocalProfile] = useState<InvestorProfile | null>(null);
+  const [serverProfile, setServerProfile] = useState<UserProfileRow | null>(null);
 
   useEffect(() => {
-    setProfile(getInvestorProfile());
+    setLocalProfile(getInvestorProfile());
   }, []);
 
-  if (!profile) return null;
+  useEffect(() => {
+    if (!isSignedIn) return;
 
-  const summary = getInvestorProfileSummary(profile);
-  const defaults = getAnalyzerDefaultsFromProfile(profile);
+    fetchUserProfile()
+      .then(setServerProfile)
+      .catch((error) => {
+        console.error("Failed to load user profile:", error);
+      });
+  }, [isSignedIn]);
+
+  const investorProfile = localProfile;
+  const headline =
+    serverProfile?.investor_profile_name ??
+    (investorProfile ? getInvestorProfileSummary(investorProfile).headline : null);
+  const description = investorProfile
+    ? getInvestorProfileSummary(investorProfile).description
+    : serverProfile?.onboarding_completed
+      ? "Your saved investor preferences are ready in Venura."
+      : null;
+
+  if (!headline) return null;
+
+  const defaults = serverProfile
+    ? userProfileToAnalyzerDefaults(serverProfile)
+    : investorProfile
+      ? getAnalyzerDefaultsFromProfile(investorProfile)
+      : {};
+
+  const targetCashFlow =
+    serverProfile?.min_cash_flow != null && serverProfile.min_cash_flow > 0
+      ? `$${serverProfile.min_cash_flow}+/mo cash flow`
+      : investorProfile
+        ? getInvestorProfileSummary(investorProfile).targetCashFlow
+        : "Break-even cash flow";
+
+  const topMarket = investorProfile?.marketRecommendations[0]?.name;
+  const journeyLabel = serverProfile?.journey_stage
+    ? serverProfile.journey_stage.replace(/_/g, " ")
+    : null;
 
   return (
     <div className="mb-8 rounded-2xl border border-[#E8D5B7]/30 bg-[#E8D5B7]/10 px-6 py-5">
       <p className="text-xs font-semibold uppercase tracking-wider text-[#E8D5B7]">
         Your investor profile
       </p>
-      <p className="mt-2 font-semibold text-white">{summary.headline}</p>
-      <p className="mt-1 text-sm text-white/80">{summary.description}</p>
+      <p className="mt-2 font-semibold text-white">{headline}</p>
+      {description && (
+        <p className="mt-1 text-sm text-white/80">{description}</p>
+      )}
 
       <div className="mt-4 flex flex-wrap gap-2">
         {defaults.purchasePrice != null && defaults.purchasePrice > 0 && (
           <ProfileChip label={`Budget ~${formatCurrency(defaults.purchasePrice)}`} />
         )}
-        {defaults.downPaymentPercent != null && (
-          <ProfileChip label={`${defaults.downPaymentPercent}% down`} />
+        <ProfileChip label={`Target: ${targetCashFlow}`} />
+        {topMarket && <ProfileChip label={`Top market: ${topMarket}`} />}
+        {journeyLabel && (
+          <ProfileChip label={`Stage: ${journeyLabel}`} />
         )}
-        <ProfileChip label={`Target: ${summary.targetCashFlow}`} />
-        {profile.marketRecommendations[0] && (
-          <ProfileChip label={`Top market: ${profile.marketRecommendations[0].name}`} />
+        {serverProfile && serverProfile.properties_analyzed > 0 && (
+          <ProfileChip
+            label={`${serverProfile.properties_analyzed} properties analyzed`}
+          />
         )}
       </div>
 

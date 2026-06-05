@@ -66,20 +66,26 @@ if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
 const client = createClient(url, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
-const { error, count } = await client
-  .from("saved_deals")
-  .select("id", { count: "exact", head: true });
+const tables = ["saved_deals", "user_profiles"];
 
-if (error) {
-  console.error("saved_deals query failed:", error.message);
-  if (error.code === "42P01") {
-    console.error(
-      "Table missing. Run supabase/migrations/001_saved_deals.sql in the Supabase SQL editor.",
-    );
+for (const table of tables) {
+  const { error, count } = await client
+    .from(table)
+    .select("id", { count: "exact", head: true });
+
+  if (error) {
+    console.error(`${table} query failed:`, error.message);
+    if (error.code === "42P01") {
+      console.error(
+        `Table missing. Run supabase/migrations for ${table} in the Supabase SQL editor.`,
+      );
+    }
+    process.exit(1);
   }
-  process.exit(1);
+
+  console.log(
+    `OK: ${table} exists (row count: ${count ?? 0})`,
+  );
 }
 
-console.log(
-  `OK: service role connected to ${parsed.host}, saved_deals exists (row count: ${count ?? 0})`,
-);
+console.log(`OK: service role connected to ${parsed.host}`);

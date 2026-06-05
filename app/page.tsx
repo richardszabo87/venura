@@ -13,7 +13,7 @@ export default async function Home() {
   const { userId } = await auth();
 
   if (userId) {
-    redirect("/analyzer");
+    redirect("/dashboard");
   }
 
   return <LandingPage />;

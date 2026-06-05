@@ -1,4 +1,5 @@
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { ProfileSync } from "@/components/profile/profile-sync";
 
 export default function DashboardLayout({
   children,
@@ -7,6 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-full bg-[#0d2818] font-sans text-white">
+      <ProfileSync />
       <Sidebar />
       <main className="min-h-full pl-64">
         <div className="mx-auto max-w-6xl px-6 py-10 lg:px-8 lg:py-12">
