@@ -25,11 +25,18 @@ import {
   formatCurrencyDetailed,
   formatPercent,
 } from "@/lib/format";
+import { CrimeRate } from "@/components/analyzer/crime-rate";
 import { InputField, MetricCard } from "@/components/analyzer/input-field";
+import { SchoolDistrict } from "@/components/analyzer/school-district";
 import {
   NegotiationCalculator,
   VerdictBanner,
 } from "@/components/analyzer/verdict-banner";
+import {
+  extractZipCode,
+  type CrimeRateData,
+  type SchoolDistrictData,
+} from "@/lib/location-intelligence";
 
 function computeDealScore(analysis: ReturnType<typeof analyzeProperty>): number {
   let score = 50;
@@ -72,6 +79,9 @@ export function PropertyAnalyzer() {
     "idle" | "saving" | "saved" | "error"
   >("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [schoolData, setSchoolData] = useState<SchoolDistrictData | null>(null);
+  const [crimeData, setCrimeData] = useState<CrimeRateData | null>(null);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   useEffect(() => {
     async function applyProfileDefaults() {
@@ -190,6 +200,54 @@ export function PropertyAnalyzer() {
       analyzedInputs ? calculateNegotiationPrices(analyzedInputs) : null,
     [analyzedInputs],
   );
+
+  const analyzedZipCode = useMemo(
+    () => (propertyAddress.trim() ? extractZipCode(propertyAddress) : null),
+    [propertyAddress],
+  );
+
+  useEffect(() => {
+    if (!hasAnalyzed || !analyzedZipCode) {
+      setSchoolData(null);
+      setCrimeData(null);
+      setLocationLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadLocationIntelligence() {
+      setLocationLoading(true);
+      try {
+        const res = await fetch(
+          `/api/location-intelligence?zip=${encodeURIComponent(analyzedZipCode)}`,
+        );
+        const data = await res.json().catch(() => ({}));
+        if (cancelled) return;
+
+        if (res.ok) {
+          setSchoolData(data.school ?? null);
+          setCrimeData(data.crime ?? null);
+        } else {
+          setSchoolData(null);
+          setCrimeData(null);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Failed to load location intelligence:", error);
+          setSchoolData(null);
+          setCrimeData(null);
+        }
+      } finally {
+        if (!cancelled) setLocationLoading(false);
+      }
+    }
+
+    void loadLocationIntelligence();
+    return () => {
+      cancelled = true;
+    };
+  }, [hasAnalyzed, analyzedZipCode]);
 
   async function handleAnalyze() {
     const analysisResult = analyzeProperty(currentInputs);
@@ -419,6 +477,17 @@ export function PropertyAnalyzer() {
           ) : (
             <>
               <VerdictBanner analysis={analysis} />
+
+              <div className="grid gap-6 sm:grid-cols-2">
+                <SchoolDistrict
+                  data={schoolData}
+                  loading={locationLoading && !!analyzedZipCode}
+                />
+                <CrimeRate
+                  data={crimeData}
+                  loading={locationLoading && !!analyzedZipCode}
+                />
+              </div>
 
               <section className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
                 <div className="flex flex-wrap items-center justify-between gap-4">

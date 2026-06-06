@@ -2,6 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { saveAnalysisHistory } from "@/lib/analysis-history-server";
 import type { AnalysisResult } from "@/lib/calculator";
+import { extractZipCode } from "@/lib/location-intelligence";
+import { ensureFreshLocationIntelligence } from "@/lib/location-intelligence-server";
 import { incrementAnalysisUsage } from "@/lib/user-profile-server";
 
 type AnalyzeBody = {
@@ -39,6 +41,15 @@ export async function POST(request: Request) {
         monthlyRent: body.monthlyRent,
         analysis: body.analysis,
       });
+
+      const zipCode = body.address ? extractZipCode(body.address) : null;
+      if (zipCode) {
+        try {
+          await ensureFreshLocationIntelligence(zipCode);
+        } catch (cacheError) {
+          console.error("Location intelligence cache refresh failed:", cacheError);
+        }
+      }
     }
 
     return NextResponse.json({
