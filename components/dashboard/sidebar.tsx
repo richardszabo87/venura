@@ -109,7 +109,7 @@ export function Sidebar() {
           </button>
         </SignOutButton>
         <p className="mt-4 text-xs text-white/40">
-          For illustrative purposes only
+          Venura · Real estate intelligence
         </p>
       </div>
     </aside>

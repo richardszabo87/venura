@@ -173,6 +173,13 @@ export function LandingHeader() {
               >
                 Log in
               </Link>
+              <Link
+                href="/sign-up"
+                className="mt-1 block rounded-lg bg-[#E8D5B7] px-3 py-2.5 text-center text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
+                onClick={closeAll}
+              >
+                Get started
+              </Link>
             </div>
           </nav>
         </div>

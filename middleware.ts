@@ -47,45 +47,54 @@ const isCheckoutRoute = createRouteMatcher(["/api/checkout(.*)"]);
 
 const isStripeWebhook = createRouteMatcher(["/api/webhooks/stripe(.*)"]);
 
-export default clerkMiddleware(async (auth, req) => {
-  if (isStripeWebhook(req)) return;
+const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
-  if (isProtectedRoute(req) || isCheckoutRoute(req)) {
-    await auth.protect();
-  }
+export default clerkMiddleware(
+  {
+    signInUrl: "/sign-in",
+    signUpUrl: "/sign-up",
+    ...(appUrl ? { authorizedParties: [appUrl.replace(/\/$/, "")] } : {}),
+  },
+  async (auth, req) => {
+    if (isStripeWebhook(req)) return;
 
-  const { userId } = await auth();
-  if (!userId) return;
+    if (isProtectedRoute(req) || isCheckoutRoute(req)) {
+      await auth.protect();
+    }
 
-  if (isPublicRoute(req) || isApiRoute(req)) return;
+    const { userId } = await auth();
+    if (!userId) return;
 
-  let onboardingCompleted = false;
-  try {
-    const profile = await fetchProfileByClerkId(userId);
-    onboardingCompleted = profile?.onboarding_completed ?? false;
-  } catch (error) {
-    console.error("Middleware profile check failed:", error);
-    if (!isOnboardingRoute(req)) {
+    if (isPublicRoute(req) || isApiRoute(req)) return;
+
+    let onboardingCompleted = false;
+    try {
+      const profile = await fetchProfileByClerkId(userId);
+      onboardingCompleted = profile?.onboarding_completed ?? false;
+    } catch (error) {
+      console.error("Middleware profile check failed:", error);
+      if (!isOnboardingRoute(req)) {
+        return NextResponse.redirect(new URL("/onboarding", req.url));
+      }
+      return;
+    }
+
+    if (isOnboardingRoute(req)) {
+      if (onboardingCompleted) {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+      return;
+    }
+
+    if (!onboardingCompleted) {
       return NextResponse.redirect(new URL("/onboarding", req.url));
     }
-    return;
-  }
 
-  if (isOnboardingRoute(req)) {
-    if (onboardingCompleted) {
+    if (req.nextUrl.pathname === "/") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
-    return;
-  }
-
-  if (!onboardingCompleted) {
-    return NextResponse.redirect(new URL("/onboarding", req.url));
-  }
-
-  if (req.nextUrl.pathname === "/") {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
-});
+  },
+);
 
 export const config = {
   matcher: [

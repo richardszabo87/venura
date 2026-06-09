@@ -160,7 +160,7 @@ const PRICING_TIERS: PricingTier[] = [
     features: ["Go / No-Go verdict", "Cash flow & cap rate", "50% rule check"],
     excluded: ["Saved deals", "Negotiation calculator", "10-year projections"],
     cta: "Start free",
-    href: "/analyzer",
+    href: "/sign-up",
     highlighted: false,
   },
   {
@@ -219,7 +219,7 @@ export function LandingPage() {
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
-                href="/analyzer"
+                href="/sign-up"
                 className="rounded-xl bg-[#E8D5B7] px-6 py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE]"
               >
                 Analyze your first deal free
@@ -519,7 +519,7 @@ export function LandingPage() {
       <CtaBanner />
 
       <footer className="border-t border-white/10 px-6 py-8 text-center text-xs text-white/40">
-        Venura · For illustrative purposes only · Not financial advice
+        Venura · Real estate intelligence
       </footer>
     </div>
   );
