@@ -1,95 +1,35 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { fetchProfileByClerkId } from "@/lib/user-profile-server";
-
-const isProtectedRoute = createRouteMatcher([
-  "/api/profile(.*)",
-  "/api/deals(.*)",
-  "/api/venura-ai(.*)",
-  "/api/usage(.*)",
-  "/api/analysis-history(.*)",
-  "/api/listings(.*)",
-  "/api/rent-estimate(.*)",
-  "/analyzer(.*)",
-  "/saved-deals(.*)",
-  "/compare(.*)",
-  "/projections(.*)",
-  "/portfolio(.*)",
-  "/deal-alerts(.*)",
-  "/listings(.*)",
-  "/venura-ai(.*)",
-  "/pricing(.*)",
-  "/settings(.*)",
-  "/dashboard(.*)",
-  "/onboarding(.*)",
-]);
 
 const isPublicRoute = createRouteMatcher([
+  "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/quiz(.*)",
   "/hoa(.*)",
   "/rent(.*)",
+  "/markets(.*)",
   "/cost(.*)",
   "/rvb(.*)",
   "/guide(.*)",
-  "/quiz(.*)",
-  "/markets(.*)",
-  "/widget(.*)",
   "/mortgage(.*)",
+  "/widget(.*)",
+  "/schools(.*)",
+  "/api/public(.*)",
+  "/api/webhooks/stripe(.*)",
 ]);
-
-const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
-
-const isApiRoute = createRouteMatcher([
-  "/api(.*)",
-  "/trpc(.*)",
-  "/__clerk(.*)",
-]);
-
-const isCheckoutRoute = createRouteMatcher(["/api/checkout(.*)"]);
-
-const isStripeWebhook = createRouteMatcher(["/api/webhooks/stripe(.*)"]);
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 export default clerkMiddleware(
   async (auth, req) => {
-    if (isStripeWebhook(req)) return;
-
-    if (isProtectedRoute(req) || isCheckoutRoute(req)) {
-      await auth.protect();
-    }
-
-    const { userId } = await auth();
-    if (!userId) return;
-
-    if (isPublicRoute(req) || isApiRoute(req)) return;
-
-    let onboardingCompleted = false;
     try {
-      const profile = await fetchProfileByClerkId(userId);
-      onboardingCompleted = profile?.onboarding_completed ?? false;
+      if (!isPublicRoute(req)) {
+        await auth.protect();
+      }
     } catch (error) {
-      console.error("Middleware profile check failed:", error);
-      if (!isOnboardingRoute(req)) {
-        return NextResponse.redirect(new URL("/onboarding", req.url));
-      }
-      return;
-    }
-
-    if (isOnboardingRoute(req)) {
-      if (onboardingCompleted) {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
-      return;
-    }
-
-    if (!onboardingCompleted) {
-      return NextResponse.redirect(new URL("/onboarding", req.url));
-    }
-
-    if (req.nextUrl.pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+      console.error("Clerk middleware error:", error);
+      return NextResponse.next();
     }
   },
   {
@@ -103,6 +43,5 @@ export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
-    "/__clerk/(.*)",
   ],
 };
