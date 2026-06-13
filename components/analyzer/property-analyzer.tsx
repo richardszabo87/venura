@@ -221,7 +221,7 @@ export function PropertyAnalyzer() {
       try {
         if (!analyzedZipCode) return;
         const res = await fetch(
-          `/api/location-intelligence?zip=${encodeURIComponent(analyzedZipCode)}`,
+          `/api/location-intelligence?zip=${encodeURIComponent(analyzedZipCode ?? "")}`,
         );
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
