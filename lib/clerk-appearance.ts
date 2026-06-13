@@ -1,6 +1,4 @@
-import type { Appearance } from "@clerk/types";
-
-export const clerkAppearance: Appearance = {
+export const clerkAppearance = {
   variables: {
     colorPrimary: "#1B4332",
     colorBackground: "#1B4332",

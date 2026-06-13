@@ -50,11 +50,6 @@ const isStripeWebhook = createRouteMatcher(["/api/webhooks/stripe(.*)"]);
 const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 export default clerkMiddleware(
-  {
-    signInUrl: "/sign-in",
-    signUpUrl: "/sign-up",
-    ...(appUrl ? { authorizedParties: [appUrl.replace(/\/$/, "")] } : {}),
-  },
   async (auth, req) => {
     if (isStripeWebhook(req)) return;
 
@@ -93,6 +88,11 @@ export default clerkMiddleware(
     if (req.nextUrl.pathname === "/") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
+  },
+  {
+    signInUrl: "/sign-in",
+    signUpUrl: "/sign-up",
+    ...(appUrl ? { authorizedParties: [appUrl.replace(/\/$/, "")] } : {}),
   },
 );
 

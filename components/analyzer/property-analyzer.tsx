@@ -214,13 +214,14 @@ export function PropertyAnalyzer() {
       return;
     }
 
+    const zipCode = analyzedZipCode;
     let cancelled = false;
 
     async function loadLocationIntelligence() {
       setLocationLoading(true);
       try {
         const res = await fetch(
-          `/api/location-intelligence?zip=${encodeURIComponent(analyzedZipCode)}`,
+          `/api/location-intelligence?zip=${encodeURIComponent(zipCode)}`,
         );
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
