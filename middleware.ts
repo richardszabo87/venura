@@ -19,25 +19,16 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhooks/stripe(.*)",
 ]);
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-
-export default clerkMiddleware(
-  async (auth, req) => {
-    try {
-      if (!isPublicRoute(req)) {
-        await auth.protect();
-      }
-    } catch (error) {
-      console.error("Clerk middleware error:", error);
-      return NextResponse.next();
+export default clerkMiddleware(async (auth, req) => {
+  try {
+    if (!isPublicRoute(req)) {
+      await auth.protect();
     }
-  },
-  {
-    signInUrl: "/sign-in",
-    signUpUrl: "/sign-up",
-    ...(appUrl ? { authorizedParties: [appUrl.replace(/\/$/, "")] } : {}),
-  },
-);
+  } catch (error) {
+    console.error("Clerk middleware error:", error);
+    return NextResponse.next();
+  }
+});
 
 export const config = {
   matcher: [
