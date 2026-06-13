@@ -10,6 +10,7 @@ import {
   DEFAULTS,
   type PropertyInputs,
 } from "@/lib/calculator";
+import { computeDealScore } from "@/lib/deal-score";
 import { saveLastAnalysis } from "@/lib/analyzer-session";
 import {
   getAnalyzerDefaultsFromProfile,
@@ -37,23 +38,6 @@ import {
   type CrimeRateData,
   type SchoolDistrictData,
 } from "@/lib/location-intelligence";
-
-function computeDealScore(analysis: ReturnType<typeof analyzeProperty>): number {
-  let score = 50;
-  if (analysis.monthlyCashFlow >= 200) score += 20;
-  else if (analysis.monthlyCashFlow >= 100) score += 12;
-  else if (analysis.monthlyCashFlow >= 0) score += 4;
-  else score -= 15;
-
-  if (analysis.capRate >= 0.07) score += 15;
-  else if (analysis.capRate >= 0.05) score += 8;
-
-  if (analysis.cashOnCashReturn >= 0.1) score += 10;
-  else if (analysis.cashOnCashReturn >= 0.06) score += 5;
-
-  if (analysis.fiftyPercentRulePass) score += 5;
-  return Math.max(0, Math.min(100, Math.round(score)));
-}
 
 export function PropertyAnalyzer() {
   const searchParams = useSearchParams();
