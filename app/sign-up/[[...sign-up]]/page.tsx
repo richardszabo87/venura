@@ -1,9 +1,9 @@
 'use client'
-import { useSignUp } from '@clerk/nextjs'
+import { useSignUp } from '@clerk/nextjs/legacy'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 export default function SignUpPage() {
-  const { signUp, isLoaded } = useSignUp()
+  const { signUp, isLoaded, setActive } = useSignUp()
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,6 +25,7 @@ export default function SignUpPage() {
         password,
       })
       if (result.status === 'complete') {
+        await setActive({ session: result.createdSessionId })
         router.push('/onboarding')
       }
     } catch (err: any) {
