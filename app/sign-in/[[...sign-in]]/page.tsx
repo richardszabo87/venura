@@ -29,6 +29,18 @@ export default function SignInPage() {
     }
   }
   return (
+    <div>
+      <style>{`
+        .cl-socialButtonsBlockButton,
+        .cl-socialButtonsRoot,
+        .cl-dividerRow,
+        .cl-dividerText,
+        .cl-dividerLine,
+        [data-provider="google"],
+        .cl-internal-b3fm6y {
+          display: none !important;
+        }
+      `}</style>
     <div style={{minHeight:'100vh',background:'#0D2B20',display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}}>
       <div style={{background:'#1B4332',borderRadius:'16px',padding:'32px',width:'100%',maxWidth:'400px'}}>
         <div style={{textAlign:'center',marginBottom:'28px'}}>
@@ -53,6 +65,7 @@ export default function SignInPage() {
           Don't have an account? <a href="/sign-up" style={{color:'#E8D5B7'}}>Sign up</a>
         </div>
       </div>
+    </div>
     </div>
   )
 }
