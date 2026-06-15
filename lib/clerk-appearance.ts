@@ -19,9 +19,10 @@ export const clerkAppearance = {
     identityPreviewEditButton: "text-[#E8D5B7]",
     formFieldInput: "border-white/10 bg-white/5 text-white",
     dividerLine: "bg-white/10",
-    dividerText: "text-white/40",
-    socialButtonsBlockButton:
-      "border-white/10 bg-white/5 text-white hover:bg-white/10",
+    socialButtonsRoot: "hidden",
+    socialButtonsBlockButton: "hidden",
+    dividerRow: "hidden",
+    dividerText: "hidden",
     navbar: "hidden",
   },
 };
