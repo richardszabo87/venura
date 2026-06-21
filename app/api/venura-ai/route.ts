@@ -15,7 +15,7 @@ const SYSTEM_PROMPT = [
   buildCityIntelligencePrompt(),
 ].join("\n\n");
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-4-6";
 
 export async function GET() {
   const { userId } = await auth();
@@ -35,6 +35,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  console.log("API Key exists:", !!process.env.ANTHROPIC_API_KEY);
+  console.log(
+    "API Key prefix:",
+    process.env.ANTHROPIC_API_KEY?.slice(0, 10),
+  );
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -61,7 +67,13 @@ export async function POST(request: Request) {
       return NextResponse.json(usageResult.error, { status: 403 });
     }
 
-    const history = await fetchRecentConversations(userId);
+    let history: Awaited<ReturnType<typeof fetchRecentConversations>> = [];
+    try {
+      history = await fetchRecentConversations(userId);
+    } catch (historyError) {
+      console.error("VenuraAI history fetch error:", historyError);
+    }
+
     const claudeMessages = [
       ...history.map((row) => ({
         role: row.role as "user" | "assistant",
@@ -70,43 +82,91 @@ export async function POST(request: Request) {
       { role: "user" as const, content: message },
     ];
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 1024,
-        system: SYSTEM_PROMPT,
-        messages: claudeMessages,
-      }),
-    });
+    let text: string;
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          max_tokens: 1000,
+          system: SYSTEM_PROMPT,
+          messages: claudeMessages,
+        }),
+      });
 
-    if (!response.ok) {
-      const errBody = await response.text();
-      console.error("Anthropic API error:", response.status, errBody);
-      return NextResponse.json(
-        { error: "Failed to get AI response" },
-        { status: response.status >= 500 ? 502 : 400 },
+      if (!response.ok) {
+        let errBody: unknown;
+        try {
+          errBody = await response.json();
+        } catch {
+          errBody = await response.text();
+        }
+        const errMessage =
+          typeof errBody === "object" &&
+          errBody !== null &&
+          "error" in errBody &&
+          typeof (errBody as { error?: { message?: string } }).error?.message ===
+            "string"
+            ? (errBody as { error: { message: string } }).error.message
+            : typeof errBody === "string"
+              ? errBody
+              : "Anthropic API request failed";
+
+        console.error(
+          "Anthropic API error:",
+          errMessage,
+          response.status,
+          errBody,
+        );
+        return NextResponse.json(
+          {
+            error: errMessage,
+            status: response.status,
+            details: errBody,
+          },
+          { status: response.status >= 500 ? 502 : 400 },
+        );
+      }
+
+      const data = (await response.json()) as {
+        content?: { type: string; text?: string }[];
+      };
+
+      text =
+        data.content
+          ?.filter((block) => block.type === "text")
+          .map((block) => block.text ?? "")
+          .join("\n")
+          .trim() ?? "";
+
+      if (!text) {
+        return NextResponse.json({ error: "Empty AI response" }, { status: 502 });
+      }
+    } catch (error: unknown) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        error?: unknown;
+      };
+      console.error(
+        "Anthropic API error:",
+        err?.message,
+        err?.status,
+        err?.error,
       );
-    }
-
-    const data = (await response.json()) as {
-      content?: { type: string; text?: string }[];
-    };
-
-    const text =
-      data.content
-        ?.filter((block) => block.type === "text")
-        .map((block) => block.text ?? "")
-        .join("\n")
-        .trim() ?? "";
-
-    if (!text) {
-      return NextResponse.json({ error: "Empty AI response" }, { status: 502 });
+      return NextResponse.json(
+        {
+          error: err?.message || "Unknown error",
+          status: err?.status,
+          details: err?.error,
+        },
+        { status: 500 },
+      );
     }
 
     await saveConversationMessages(userId, [
