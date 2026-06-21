@@ -11,6 +11,57 @@ import {
   type RiskBand,
 } from "@/lib/hoa-danger-score";
 
+type HoaFormState = {
+  buildingName: string;
+  yearBuilt: string;
+  currentHoaFee: string;
+  hoaFee1YearAgo: string;
+  hoaFee2YearsAgo: string;
+  numberOfUnits: string;
+  propertyType: PropertyType;
+  reserveFundBalance: string;
+  pendingSpecialAssessments: string;
+  litigationStatus: LitigationStatus;
+  expectedMonthlyRent: string;
+};
+
+function defaultsToForm(defaults: HoaScoreInput): HoaFormState {
+  return {
+    buildingName: defaults.buildingName,
+    yearBuilt: String(defaults.yearBuilt),
+    currentHoaFee: defaults.currentHoaFee === 0 ? "" : String(defaults.currentHoaFee),
+    hoaFee1YearAgo: defaults.hoaFee1YearAgo === 0 ? "" : String(defaults.hoaFee1YearAgo),
+    hoaFee2YearsAgo: defaults.hoaFee2YearsAgo === 0 ? "" : String(defaults.hoaFee2YearsAgo),
+    numberOfUnits: defaults.numberOfUnits === 0 ? "" : String(defaults.numberOfUnits),
+    propertyType: defaults.propertyType,
+    reserveFundBalance:
+      defaults.reserveFundBalance === 0 ? "" : String(defaults.reserveFundBalance),
+    pendingSpecialAssessments:
+      defaults.pendingSpecialAssessments === 0
+        ? ""
+        : String(defaults.pendingSpecialAssessments),
+    litigationStatus: defaults.litigationStatus,
+    expectedMonthlyRent:
+      defaults.expectedMonthlyRent === 0 ? "" : String(defaults.expectedMonthlyRent),
+  };
+}
+
+function parseForm(form: HoaFormState): HoaScoreInput {
+  return {
+    buildingName: form.buildingName,
+    yearBuilt: parseFloat(form.yearBuilt) || 0,
+    currentHoaFee: parseFloat(form.currentHoaFee) || 0,
+    hoaFee1YearAgo: parseFloat(form.hoaFee1YearAgo) || 0,
+    hoaFee2YearsAgo: parseFloat(form.hoaFee2YearsAgo) || 0,
+    numberOfUnits: parseFloat(form.numberOfUnits) || 0,
+    propertyType: form.propertyType,
+    reserveFundBalance: parseFloat(form.reserveFundBalance) || 0,
+    pendingSpecialAssessments: parseFloat(form.pendingSpecialAssessments) || 0,
+    litigationStatus: form.litigationStatus,
+    expectedMonthlyRent: parseFloat(form.expectedMonthlyRent) || 0,
+  };
+}
+
 const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
   { value: "condo", label: "Condo" },
   { value: "townhouse", label: "Townhouse" },
@@ -50,25 +101,20 @@ const BAND_STYLES: Record<
 };
 
 export function HoaDangerScoreTool() {
-  const [form, setForm] = useState<HoaScoreInput>(DEFAULT_HOA_INPUT);
+  const [form, setForm] = useState<HoaFormState>(defaultsToForm(DEFAULT_HOA_INPUT));
   const [submitted, setSubmitted] = useState(false);
 
   const result = useMemo(() => {
     if (!submitted) return null;
-    return calculateHoaDangerScore(form);
+    return calculateHoaDangerScore(parseForm(form));
   }, [form, submitted]);
 
-  function updateField<K extends keyof HoaScoreInput>(
+  function updateField<K extends keyof HoaFormState>(
     field: K,
-    value: HoaScoreInput[K],
+    value: HoaFormState[K],
   ) {
     setForm((prev) => ({ ...prev, [field]: value }));
     setSubmitted(false);
-  }
-
-  function updateNumber(field: keyof HoaScoreInput, raw: string) {
-    const value = raw === "" ? 0 : Number(raw);
-    updateField(field, Number.isFinite(value) ? value : 0);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -121,6 +167,8 @@ export function HoaDangerScoreTool() {
                 type="text"
                 value={form.buildingName}
                 onChange={(e) => updateField("buildingName", e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={1}
                 placeholder="e.g. Riverside Commons"
                 className={inputClass}
               />
@@ -128,21 +176,24 @@ export function HoaDangerScoreTool() {
 
             <Field label="Year built">
               <input
-                type="number"
-                min={1900}
-                max={new Date().getFullYear()}
-                value={form.yearBuilt || ""}
-                onChange={(e) => updateNumber("yearBuilt", e.target.value)}
+                type="text"
+                inputMode="numeric"
+                value={form.yearBuilt}
+                onChange={(e) => updateField("yearBuilt", e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={2}
                 className={inputClass}
               />
             </Field>
 
             <Field label="Number of units">
               <input
-                type="number"
-                min={1}
-                value={form.numberOfUnits || ""}
-                onChange={(e) => updateNumber("numberOfUnits", e.target.value)}
+                type="text"
+                inputMode="numeric"
+                value={form.numberOfUnits}
+                onChange={(e) => updateField("numberOfUnits", e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={3}
                 className={inputClass}
               />
             </Field>
@@ -153,6 +204,7 @@ export function HoaDangerScoreTool() {
                 onChange={(e) =>
                   updateField("propertyType", e.target.value as PropertyType)
                 }
+                tabIndex={4}
                 className={inputClass}
               >
                 {PROPERTY_TYPES.map((option) => (
@@ -172,6 +224,7 @@ export function HoaDangerScoreTool() {
                     e.target.value as LitigationStatus,
                   )
                 }
+                tabIndex={5}
                 className={inputClass}
               >
                 {LITIGATION_OPTIONS.map((option) => (
@@ -184,66 +237,78 @@ export function HoaDangerScoreTool() {
 
             <Field label="Current HOA fee" prefix="$" suffix="/mo">
               <input
-                type="number"
-                min={0}
-                value={form.currentHoaFee || ""}
-                onChange={(e) => updateNumber("currentHoaFee", e.target.value)}
+                type="text"
+                inputMode="decimal"
+                value={form.currentHoaFee}
+                onChange={(e) => updateField("currentHoaFee", e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={6}
                 className={inputClass}
               />
             </Field>
 
             <Field label="HOA fee 1 year ago" prefix="$" suffix="/mo">
               <input
-                type="number"
-                min={0}
-                value={form.hoaFee1YearAgo || ""}
-                onChange={(e) => updateNumber("hoaFee1YearAgo", e.target.value)}
+                type="text"
+                inputMode="decimal"
+                value={form.hoaFee1YearAgo}
+                onChange={(e) => updateField("hoaFee1YearAgo", e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={7}
                 className={inputClass}
               />
             </Field>
 
             <Field label="HOA fee 2 years ago" prefix="$" suffix="/mo">
               <input
-                type="number"
-                min={0}
-                value={form.hoaFee2YearsAgo || ""}
-                onChange={(e) => updateNumber("hoaFee2YearsAgo", e.target.value)}
+                type="text"
+                inputMode="decimal"
+                value={form.hoaFee2YearsAgo}
+                onChange={(e) => updateField("hoaFee2YearsAgo", e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={8}
                 className={inputClass}
               />
             </Field>
 
             <Field label="Expected monthly rent" prefix="$" suffix="/mo">
               <input
-                type="number"
-                min={0}
-                value={form.expectedMonthlyRent || ""}
+                type="text"
+                inputMode="decimal"
+                value={form.expectedMonthlyRent}
                 onChange={(e) =>
-                  updateNumber("expectedMonthlyRent", e.target.value)
+                  updateField("expectedMonthlyRent", e.target.value)
                 }
+                onFocus={(e) => e.target.select()}
+                tabIndex={9}
                 className={inputClass}
               />
             </Field>
 
             <Field label="Reserve fund balance" prefix="$">
               <input
-                type="number"
-                min={0}
-                value={form.reserveFundBalance || ""}
+                type="text"
+                inputMode="decimal"
+                value={form.reserveFundBalance}
                 onChange={(e) =>
-                  updateNumber("reserveFundBalance", e.target.value)
+                  updateField("reserveFundBalance", e.target.value)
                 }
+                onFocus={(e) => e.target.select()}
+                tabIndex={10}
                 className={inputClass}
               />
             </Field>
 
             <Field label="Pending special assessments" prefix="$" className="sm:col-span-2">
               <input
-                type="number"
-                min={0}
-                value={form.pendingSpecialAssessments || ""}
+                type="text"
+                inputMode="decimal"
+                value={form.pendingSpecialAssessments}
                 onChange={(e) =>
-                  updateNumber("pendingSpecialAssessments", e.target.value)
+                  updateField("pendingSpecialAssessments", e.target.value)
                 }
+                onFocus={(e) => e.target.select()}
+                tabIndex={11}
                 className={inputClass}
               />
             </Field>
@@ -251,6 +316,7 @@ export function HoaDangerScoreTool() {
 
           <button
             type="submit"
+            tabIndex={12}
             className="mt-8 w-full rounded-xl bg-[#1B4332] px-6 py-3.5 text-sm font-semibold text-[#E8D5B7] transition hover:bg-[#163828] sm:w-auto"
           >
             Calculate HOA Danger Score

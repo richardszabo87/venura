@@ -10,13 +10,44 @@ import {
 } from "@/lib/rent-vs-buy";
 import { formatCurrency } from "@/lib/format";
 
-export function RentVsBuyCalculator() {
-  const [form, setForm] = useState<RentVsBuyInput>(DEFAULT_RENT_VS_BUY_INPUT);
-  const result = useMemo(() => calculateRentVsBuy(form), [form]);
+type RentVsBuyFormState = {
+  [K in keyof RentVsBuyInput]: string;
+};
 
-  function updateField<K extends keyof RentVsBuyInput>(
+function defaultsToForm(defaults: RentVsBuyInput): RentVsBuyFormState {
+  return Object.fromEntries(
+    Object.entries(defaults).map(([key, value]) => [key, String(value)]),
+  ) as RentVsBuyFormState;
+}
+
+function parseForm(form: RentVsBuyFormState): RentVsBuyInput {
+  return {
+    purchasePrice: parseFloat(form.purchasePrice) || 0,
+    downPaymentPercent: parseFloat(form.downPaymentPercent) || 0,
+    interestRate: parseFloat(form.interestRate) || 0,
+    propertyTaxes: parseFloat(form.propertyTaxes) || 0,
+    homeInsurance: parseFloat(form.homeInsurance) || 0,
+    hoa: parseFloat(form.hoa) || 0,
+    appreciationRate: parseFloat(form.appreciationRate) || 0,
+    monthlyRent: parseFloat(form.monthlyRent) || 0,
+    rentersInsurance: parseFloat(form.rentersInsurance) || 0,
+    annualRentIncrease: parseFloat(form.annualRentIncrease) || 0,
+    investmentReturn: parseFloat(form.investmentReturn) || 0,
+    yearsToStay: parseFloat(form.yearsToStay) || 0,
+    annualIncome: parseFloat(form.annualIncome) || 0,
+  };
+}
+
+export function RentVsBuyCalculator() {
+  const [form, setForm] = useState<RentVsBuyFormState>(
+    defaultsToForm(DEFAULT_RENT_VS_BUY_INPUT),
+  );
+  const parsedForm = useMemo(() => parseForm(form), [form]);
+  const result = useMemo(() => calculateRentVsBuy(parsedForm), [parsedForm]);
+
+  function updateField<K extends keyof RentVsBuyFormState>(
     field: K,
-    value: RentVsBuyInput[K],
+    value: RentVsBuyFormState[K],
   ) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -70,6 +101,7 @@ export function RentVsBuyCalculator() {
               <CurrencyInput
                 value={form.purchasePrice}
                 onChange={(v) => updateField("purchasePrice", v)}
+                tabIndex={1}
               />
             </Field>
             <div className="grid gap-5 sm:grid-cols-2">
@@ -77,13 +109,14 @@ export function RentVsBuyCalculator() {
                 <PercentInput
                   value={form.downPaymentPercent}
                   onChange={(v) => updateField("downPaymentPercent", v)}
+                  tabIndex={2}
                 />
               </Field>
               <Field label="Interest rate %">
                 <PercentInput
                   value={form.interestRate}
                   onChange={(v) => updateField("interestRate", v)}
-                  step={0.01}
+                  tabIndex={3}
                 />
               </Field>
             </div>
@@ -92,12 +125,14 @@ export function RentVsBuyCalculator() {
                 <CurrencyInput
                   value={form.propertyTaxes}
                   onChange={(v) => updateField("propertyTaxes", v)}
+                  tabIndex={4}
                 />
               </Field>
               <Field label="Home insurance / mo">
                 <CurrencyInput
                   value={form.homeInsurance}
                   onChange={(v) => updateField("homeInsurance", v)}
+                  tabIndex={5}
                 />
               </Field>
             </div>
@@ -106,13 +141,14 @@ export function RentVsBuyCalculator() {
                 <CurrencyInput
                   value={form.hoa}
                   onChange={(v) => updateField("hoa", v)}
+                  tabIndex={6}
                 />
               </Field>
               <Field label="Appreciation rate %">
                 <PercentInput
                   value={form.appreciationRate}
                   onChange={(v) => updateField("appreciationRate", v)}
-                  step={0.1}
+                  tabIndex={7}
                 />
               </Field>
             </div>
@@ -123,6 +159,7 @@ export function RentVsBuyCalculator() {
               <CurrencyInput
                 value={form.monthlyRent}
                 onChange={(v) => updateField("monthlyRent", v)}
+                tabIndex={8}
               />
             </Field>
             <div className="grid gap-5 sm:grid-cols-2">
@@ -130,13 +167,14 @@ export function RentVsBuyCalculator() {
                 <CurrencyInput
                   value={form.rentersInsurance}
                   onChange={(v) => updateField("rentersInsurance", v)}
+                  tabIndex={9}
                 />
               </Field>
               <Field label="Annual rent increase %">
                 <PercentInput
                   value={form.annualRentIncrease}
                   onChange={(v) => updateField("annualRentIncrease", v)}
-                  step={0.1}
+                  tabIndex={10}
                 />
               </Field>
             </div>
@@ -145,15 +183,14 @@ export function RentVsBuyCalculator() {
                 <PercentInput
                   value={form.investmentReturn}
                   onChange={(v) => updateField("investmentReturn", v)}
-                  step={0.1}
+                  tabIndex={11}
                 />
               </Field>
               <Field label="Years planning to stay">
                 <NumberInput
                   value={form.yearsToStay}
                   onChange={(v) => updateField("yearsToStay", v)}
-                  min={1}
-                  max={30}
+                  tabIndex={12}
                 />
               </Field>
             </div>
@@ -161,6 +198,7 @@ export function RentVsBuyCalculator() {
               <CurrencyInput
                 value={form.annualIncome}
                 onChange={(v) => updateField("annualIncome", v)}
+                tabIndex={13}
               />
             </Field>
           </InputPanel>
@@ -184,7 +222,7 @@ export function RentVsBuyCalculator() {
                   result.verdict === "buy" ? "text-white/75" : "text-[#1B4332]/70"
                 }`}
               >
-                After {form.yearsToStay} years,{" "}
+                After {parsedForm.yearsToStay} years,{" "}
                 {result.verdict === "buy" ? "buying" : "renting"} leaves you{" "}
                 {formatCurrency(result.wealthDifference)} ahead.
                 {result.breakEvenYear && (
@@ -192,7 +230,7 @@ export function RentVsBuyCalculator() {
                     {" "}
                     Break-even year:{" "}
                     <span className="font-semibold">Year {result.breakEvenYear}</span>
-                    {result.breakEvenYear > form.yearsToStay && (
+                    {result.breakEvenYear > parsedForm.yearsToStay && (
                       <> (after your planned stay)</>
                     )}
                     .
@@ -404,9 +442,11 @@ function Field({
 function CurrencyInput({
   value,
   onChange,
+  tabIndex,
 }: {
-  value: number;
-  onChange: (value: number) => void;
+  value: string;
+  onChange: (value: string) => void;
+  tabIndex?: number;
 }) {
   return (
     <div className="relative">
@@ -414,11 +454,12 @@ function CurrencyInput({
         $
       </span>
       <input
-        type="number"
-        min={0}
-        step={1}
-        value={value || ""}
-        onChange={(e) => onChange(Math.max(0, Number(e.target.value) || 0))}
+        type="text"
+        inputMode="decimal"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={(e) => e.target.select()}
+        tabIndex={tabIndex}
         className={`${inputClass} pl-7`}
       />
     </div>
@@ -428,25 +469,21 @@ function CurrencyInput({
 function PercentInput({
   value,
   onChange,
-  step = 0.1,
-  max = 100,
+  tabIndex,
 }: {
-  value: number;
-  onChange: (value: number) => void;
-  step?: number;
-  max?: number;
+  value: string;
+  onChange: (value: string) => void;
+  tabIndex?: number;
 }) {
   return (
     <div className="relative">
       <input
-        type="number"
-        min={0}
-        max={max}
-        step={step}
-        value={value || ""}
-        onChange={(e) =>
-          onChange(Math.max(0, Math.min(max, Number(e.target.value) || 0)))
-        }
+        type="text"
+        inputMode="decimal"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={(e) => e.target.select()}
+        tabIndex={tabIndex}
         className={`${inputClass} pr-8`}
       />
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#1B4332]/50">
@@ -459,26 +496,20 @@ function PercentInput({
 function NumberInput({
   value,
   onChange,
-  min,
-  max,
+  tabIndex,
 }: {
-  value: number;
-  onChange: (value: number) => void;
-  min: number;
-  max: number;
+  value: string;
+  onChange: (value: string) => void;
+  tabIndex?: number;
 }) {
   return (
     <input
-      type="number"
-      min={min}
-      max={max}
-      step={1}
-      value={value || ""}
-      onChange={(e) =>
-        onChange(
-          Math.max(min, Math.min(max, Math.round(Number(e.target.value) || 0))),
-        )
-      }
+      type="text"
+      inputMode="numeric"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onFocus={(e) => e.target.select()}
+      tabIndex={tabIndex}
       className={inputClass}
     />
   );

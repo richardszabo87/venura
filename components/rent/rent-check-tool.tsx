@@ -96,6 +96,8 @@ export function RentCheckTool() {
                 type="text"
                 value={form.addressOrZip}
                 onChange={(e) => updateField("addressOrZip", e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={1}
                 placeholder="20901 or 1234 Fenton St, Silver Spring MD"
                 className={inputClass}
                 required
@@ -108,6 +110,7 @@ export function RentCheckTool() {
                 onChange={(e) =>
                   updateField("bedrooms", Number(e.target.value))
                 }
+                tabIndex={2}
                 className={inputClass}
               >
                 {BEDROOM_OPTIONS.map((beds) => (
@@ -124,6 +127,7 @@ export function RentCheckTool() {
                 onChange={(e) =>
                   updateField("propertyType", e.target.value as RentPropertyType)
                 }
+                tabIndex={3}
                 className={inputClass}
               >
                 {PROPERTY_TYPES.map((option) => (
@@ -136,12 +140,13 @@ export function RentCheckTool() {
 
             <Field label="Condition" className="sm:col-span-2">
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {CONDITION_OPTIONS.map((option) => {
+                {CONDITION_OPTIONS.map((option, index) => {
                   const selected = form.condition === option.value;
                   return (
                     <button
                       key={option.value}
                       type="button"
+                      tabIndex={4 + index}
                       onClick={() => updateField("condition", option.value)}
                       className={`rounded-lg border px-3 py-2.5 text-sm font-semibold transition ${
                         selected
@@ -159,6 +164,7 @@ export function RentCheckTool() {
 
           <button
             type="submit"
+            tabIndex={8}
             className="mt-8 w-full rounded-xl bg-[#1B4332] px-6 py-3.5 text-sm font-semibold text-[#E8D5B7] transition hover:bg-[#163828] sm:w-auto"
           >
             Check rent estimate

@@ -10,6 +10,14 @@ import {
   DEFAULTS,
   type PropertyInputs,
 } from "@/lib/calculator";
+
+function parseInput(value: string): number {
+  return parseFloat(value) || 0;
+}
+
+function numToInput(value: number): string {
+  return value === 0 ? "" : String(value);
+}
 import { computeDealScore } from "@/lib/deal-score";
 import { saveLastAnalysis } from "@/lib/analyzer-session";
 import {
@@ -45,16 +53,20 @@ export function PropertyAnalyzer() {
   const { tier, usage, showUpgrade, refreshProfile } = useSubscription();
   const [propertyName, setPropertyName] = useState("");
   const [propertyAddress, setPropertyAddress] = useState("");
-  const [purchasePrice, setPurchasePrice] = useState(DEFAULTS.purchasePrice);
-  const [monthlyRent, setMonthlyRent] = useState(DEFAULTS.monthlyRent);
-  const [hoaFee, setHoaFee] = useState(DEFAULTS.hoaFee);
-  const [propertyTaxes, setPropertyTaxes] = useState(DEFAULTS.propertyTaxes);
-  const [downPaymentPercent, setDownPaymentPercent] = useState(
-    DEFAULTS.downPaymentPercent,
+  const [purchasePrice, setPurchasePrice] = useState("");
+  const [monthlyRent, setMonthlyRent] = useState("");
+  const [hoaFee, setHoaFee] = useState(numToInput(DEFAULTS.hoaFee));
+  const [propertyTaxes, setPropertyTaxes] = useState(
+    numToInput(DEFAULTS.propertyTaxes),
   );
-  const [interestRate, setInterestRate] = useState(DEFAULTS.interestRate);
-  const [insurance, setInsurance] = useState(DEFAULTS.insurance);
-  const [loanTerm, setLoanTerm] = useState(DEFAULTS.loanTerm);
+  const [downPaymentPercent, setDownPaymentPercent] = useState(
+    String(DEFAULTS.downPaymentPercent),
+  );
+  const [interestRate, setInterestRate] = useState(
+    String(DEFAULTS.interestRate),
+  );
+  const [insurance, setInsurance] = useState(numToInput(DEFAULTS.insurance));
+  const [loanTerm, setLoanTerm] = useState(String(DEFAULTS.loanTerm));
   const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const [analyzedInputs, setAnalyzedInputs] = useState<PropertyInputs | null>(
     null,
@@ -74,12 +86,14 @@ export function PropertyAnalyzer() {
         if (serverProfile?.onboarding_completed) {
           const fromServer = userProfileToAnalyzerDefaults(serverProfile);
           if (fromServer.purchasePrice != null) {
-            setPurchasePrice(fromServer.purchasePrice);
+            setPurchasePrice(numToInput(fromServer.purchasePrice));
           }
-          if (fromServer.monthlyRent != null) setMonthlyRent(fromServer.monthlyRent);
-          if (fromServer.hoaFee != null) setHoaFee(fromServer.hoaFee);
+          if (fromServer.monthlyRent != null) {
+            setMonthlyRent(numToInput(fromServer.monthlyRent));
+          }
+          if (fromServer.hoaFee != null) setHoaFee(numToInput(fromServer.hoaFee));
           if (fromServer.propertyTaxes != null) {
-            setPropertyTaxes(fromServer.propertyTaxes);
+            setPropertyTaxes(numToInput(fromServer.propertyTaxes));
           }
           return;
         }
@@ -91,16 +105,26 @@ export function PropertyAnalyzer() {
       if (!profile) return;
 
       const defaults = getAnalyzerDefaultsFromProfile(profile);
-      if (defaults.purchasePrice != null) setPurchasePrice(defaults.purchasePrice);
-      if (defaults.monthlyRent != null) setMonthlyRent(defaults.monthlyRent);
-      if (defaults.hoaFee != null) setHoaFee(defaults.hoaFee);
-      if (defaults.propertyTaxes != null) setPropertyTaxes(defaults.propertyTaxes);
-      if (defaults.downPaymentPercent != null) {
-        setDownPaymentPercent(defaults.downPaymentPercent);
+      if (defaults.purchasePrice != null) {
+        setPurchasePrice(numToInput(defaults.purchasePrice));
       }
-      if (defaults.interestRate != null) setInterestRate(defaults.interestRate);
-      if (defaults.insurance != null) setInsurance(defaults.insurance);
-      if (defaults.loanTerm != null) setLoanTerm(defaults.loanTerm);
+      if (defaults.monthlyRent != null) {
+        setMonthlyRent(numToInput(defaults.monthlyRent));
+      }
+      if (defaults.hoaFee != null) setHoaFee(numToInput(defaults.hoaFee));
+      if (defaults.propertyTaxes != null) {
+        setPropertyTaxes(numToInput(defaults.propertyTaxes));
+      }
+      if (defaults.downPaymentPercent != null) {
+        setDownPaymentPercent(String(defaults.downPaymentPercent));
+      }
+      if (defaults.interestRate != null) {
+        setInterestRate(String(defaults.interestRate));
+      }
+      if (defaults.insurance != null) {
+        setInsurance(numToInput(defaults.insurance));
+      }
+      if (defaults.loanTerm != null) setLoanTerm(String(defaults.loanTerm));
     }
 
     void applyProfileDefaults();
@@ -136,8 +160,8 @@ export function PropertyAnalyzer() {
           loanTerm: DEFAULTS.loanTerm,
         };
 
-        setPurchasePrice(inputs.purchasePrice);
-        setMonthlyRent(inputs.monthlyRent);
+        setPurchasePrice(numToInput(inputs.purchasePrice));
+        setMonthlyRent(numToInput(inputs.monthlyRent));
         setAnalyzedInputs(inputs);
         saveLastAnalysis(inputs);
         setHasAnalyzed(true);
@@ -150,16 +174,16 @@ export function PropertyAnalyzer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- load once per historyId
   }, [historyId]);
 
-  const currentInputs = useMemo(
+  const currentInputs = useMemo<PropertyInputs>(
     () => ({
-      purchasePrice,
-      monthlyRent,
-      hoaFee,
-      propertyTaxes,
-      downPaymentPercent,
-      interestRate,
-      insurance,
-      loanTerm,
+      purchasePrice: parseInput(purchasePrice),
+      monthlyRent: parseInput(monthlyRent),
+      hoaFee: parseInput(hoaFee),
+      propertyTaxes: parseInput(propertyTaxes),
+      downPaymentPercent: parseInput(downPaymentPercent),
+      interestRate: parseInput(interestRate),
+      insurance: parseInput(insurance),
+      loanTerm: parseInput(loanTerm),
     }),
     [
       purchasePrice,
@@ -244,8 +268,8 @@ export function PropertyAnalyzer() {
         body: JSON.stringify({
           propertyName: propertyName.trim() || undefined,
           address: propertyAddress.trim() || undefined,
-          purchasePrice,
-          monthlyRent,
+          purchasePrice: currentInputs.purchasePrice,
+          monthlyRent: currentInputs.monthlyRent,
           analysis: analysisResult,
         }),
       });
@@ -357,6 +381,8 @@ export function PropertyAnalyzer() {
                 type="text"
                 value={propertyName}
                 onChange={(e) => setPropertyName(e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={1}
                 placeholder="e.g. Capitol Hill Duplex"
                 className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30"
               />
@@ -369,6 +395,8 @@ export function PropertyAnalyzer() {
                 type="text"
                 value={propertyAddress}
                 onChange={(e) => setPropertyAddress(e.target.value)}
+                onFocus={(e) => e.target.select()}
+                tabIndex={2}
                 placeholder="123 Main St, Arlington, VA"
                 className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30"
               />
@@ -381,6 +409,8 @@ export function PropertyAnalyzer() {
               value={purchasePrice}
               onChange={setPurchasePrice}
               prefix="$"
+              placeholder="Enter purchase price"
+              tabIndex={3}
             />
             <InputField
               id="monthlyRent"
@@ -388,6 +418,8 @@ export function PropertyAnalyzer() {
               value={monthlyRent}
               onChange={setMonthlyRent}
               prefix="$"
+              placeholder="Enter monthly rent"
+              tabIndex={4}
             />
             <InputField
               id="hoaFee"
@@ -395,6 +427,7 @@ export function PropertyAnalyzer() {
               value={hoaFee}
               onChange={setHoaFee}
               prefix="$"
+              tabIndex={5}
             />
             <InputField
               id="propertyTaxes"
@@ -402,6 +435,7 @@ export function PropertyAnalyzer() {
               value={propertyTaxes}
               onChange={setPropertyTaxes}
               prefix="$"
+              tabIndex={6}
             />
             <InputField
               id="downPayment"
@@ -409,7 +443,7 @@ export function PropertyAnalyzer() {
               value={downPaymentPercent}
               onChange={setDownPaymentPercent}
               suffix="%"
-              step={0.5}
+              tabIndex={7}
             />
             <InputField
               id="interestRate"
@@ -417,7 +451,7 @@ export function PropertyAnalyzer() {
               value={interestRate}
               onChange={setInterestRate}
               suffix="%"
-              step={0.01}
+              tabIndex={8}
             />
             <InputField
               id="insurance"
@@ -425,6 +459,7 @@ export function PropertyAnalyzer() {
               value={insurance}
               onChange={setInsurance}
               prefix="$"
+              tabIndex={9}
             />
             <InputField
               id="loanTerm"
@@ -432,6 +467,7 @@ export function PropertyAnalyzer() {
               value={loanTerm}
               onChange={setLoanTerm}
               suffix="yr"
+              tabIndex={10}
             />
           </div>
           <button
@@ -539,7 +575,7 @@ export function PropertyAnalyzer() {
                 openOfferPrice={negotiation.openOfferPrice}
                 targetPrice={negotiation.targetPrice}
                 walkAwayPrice={negotiation.walkAwayPrice}
-                currentPrice={purchasePrice}
+                currentPrice={currentInputs.purchasePrice}
               />
 
               <section className="rounded-2xl border border-white/10 bg-[#1B4332] p-6 shadow-xl">
@@ -550,7 +586,7 @@ export function PropertyAnalyzer() {
                   <MetricCard
                     label="Monthly mortgage"
                     value={formatCurrencyDetailed(analysis.monthlyMortgage)}
-                    sub={`Loan ${formatCurrency(analysis.loanAmount)} · ${loanTerm} yr`}
+                    sub={`Loan ${formatCurrency(analysis.loanAmount)} · ${analyzedInputs?.loanTerm ?? 0} yr`}
                   />
                   <MetricCard
                     label="Monthly cash flow"
@@ -610,7 +646,7 @@ export function PropertyAnalyzer() {
                       Gross rental income
                     </span>
                     <span className="font-semibold tabular-nums text-[#E8D5B7]">
-                      +{formatCurrencyDetailed(monthlyRent)}
+                      +{formatCurrencyDetailed(analyzedInputs?.monthlyRent ?? 0)}
                     </span>
                   </div>
                   {analysis.expenseBreakdown.map((item) => (

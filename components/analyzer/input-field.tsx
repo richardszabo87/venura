@@ -1,11 +1,12 @@
 type InputFieldProps = {
   id: string;
   label: string;
-  value: number;
-  onChange: (value: number) => void;
+  value: string;
+  onChange: (value: string) => void;
   prefix?: string;
   suffix?: string;
-  step?: number;
+  placeholder?: string;
+  tabIndex?: number;
 };
 
 export function InputField({
@@ -15,7 +16,8 @@ export function InputField({
   onChange,
   prefix,
   suffix,
-  step = 1,
+  placeholder,
+  tabIndex,
 }: InputFieldProps) {
   return (
     <label htmlFor={id} className="block">
@@ -30,11 +32,14 @@ export function InputField({
         )}
         <input
           id={id}
-          type="number"
-          step={step}
+          type="text"
+          inputMode="decimal"
           value={value}
-          onChange={(e) => onChange(Number(e.target.value) || 0)}
-          className={`w-full rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm text-white outline-none transition focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30 ${
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          placeholder={placeholder}
+          tabIndex={tabIndex}
+          className={`w-full rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#E8D5B7] focus:ring-2 focus:ring-[#E8D5B7]/30 ${
             prefix ? "pl-7" : "pl-3"
           } ${suffix ? "pr-9" : "pr-3"}`}
         />

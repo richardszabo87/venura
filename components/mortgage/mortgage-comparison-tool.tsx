@@ -22,19 +22,54 @@ import {
   type MortgageComparisonInput,
 } from "@/lib/mortgage-comparison";
 
+type MortgageFormState = {
+  homePrice: string;
+  annualIncome: string;
+  creditScoreRange: CreditScoreRange;
+  availableDownPayment: string;
+  homeEquity: string;
+  isVeteran: boolean;
+};
+
+function defaultsToForm(defaults: MortgageComparisonInput): MortgageFormState {
+  return {
+    homePrice: String(defaults.homePrice),
+    annualIncome: String(defaults.annualIncome),
+    creditScoreRange: defaults.creditScoreRange,
+    availableDownPayment: String(defaults.availableDownPayment),
+    homeEquity: String(defaults.homeEquity),
+    isVeteran: defaults.isVeteran,
+  };
+}
+
+function parseForm(form: MortgageFormState): MortgageComparisonInput {
+  return {
+    homePrice: parseFloat(form.homePrice) || 0,
+    annualIncome: parseFloat(form.annualIncome) || 0,
+    creditScoreRange: form.creditScoreRange,
+    availableDownPayment: parseFloat(form.availableDownPayment) || 0,
+    homeEquity: parseFloat(form.homeEquity) || 0,
+    isVeteran: form.isVeteran,
+  };
+}
+
 const FOREST = "#1B4332";
 const CREAM = "#E8D5B7";
 const CHART_COLORS = [FOREST, CREAM, "#2D6A4F", "#40916C", "#52B788", "#74C69D"];
 
 export function MortgageComparisonTool() {
-  const [form, setForm] = useState<MortgageComparisonInput>(
-    DEFAULT_MORTGAGE_INPUT,
+  const [form, setForm] = useState<MortgageFormState>(
+    defaultsToForm(DEFAULT_MORTGAGE_INPUT),
   );
-  const result = useMemo(() => calculateMortgageComparison(form), [form]);
+  const parsedForm = useMemo(() => parseForm(form), [form]);
+  const result = useMemo(
+    () => calculateMortgageComparison(parsedForm),
+    [parsedForm],
+  );
 
-  function updateField<K extends keyof MortgageComparisonInput>(
+  function updateField<K extends keyof MortgageFormState>(
     field: K,
-    value: MortgageComparisonInput[K],
+    value: MortgageFormState[K],
   ) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -86,12 +121,14 @@ export function MortgageComparisonTool() {
               <CurrencyInput
                 value={form.homePrice}
                 onChange={(v) => updateField("homePrice", v)}
+                tabIndex={1}
               />
             </Field>
             <Field label="Annual income">
               <CurrencyInput
                 value={form.annualIncome}
                 onChange={(v) => updateField("annualIncome", v)}
+                tabIndex={2}
               />
             </Field>
             <Field label="Credit score range">
@@ -103,6 +140,7 @@ export function MortgageComparisonTool() {
                     e.target.value as CreditScoreRange,
                   )
                 }
+                tabIndex={3}
                 className={inputClass}
               >
                 {CREDIT_SCORE_OPTIONS.map((opt) => (
@@ -116,12 +154,14 @@ export function MortgageComparisonTool() {
               <CurrencyInput
                 value={form.availableDownPayment}
                 onChange={(v) => updateField("availableDownPayment", v)}
+                tabIndex={4}
               />
             </Field>
             <Field label="Home equity (other property)">
               <CurrencyInput
                 value={form.homeEquity}
                 onChange={(v) => updateField("homeEquity", v)}
+                tabIndex={5}
               />
             </Field>
             <Field label="Veteran status">
@@ -130,6 +170,7 @@ export function MortgageComparisonTool() {
                   type="checkbox"
                   checked={form.isVeteran}
                   onChange={(e) => updateField("isVeteran", e.target.checked)}
+                  tabIndex={6}
                   className="h-4 w-4 rounded border-[#1B4332]/30 text-[#1B4332] focus:ring-[#E8D5B7]"
                 />
                 <span className="text-sm text-[#1B4332]">
@@ -483,9 +524,11 @@ function Field({
 function CurrencyInput({
   value,
   onChange,
+  tabIndex,
 }: {
-  value: number;
-  onChange: (value: number) => void;
+  value: string;
+  onChange: (value: string) => void;
+  tabIndex?: number;
 }) {
   return (
     <div className="relative">
@@ -493,11 +536,12 @@ function CurrencyInput({
         $
       </span>
       <input
-        type="number"
-        min={0}
-        step={1}
-        value={value || ""}
-        onChange={(e) => onChange(Math.max(0, Number(e.target.value) || 0))}
+        type="text"
+        inputMode="decimal"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={(e) => e.target.select()}
+        tabIndex={tabIndex}
         className={`${inputClass} pl-7`}
       />
     </div>

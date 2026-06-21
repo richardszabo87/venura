@@ -14,14 +14,51 @@ import {
   formatPercentOneDecimal,
 } from "@/lib/format";
 
+type TrueCostFormState = {
+  [K in keyof TrueCostInput]: string;
+};
+
+function defaultsToForm(defaults: TrueCostInput): TrueCostFormState {
+  return {
+    purchasePrice: String(defaults.purchasePrice),
+    downPaymentPercent: String(defaults.downPaymentPercent),
+    interestRate: String(defaults.interestRate),
+    loanTerm: String(defaults.loanTerm),
+    propertyTaxes: String(defaults.propertyTaxes),
+    homeInsurance: String(defaults.homeInsurance),
+    hoa: String(defaults.hoa),
+    utilities: String(defaults.utilities),
+    annualIncome: String(defaults.annualIncome),
+    appreciationRate: String(defaults.appreciationRate),
+  };
+}
+
+function parseForm(form: TrueCostFormState): TrueCostInput {
+  return {
+    purchasePrice: parseFloat(form.purchasePrice) || 0,
+    downPaymentPercent: parseFloat(form.downPaymentPercent) || 0,
+    interestRate: parseFloat(form.interestRate) || 0,
+    loanTerm: parseFloat(form.loanTerm) || 0,
+    propertyTaxes: parseFloat(form.propertyTaxes) || 0,
+    homeInsurance: parseFloat(form.homeInsurance) || 0,
+    hoa: parseFloat(form.hoa) || 0,
+    utilities: parseFloat(form.utilities) || 0,
+    annualIncome: parseFloat(form.annualIncome) || 0,
+    appreciationRate: parseFloat(form.appreciationRate) || 0,
+  };
+}
+
 export function TrueCostCalculator() {
-  const [form, setForm] = useState<TrueCostInput>(DEFAULT_TRUE_COST_INPUT);
+  const [form, setForm] = useState<TrueCostFormState>(
+    defaultsToForm(DEFAULT_TRUE_COST_INPUT),
+  );
 
-  const result = useMemo(() => calculateTrueCost(form), [form]);
+  const parsedForm = useMemo(() => parseForm(form), [form]);
+  const result = useMemo(() => calculateTrueCost(parsedForm), [parsedForm]);
 
-  function updateField<K extends keyof TrueCostInput>(
+  function updateField<K extends keyof TrueCostFormState>(
     field: K,
-    value: TrueCostInput[K],
+    value: TrueCostFormState[K],
   ) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -79,6 +116,7 @@ export function TrueCostCalculator() {
                 <CurrencyInput
                   value={form.purchasePrice}
                   onChange={(v) => updateField("purchasePrice", v)}
+                  tabIndex={1}
                 />
               </Field>
 
@@ -86,7 +124,7 @@ export function TrueCostCalculator() {
                 <PercentInput
                   value={form.downPaymentPercent}
                   onChange={(v) => updateField("downPaymentPercent", v)}
-                  max={100}
+                  tabIndex={2}
                 />
               </Field>
 
@@ -94,7 +132,7 @@ export function TrueCostCalculator() {
                 <PercentInput
                   value={form.interestRate}
                   onChange={(v) => updateField("interestRate", v)}
-                  step={0.01}
+                  tabIndex={3}
                 />
               </Field>
 
@@ -102,8 +140,7 @@ export function TrueCostCalculator() {
                 <NumberInput
                   value={form.loanTerm}
                   onChange={(v) => updateField("loanTerm", v)}
-                  min={1}
-                  max={40}
+                  tabIndex={4}
                 />
               </Field>
 
@@ -111,7 +148,7 @@ export function TrueCostCalculator() {
                 <PercentInput
                   value={form.appreciationRate}
                   onChange={(v) => updateField("appreciationRate", v)}
-                  step={0.1}
+                  tabIndex={5}
                 />
               </Field>
             </div>
@@ -124,6 +161,7 @@ export function TrueCostCalculator() {
                 <CurrencyInput
                   value={form.propertyTaxes}
                   onChange={(v) => updateField("propertyTaxes", v)}
+                  tabIndex={6}
                 />
               </Field>
 
@@ -131,6 +169,7 @@ export function TrueCostCalculator() {
                 <CurrencyInput
                   value={form.homeInsurance}
                   onChange={(v) => updateField("homeInsurance", v)}
+                  tabIndex={7}
                 />
               </Field>
 
@@ -138,6 +177,7 @@ export function TrueCostCalculator() {
                 <CurrencyInput
                   value={form.hoa}
                   onChange={(v) => updateField("hoa", v)}
+                  tabIndex={8}
                 />
               </Field>
 
@@ -145,6 +185,7 @@ export function TrueCostCalculator() {
                 <CurrencyInput
                   value={form.utilities}
                   onChange={(v) => updateField("utilities", v)}
+                  tabIndex={9}
                 />
               </Field>
             </div>
@@ -157,6 +198,7 @@ export function TrueCostCalculator() {
                 <CurrencyInput
                   value={form.annualIncome}
                   onChange={(v) => updateField("annualIncome", v)}
+                  tabIndex={10}
                 />
               </Field>
             </div>
@@ -260,7 +302,7 @@ export function TrueCostCalculator() {
                   Equity projection
                 </h2>
                 <p className="mt-1 text-sm text-[#1B4332]/70">
-                  Based on {formatPercentOneDecimal(form.appreciationRate)}{" "}
+                  Based on {formatPercentOneDecimal(parsedForm.appreciationRate)}{" "}
                   annual appreciation.
                 </p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -295,7 +337,8 @@ export function TrueCostCalculator() {
                   <HiddenCostRow
                     label="PMI"
                     detail={
-                      form.downPaymentPercent < 20
+                      form.downPaymentPercent !== "" &&
+                      parseFloat(form.downPaymentPercent) < 20
                         ? "Required with less than 20% down"
                         : "Not required at this down payment"
                     }
@@ -378,9 +421,11 @@ function Field({
 function CurrencyInput({
   value,
   onChange,
+  tabIndex,
 }: {
-  value: number;
-  onChange: (value: number) => void;
+  value: string;
+  onChange: (value: string) => void;
+  tabIndex?: number;
 }) {
   return (
     <div className="relative">
@@ -388,11 +433,12 @@ function CurrencyInput({
         $
       </span>
       <input
-        type="number"
-        min={0}
-        step={1}
-        value={value || ""}
-        onChange={(e) => onChange(Math.max(0, Number(e.target.value) || 0))}
+        type="text"
+        inputMode="decimal"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={(e) => e.target.select()}
+        tabIndex={tabIndex}
         className={`${inputClass} pl-7`}
       />
     </div>
@@ -402,25 +448,21 @@ function CurrencyInput({
 function PercentInput({
   value,
   onChange,
-  step = 0.1,
-  max = 100,
+  tabIndex,
 }: {
-  value: number;
-  onChange: (value: number) => void;
-  step?: number;
-  max?: number;
+  value: string;
+  onChange: (value: string) => void;
+  tabIndex?: number;
 }) {
   return (
     <div className="relative">
       <input
-        type="number"
-        min={0}
-        max={max}
-        step={step}
-        value={value || ""}
-        onChange={(e) =>
-          onChange(Math.max(0, Math.min(max, Number(e.target.value) || 0)))
-        }
+        type="text"
+        inputMode="decimal"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={(e) => e.target.select()}
+        tabIndex={tabIndex}
         className={`${inputClass} pr-8`}
       />
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#1B4332]/50">
@@ -433,26 +475,20 @@ function PercentInput({
 function NumberInput({
   value,
   onChange,
-  min,
-  max,
+  tabIndex,
 }: {
-  value: number;
-  onChange: (value: number) => void;
-  min: number;
-  max: number;
+  value: string;
+  onChange: (value: string) => void;
+  tabIndex?: number;
 }) {
   return (
     <input
-      type="number"
-      min={min}
-      max={max}
-      step={1}
-      value={value || ""}
-      onChange={(e) =>
-        onChange(
-          Math.max(min, Math.min(max, Math.round(Number(e.target.value) || 0))),
-        )
-      }
+      type="text"
+      inputMode="numeric"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onFocus={(e) => e.target.select()}
+      tabIndex={tabIndex}
       className={inputClass}
     />
   );
