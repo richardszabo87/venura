@@ -45,7 +45,6 @@ export async function POST(request: Request) {
       client_reference_id: userId,
       customer: profile?.stripe_customer_id ?? undefined,
       subscription_data: {
-        trial_period_days: 7,
         metadata: { plan, clerk_user_id: userId },
       },
       success_url: `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`,

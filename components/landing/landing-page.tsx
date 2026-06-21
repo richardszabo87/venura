@@ -174,7 +174,7 @@ const PRICING_TIERS: PricingTier[] = [
       "HOA Health Report",
       "Deal Score™",
     ],
-    cta: "Upgrade",
+    cta: "Upgrade to Investor — $19/month",
     href: "/pricing",
     highlighted: true,
   },
@@ -470,16 +470,23 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href={tier.href}
-                  className={`mt-8 block rounded-xl py-3 text-center text-sm font-semibold transition ${
-                    tier.highlighted
-                      ? "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE]"
-                      : "border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 text-[#E8D5B7] hover:bg-[#E8D5B7]/20"
-                  }`}
-                >
-                  {tier.cta}
-                </Link>
+                <div className="mt-8">
+                  <Link
+                    href={tier.href}
+                    className={`block rounded-xl py-3 text-center text-sm font-semibold transition ${
+                      tier.highlighted
+                        ? "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE]"
+                        : "border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 text-[#E8D5B7] hover:bg-[#E8D5B7]/20"
+                    }`}
+                  >
+                    {tier.cta}
+                  </Link>
+                  {tier.highlighted && (
+                    <p className="mt-2 text-center text-xs text-white/50">
+                      Cancel anytime
+                    </p>
+                  )}
+                </div>
               </article>
             ))}
           </div>

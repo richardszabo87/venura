@@ -56,7 +56,7 @@ export function UpgradeModal({ open, reason, onClose }: UpgradeModalProps) {
 
   if (!open) return null;
 
-  async function startTrial() {
+  async function startCheckout() {
     setLoading(true);
     setError(null);
 
@@ -161,20 +161,20 @@ export function UpgradeModal({ open, reason, onClose }: UpgradeModalProps) {
 
           <button
             type="button"
-            onClick={() => void startTrial()}
+            onClick={() => void startCheckout()}
             disabled={loading}
             className="w-full rounded-xl bg-[#E8D5B7] py-3.5 text-sm font-semibold text-[#1B4332] transition hover:bg-[#F0E4CE] disabled:opacity-60"
           >
-            {loading ? "Redirecting to checkout…" : "Start 7-day free trial"}
+            {loading
+              ? "Redirecting to checkout…"
+              : isPro
+                ? "Upgrade to Pro — $29/month"
+                : "Upgrade to Investor — $19/month"}
           </button>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-3 w-full py-2.5 text-sm font-medium text-white/50 transition hover:text-white/80"
-          >
-            Maybe later
-          </button>
+          <p className="mt-3 text-center text-xs text-white/50">
+            Cancel anytime
+          </p>
         </div>
       </div>
     </div>

@@ -50,7 +50,7 @@ const PLANS: {
       "10-year projections with export",
       "Zip-level market data",
     ],
-    cta: "Start 7-day free trial",
+    cta: "Upgrade to Investor — $19/month",
     highlighted: true,
   },
   {
@@ -227,30 +227,37 @@ export function PricingPlans({ currentTier = "free" }: PricingPlansProps) {
                 ))}
               </ul>
 
-              <button
-                type="button"
-                disabled={isCurrent || !isPaid || isLoading || loadingPlan !== null}
-                onClick={() => {
-                  if (plan.id === "investor" || plan.id === "pro") {
-                    void startCheckout(plan.id);
-                  }
-                }}
-                className={`w-full rounded-xl py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                  isCurrent
-                    ? "border border-white/20 bg-white/5 text-white/60"
-                    : plan.highlighted
-                      ? "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE]"
-                      : plan.price === 0
-                        ? "border border-white/20 bg-white/5 text-white/60"
-                        : "border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 text-[#E8D5B7] hover:bg-[#E8D5B7]/20"
-                }`}
-              >
-                {isCurrent
-                  ? "Current Plan"
-                  : isLoading
-                    ? "Redirecting to checkout…"
-                    : plan.cta}
-              </button>
+              <div>
+                <button
+                  type="button"
+                  disabled={isCurrent || !isPaid || isLoading || loadingPlan !== null}
+                  onClick={() => {
+                    if (plan.id === "investor" || plan.id === "pro") {
+                      void startCheckout(plan.id);
+                    }
+                  }}
+                  className={`w-full rounded-xl py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                    isCurrent
+                      ? "border border-white/20 bg-white/5 text-white/60"
+                      : plan.highlighted
+                        ? "bg-[#E8D5B7] text-[#1B4332] hover:bg-[#F0E4CE]"
+                        : plan.price === 0
+                          ? "border border-white/20 bg-white/5 text-white/60"
+                          : "border border-[#E8D5B7]/40 bg-[#E8D5B7]/10 text-[#E8D5B7] hover:bg-[#E8D5B7]/20"
+                  }`}
+                >
+                  {isCurrent
+                    ? "Current Plan"
+                    : isLoading
+                      ? "Redirecting to checkout…"
+                      : plan.cta}
+                </button>
+                {plan.id === "investor" && !isCurrent && (
+                  <p className="mt-2 text-center text-xs text-white/50">
+                    Cancel anytime
+                  </p>
+                )}
+              </div>
             </article>
           );
         })}
