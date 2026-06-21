@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ProfileSettingsForm } from "@/components/settings/profile-settings-form";
+import { SubscriptionSettings } from "@/components/settings/subscription-settings";
 
 export default function SettingsPage() {
   return (
@@ -7,8 +8,9 @@ export default function SettingsPage() {
       <PageHeader
         eyebrow="Account"
         title="Settings"
-        description="Update your investor profile, target markets, and preferences."
+        description="Manage your subscription, investor profile, target markets, and preferences."
       />
+      <SubscriptionSettings />
       <ProfileSettingsForm />
     </>
   );

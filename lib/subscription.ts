@@ -2,6 +2,26 @@ import type { UserProfileRow } from "./user-profile";
 
 export type SubscriptionTier = "free" | "investor" | "pro";
 
+export const PLAN_NAMES: Record<SubscriptionTier, string> = {
+  free: "Free",
+  investor: "Investor",
+  pro: "Pro",
+};
+
+export const PLAN_PRICES: Record<SubscriptionTier, number> = {
+  free: 0,
+  investor: 19,
+  pro: 29,
+};
+
+export function getPlanName(tier: SubscriptionTier): string {
+  return PLAN_NAMES[tier];
+}
+
+export function getPlanPrice(tier: SubscriptionTier): number {
+  return PLAN_PRICES[tier];
+}
+
 export type UpgradeReason =
   | "analyses"
   | "saved_deals"
