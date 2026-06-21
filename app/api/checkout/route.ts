@@ -26,10 +26,6 @@ export async function POST(request: Request) {
 
     const stripe = getStripe();
     const priceId = getPriceIdForPlan(plan);
-    const origin =
-      request.headers.get("origin") ??
-      process.env.NEXT_PUBLIC_APP_URL ??
-      "http://localhost:3000";
 
     const profile = await fetchProfileByClerkId(userId).catch(() => null);
 
@@ -47,8 +43,8 @@ export async function POST(request: Request) {
       subscription_data: {
         metadata: { plan, clerk_user_id: userId },
       },
-      success_url: `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/pricing?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-cancelled`,
       metadata: {
         plan,
         clerk_user_id: userId,
