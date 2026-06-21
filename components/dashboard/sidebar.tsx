@@ -48,7 +48,12 @@ function GearIcon() {
   );
 }
 
-export function Sidebar() {
+type SidebarProps = {
+  mobileOpen?: boolean;
+  onNavigate?: () => void;
+};
+
+export function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const { isLoaded, user } = useUser();
 
@@ -57,10 +62,18 @@ export function Sidebar() {
     user?.primaryEmailAddress?.emailAddress ||
     user?.emailAddresses[0]?.emailAddress;
 
+  const sidebarClassName = mobileOpen
+    ? "fixed inset-y-0 left-0 z-50 flex w-[240px] shrink-0 flex-col bg-[#1B4332] md:relative md:z-auto"
+    : "hidden w-[240px] shrink-0 flex-col bg-[#1B4332] md:flex md:min-h-screen";
+
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 flex w-64 flex-col bg-[#1B4332]">
+    <aside className={sidebarClassName}>
       <div className="border-b border-white/10 px-6 py-6">
-        <Link href="/analyzer" className="group inline-flex items-baseline gap-0.5">
+        <Link
+          href="/analyzer"
+          className="group inline-flex items-baseline gap-0.5"
+          onClick={onNavigate}
+        >
           <span className="text-2xl font-bold tracking-tight text-white">
             Venura
           </span>
@@ -79,6 +92,7 @@ export function Sidebar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  onClick={onNavigate}
                   className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                     isActive
                       ? "bg-[#E8D5B7]/20 text-[#E8D5B7]"
