@@ -19,24 +19,16 @@ export async function POST() {
     );
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!appUrl) {
-    return NextResponse.json(
-      { error: "NEXT_PUBLIC_APP_URL is not configured" },
-      { status: 500 },
-    );
-  }
-
   try {
     const stripe = getStripe();
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${appUrl}/settings`,
+      return_url: "https://venura.io/settings",
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (error) {
-    console.error("Customer portal session error:", error);
+  } catch (error: unknown) {
+    console.error("Portal error:", error);
     const message =
       error instanceof Error ? error.message : "Could not open billing portal";
     return NextResponse.json({ error: message }, { status: 500 });
