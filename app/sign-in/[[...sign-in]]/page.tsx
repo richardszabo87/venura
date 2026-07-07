@@ -29,12 +29,15 @@ export default function SignInPage() {
       })
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId })
-        router.push('/dashboard')
+        window.location.href = '/dashboard'
+      } else {
+        console.log('Sign in status:', result.status)
+        setError('Additional verification needed. Status: ' + result.status)
       }
     } catch (err: any) {
       const errorCode = err.errors?.[0]?.code
       if (errorCode === 'session_exists') {
-        router.push('/dashboard')
+        window.location.href = '/dashboard'
         return
       }
       setError(err.errors?.[0]?.message || 'Sign in failed')

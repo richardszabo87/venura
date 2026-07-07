@@ -26,7 +26,10 @@ export default function SignUpPage() {
       })
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId })
-        router.push('/onboarding')
+        window.location.href = '/onboarding'
+      } else {
+        console.log('Sign up status:', result.status)
+        setError('Additional verification needed. Status: ' + result.status)
       }
     } catch (err: any) {
       setError(err.errors?.[0]?.message || 'Sign up failed')
